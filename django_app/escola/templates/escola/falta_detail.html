@@ -1,0 +1,9 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Comunicação de falta - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao">
+  <h2>Comunicação de falta</h2>
+  <p>{{ destinatario.comunicado.corpo_mensagem }}</p>
+  <p><small>Enviado em {{ destinatario.enviado_em }}</small></p>
+</section>
+{% endblock %}
