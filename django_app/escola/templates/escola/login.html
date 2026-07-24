@@ -1,0 +1,18 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Login - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--formulario">
+  <h2>Acesso do administrador</h2>
+  <form method="post" class="formulario">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="formulario__campo">
+        {{ field.label_tag }}
+        {{ field }}
+        {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="botao botao--primario">Entrar</button>
+  </form>
+</section>
+{% endblock %}
