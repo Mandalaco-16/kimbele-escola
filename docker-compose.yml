@@ -1,0 +1,83 @@
+# =====================================================================
+# ATENÇÃO: ficheiro RECONSTRUÍDO a partir de excertos vistos na
+# conversa (só vimos claramente a parte final: networks, volumes, e
+# alguns labels do Traefik). A definição completa dos serviços
+# "db", "web" e "traefik" (imagens, variáveis de ambiente, portas)
+# foi INFERIDA a partir de comandos como "docker compose exec web",
+# "docker compose exec db", nomes de container (kimbele_db,
+# kimbele_web, kimbele_traefik) e mensagens de log vistas.
+# REVEJA COM CUIDADO antes de usar, principalmente credenciais e
+# nomes de variáveis de ambiente.
+# =====================================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: kimbele_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-kimbele_escola}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - kimbele_db_data:/var/lib/postgresql/data
+    networks:
+      - kimbele_net
+
+  web:
+    build: ./django_app
+    container_name: kimbele_web
+    restart: unless-stopped
+    command: gunicorn core.wsgi:application --bind 0.0.0.0:8000
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/mediafiles
+    depends_on:
+      - db
+    networks:
+      - kimbele_net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.kimbele-web.rule=Host(`${SITE_DOMAIN}`)"
+      - "traefik.http.routers.kimbele-web.entrypoints=websecure"
+      - "traefik.http.routers.kimbele-web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.kimbele-web.loadbalancer.server.port=8000"
+      # Redireciona HTTP -> HTTPS
+      - "traefik.http.routers.kimbele-web-http.rule=Host(`${SITE_DOMAIN}`)"
+      - "traefik.http.routers.kimbele-web-http.entrypoints=web"
+      - "traefik.http.routers.kimbele-web-http.middlewares=kimbele-redirect"
+      - "traefik.http.middlewares.kimbele-redirect.redirectscheme.scheme=https"
+
+  traefik:
+    image: traefik:v3.4
+    container_name: kimbele_traefik
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_certs:/letsencrypt
+    networks:
+      - kimbele_net
+
+networks:
+  kimbele_net:
+    driver: bridge
+
+volumes:
+  kimbele_db_data:
+  traefik_certs:
+  static_volume:
+  media_volume:
