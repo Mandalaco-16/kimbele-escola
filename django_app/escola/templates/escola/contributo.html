@@ -1,0 +1,26 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Fale connosco - {{ NOME_ESCOLA }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao secao--formulario">
+  <h2>Fale connosco</h2>
+  <p>
+    Escreva aqui a sua opinião, sugestão ou qualquer informação que queira
+    partilhar com a direção da escola. Esta mensagem é enviada apenas ao
+    administrador.
+  </p>
+
+  <form method="post" class="formulario">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="formulario__campo">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="botao botao--primario">Enviar</button>
+  </form>
+</section>
+{% endblock %}
