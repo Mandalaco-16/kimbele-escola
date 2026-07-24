@@ -1,0 +1,50 @@
+{% extends "escola/base.html" %}
+{% block titulo %}{{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao secao--ficha">
+  <a href="{% url 'escola:funcionarios_lista' %}" class="link-voltar">&larr; Voltar aos funcionários</a>
+
+  <div class="ficha-funcionario">
+    {% if f.foto %}
+      <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="ficha-funcionario__foto">
+    {% endif %}
+
+    <h2>{{ f.nome }}</h2>
+    <p class="ficha-funcionario__cargo">{{ f.cargo }}, desde {{ f.desde|date:"d/m/Y" }}.</p>
+
+    {% if f.disciplinas %}
+      <p>
+        Leciona a disciplina de {{ f.disciplinas }}, na turma: {{ f.turma }}
+        período: {{ f.periodo }}, entrada: {{ f.entrada }}, saída: {{ f.saida }}.
+      </p>
+    {% endif %}
+
+    <hr class="risca">
+
+    <div class="ficha-funcionario__contactos">
+      {% if f.telefone %}<p>📞 {{ f.telefone }}</p>{% endif %}
+      {% if f.whatsapp %}<p>💬 WhatsApp: {{ f.whatsapp }}</p>{% endif %}
+      {% if f.email %}<p>✉️ {{ f.email }}</p>{% endif %}
+    </div>
+
+    <hr class="risca">
+
+    <div class="formulario--sugestao">
+      <h3>Enviar ideia ou informação à direção</h3>
+      <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola.</p>
+      <form method="post" class="formulario">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="formulario__campo">
+            {{ field.label_tag }}
+            {{ field }}
+            {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+          </div>
+        {% endfor %}
+        <button type="submit" class="botao botao--primario">Enviar</button>
+      </form>
+    </div>
+  </div>
+</section>
+{% endblock %}
