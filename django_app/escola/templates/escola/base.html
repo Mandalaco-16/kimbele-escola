@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block titulo %}{{ NOME_ESCOLA }}{% endblock %}</title>
+{% load static %}
+<link rel="stylesheet" href="{% static 'escola/css/style.css' %}">
+</head>
+<body>
+
+<header class="cabecalho">
+  <div class="cabecalho__conteudo">
+    <a href="{% url 'escola:home' %}" class="cabecalho__marca">
+      <img src="{% static 'escola/img/logo.jpg' %}" alt="Logótipo da {{ NOME_ESCOLA }}" class="cabecalho__logo">
+      <span class="cabecalho__nome">{{ SIGLA_ESCOLA }}</span>
+    </a>
+  </div>
+  <nav class="menu-grade">
+    <a href="{% url 'escola:home' %}">Início</a>
+    <a href="{% url 'escola:funcionarios_lista' %}">Funcionários</a>
+    <a href="{% url 'escola:documentos_lista' %}">Regulamento</a>
+    <a href="{% url 'escola:lazer' %}">Lazer</a>
+    <a href="{% url 'escola:painel_sms' %}">Painel das faltas</a>
+    <a href="{% url 'escola:horarios' %}">Horários</a>
+    <a href="{% url 'escola:vitrine' %}">Vitrine</a>
+    <a href="{% url 'escola:desenvolvidor' %}">Desenvolvidor do site</a>
+    <a href="{% url 'escola:logout' %}">Sair</a>
+  </nav>
+</header>
+
+<main>
+  {% if messages %}
+    <div class="mensagens">
+      {% for message in messages %}
+        <div class="mensagem mensagem--{{ message.tags }}">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% block conteudo %}{% endblock %}
+</main>
+
+<footer class="rodape">
+  <div class="rodape__conteudo">
+    <p>{{ NOME_ESCOLA }} &middot; Sistema de Comunicação de Faltas via SMS</p>
+    <p class="rodape__linha-fina">Desenvolvido com Django, Docker, Traefik e Infobip</p>
+    <p class="rodape__linha-fina">🧠 Desenvolvidor=Informático Simão Paulo Bernardo ( Edmilson), Mwana Kimbele 🧠</p>
+  </div>
+</footer>
+
+</body>
+    </html>
