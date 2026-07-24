@@ -1,0 +1,17 @@
+{% extends "escola/base.html" %}
+{% block titulo %}{{ titulo_pagina }} - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao">
+  <h2>{{ titulo_pagina }}</h2>
+  <div class="lista-documentos">
+    {% for doc in documentos %}
+      <div class="cartao-download">
+        <span class="cartao-download__icone">📄</span>
+        <a href="{{ doc.ficheiro.url }}" target="_blank">{{ doc.titulo }}</a>
+      </div>
+    {% empty %}
+      <p>{{ vazio_texto }}</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
