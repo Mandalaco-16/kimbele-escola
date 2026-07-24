@@ -1,0 +1,38 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Painel de faltas - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <span class="eyebrow">Apenas administrador</span>
+  <p style="margin-top: -0.5rem;"><a href="/django-admin/escola/contributo/" target="_blank" style="font-weight: 700;">📋 Ver sugestões e ideias dos funcionários</a></p>
+  <h2>Comunicar falta por SMS</h2>
+  <p class="secao__intro">
+    Introduz até <strong>5 números de telefone</strong> dos trabalhadores e o
+    texto da mensagem. O SMS é enviado em tempo real através da Infobip, com
+    um link pessoal para cada trabalhador consultar a sua falta.
+  </p>
+  <form method="post" class="formulario formulario--cartao" novalidate>
+    {% csrf_token %}
+    <fieldset class="campo-grupo">
+      <legend>Números de telefone <span class="campo-grupo__limite">(máximo 5)</span></legend>
+      {% for campo in form %}
+        {% if "numero_" in campo.name %}
+          <div class="campo campo--numero" data-indice="{{ forloop.counter }}">
+            <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+            {{ campo }}
+            {% for erro in campo.errors %}<p class="campo__erro">{{ erro }}</p>{% endfor %}
+          </div>
+        {% endif %}
+      {% endfor %}
+      <button type="button" id="botao-mais-numero" class="botao botao--secundario botao--pequeno">+ Adicionar número</button>
+    </fieldset>
+
+    <div class="formulario__campo">
+      {{ form.corpo_mensagem.label_tag }}
+      {{ form.corpo_mensagem }}
+      {% for erro in form.corpo_mensagem.errors %}<p class="campo__erro">{{ erro }}</p>{% endfor %}
+    </div>
+
+    <button type="submit" class="botao botao--primario">Enviar SMS agora</button>
+  </form>
+</section>
+{% endblock %}
