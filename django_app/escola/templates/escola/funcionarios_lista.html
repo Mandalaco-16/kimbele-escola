@@ -1,0 +1,26 @@
+{% extends "escola/base.html" %}
+{% load static %}
+{% block titulo %}Funcionários - {{ NOME_ESCOLA }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao">
+  <h2>Funcionários</h2>
+  <p>Toca no nome de um funcionário para ver as suas informações completas.</p>
+
+  <div class="lista-horizontal">
+    {% for f in funcionarios|dictsort:'nome' %}
+      <a href="{% url 'escola:funcionario_detail' f.pk %}" class="cartao-funcionario">
+        {% if f.foto %}
+          <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
+        {% else %}
+          <div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ f.nome|first }}</div>
+        {% endif %}
+        <span class="cartao-funcionario__nome">{{ f.nome }}</span>
+        <span class="cartao-funcionario__label">Função</span><span class="cartao-funcionario__cargo">{{ f.cargo }}</span>
+      </a>
+    {% empty %}
+      <p>Ainda não há funcionários cadastrados.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
