@@ -1,0 +1,104 @@
+.cartao-download {
+  box-shadow: var(--sombra-cartao);
+  text-align: center;
+}
+.cartao-download__imagem {
+  width: 100%;
+  height: 110px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.cartao-download__icone { font-size: 2.5rem; }
+
+.formulario { max-width: 520px; margin-top: 1.5rem; }
+.formulario__campo { margin-bottom: 1.1rem; display: flex; flex-direction: column; gap: 0.35rem; }
+.formulario__campo label { font-weight: 700; }
+.formulario__campo input,
+.formulario__campo textarea {
+  padding: 0.65rem 0.8rem;
+  border: 1px solid var(--creme-forte);
+  border-radius: 10px;
+  font-family: var(--fonte-corpo);
+  font-size: 1rem;
+}
+.formulario__erro { color: var(--coral-escuro); font-size: 0.85rem; margin: 0; }
+
+.cartao-funcionario {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.15s ease;
+}
+.cartao-funcionario:hover { transform: translateY(-3px); }
+
+.cartao-funcionario__foto {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--creme-forte);
+}
+.cartao-funcionario__foto--vazia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--fonte-titulo);
+  font-size: 1.5rem;
+  color: var(--azul-ganga-escuro);
+}
+.cartao-funcionario__nome { font-weight: 700; }
+.cartao-funcionario__cargo { font-size: 0.85rem; color: var(--tinta-suave); }
+
+.ficha-funcionario {
+  max-width: 560px;
+  margin-top: 1.5rem;
+  padding: 1.75rem;
+  background: var(--branco);
+  border-radius: 16px;
+  box-shadow: var(--sombra-cartao);
+}
+.ficha-funcionario__foto {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.lista-horizontal {
+  display: grid !important;
+  grid-template-columns: repeat(2, 1fr) !important;
+  gap: 1rem !important;
+}
+.cartao-funcionario {
+  background: #1565c0 !important;
+}
+.cartao-funcionario__label {
+  color: #ff0000 !important;
+  font-weight: 700;
+  display: block;
+  font-size: 0.8rem;
+}
+.cartao-funcionario__cargo {
+  background: #000000 !important;
+  color: #ffffff !important;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+.cartao-funcionario__nome {
+  color: #ffffff !important;
+  font-weight: 700;
+}
+
+:root {
+  --branco: #ffffff;
+  --creme-forte: #f3ead9;
+  --tinta: #2b2b2b;
+  --tinta-suave: #6b6b6b;
+  --azul-ganga-escuro: #2f4a63;
+  --coral-escuro: #d97a6c;
+  --sombra-cartao: 0 2px 8px rgba(0,0,0,0.08);
+  --fonte-titulo: Georgia, serif;
+  --fonte-corpo: system-ui, sans-serif;
+  }
