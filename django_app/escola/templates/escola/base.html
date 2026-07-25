@@ -1,53 +1,46 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{% block titulo %}{{ NOME_ESCOLA }}{% endblock %}</title>
-{% load static %}
-<link rel="stylesheet" href="{% static 'escola/css/style.css' %}">
-</head>
-<body>
+.cabecalho-novo {
+    text-align: center;
+    padding: 20px 10px 0 10px;
+}
 
-<header class="cabecalho-novo">
-  <h1 class="cabecalho-novo__titulo">SISTEMA DE COMUNICAÇÃO DE FALTA EM TEMPO REAL</h1>
+.cabecalho-novo__titulo {
+    font-size: 1.5rem;
+    color: #2f4f2f;
+    margin-bottom: 15px;
+}
 
-  <nav class="menu-grade-novo">
-    <a href="{% url 'escola:home' %}">Início</a>
-    <a href="{% url 'escola:funcionarios_lista' %}">Funcionários</a>
-    <a href="{% url 'escola:documentos_lista' %}">Regulamento</a>
-    <a href="{% url 'escola:lazer' %}">Lazer</a>
-    <a href="{% url 'escola:painel_sms' %}">Painel das faltas</a>
-    <a href="{% url 'escola:horarios' %}">Horários</a>
-    <a href="{% url 'escola:vitrine' %}">Vitrine</a>
-    <a href="{% url 'escola:desenvolvidor' %}">Desenvolvidor do site</a>
-    <a href="{% url 'escola:logout' %}">Sair</a>
-  </nav>
+.menu-grade-novo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 2px solid #4a7a4a;
+    margin: 0 auto 20px auto;
+    max-width: 700px;
+}
 
-  <div class="cabecalho-novo__logo-caixa">
-    <img src="{% static 'escola/logo.jpg' %}" alt="Logótipo da {{ NOME_ESCOLA }}" class="cabecalho-novo__logo">
-  </div>
-</header>
+.menu-grade-novo a {
+    background-color: #8fae7f;
+    color: #1a1a1a;
+    text-decoration: none;
+    text-align: center;
+    padding: 20px 10px;
+    font-weight: bold;
+    border: 1px solid #4a7a4a;
+}
 
-<main>
-  {% if messages %}
-    <div class="mensagens">
-      {% for message in messages %}
-        <div class="mensagem mensagem--{{ message.tags }}">{{ message }}</div>
-      {% endfor %}
-    </div>
-  {% endif %}
+.menu-grade-novo a:hover {
+    background-color: #6f9a5f;
+}
 
-  {% block conteudo %}{% endblock %}
-</main>
+.cabecalho-novo__logo-caixa {
+    display: flex;
+    justify-content: center;
+    padding: 10px;
+}
 
-<footer class="rodape">
-  <div class="rodape__conteudo">
-    <p>{{ NOME_ESCOLA }} &middot; Sistema de Comunicação de Faltas via SMS</p>
-    <p class="rodape__linha-fina">Desenvolvido com Django, Docker, Traefik e Infobip</p>
-    <p class="rodape__linha-fina">🧠 Desenvolvidor=Informático Simão Paulo Bernardo ( Edmilson), Mwana Kimbele 🧠</p>
-  </div>
-</footer>
-
-</body>
-</html>
+.cabecalho-novo__logo {
+    width: 90%;
+    max-width: 500px;
+    border-radius: 50% 50% 0 0 / 25% 25% 0 0;
+    border: 4px solid #4a7a4a;
+    object-fit: cover;
+}
