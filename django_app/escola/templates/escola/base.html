@@ -9,14 +9,10 @@
 </head>
 <body>
 
-<header class="cabecalho">
-  <div class="cabecalho__conteudo">
-    <a href="{% url 'escola:home' %}" class="cabecalho__marca">
-      <img src="{% static 'escola/logo.jpg' %}" alt="Logótipo da {{ NOME_ESCOLA }}" class="cabecalho__logo">
-      <span class="cabecalho__nome">{{ SIGLA_ESCOLA }}</span>
-    </a>
-  </div>
-  <nav class="menu-grade">
+<header class="cabecalho-novo">
+  <h1 class="cabecalho-novo__titulo">SISTEMA DE COMUNICAÇÃO DE FALTA EM TEMPO REAL</h1>
+
+  <nav class="menu-grade-novo">
     <a href="{% url 'escola:home' %}">Início</a>
     <a href="{% url 'escola:funcionarios_lista' %}">Funcionários</a>
     <a href="{% url 'escola:documentos_lista' %}">Regulamento</a>
@@ -27,6 +23,10 @@
     <a href="{% url 'escola:desenvolvidor' %}">Desenvolvidor do site</a>
     <a href="{% url 'escola:logout' %}">Sair</a>
   </nav>
+
+  <div class="cabecalho-novo__logo-caixa">
+    <img src="{% static 'escola/logo.jpg' %}" alt="Logótipo da {{ NOME_ESCOLA }}" class="cabecalho-novo__logo">
+  </div>
 </header>
 
 <main>
@@ -50,4 +50,4 @@
 </footer>
 
 </body>
-    </html>
+</html>
