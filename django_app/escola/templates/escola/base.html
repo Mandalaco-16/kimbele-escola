@@ -7,7 +7,7 @@
 {% load static %}
 <link rel="stylesheet" href="{% static 'escola/css/style.css' %}">
 </head>
-<body>
+<body class="{% if request.resolver_match.url_name == 'home' %}pagina-inicio{% endif %}">
 
 <header class="cabecalho-novo">
   {% if request.resolver_match.url_name == 'home' %}
