@@ -170,3 +170,47 @@
     font-weight: bold;
     color: #4a7a4a;
 }
+
+.rodape__credito {
+    background-color: #1a4d8f;
+    color: #4caf50;
+    font-weight: bold;
+    padding: 10px 15px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+.menu-grade-novo {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    gap: 2px;
+    background-color: #4a7a4a;
+}
+
+.menu-grade-novo a {
+    border: none;
+    background-color: #ffffff;
+    color: #2f4f2f;
+    transition: background-color 0.2s ease, transform 0.15s ease;
+    font-size: 1.05rem;
+    padding: 22px 12px;
+}
+
+.menu-grade-novo a:hover,
+.menu-grade-novo a:active {
+    background-color: #8fae7f;
+    color: #ffffff;
+    transform: scale(0.98);
+}
+
+.cabecalho-novo__titulo {
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+.cabecalho-novo__logo {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
