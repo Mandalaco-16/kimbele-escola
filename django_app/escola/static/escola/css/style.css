@@ -267,19 +267,3 @@
 .rodape__conteudo p {
     margin: 8px 0;
 }
-
-.cabecalho-novo__titulo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    flex-wrap: wrap;
-}
-
-.cabecalho-novo__foto-lateral {
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 2px solid #ffffff;
-}
