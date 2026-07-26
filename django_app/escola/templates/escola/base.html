@@ -30,7 +30,7 @@
   </div>
   {% else %}
   <div class="cabecalho-novo__voltar">
-    <a href="{% url 'escola:home' %}" class="cabecalho-novo__seta">◀ Início</a>
+    <a href="{% url 'escola:home' %}" class="cabecalho-novo__seta">◀</a>
     <span class="cabecalho-novo__secao-atual">
       {% if request.resolver_match.url_name == 'funcionarios_lista' or request.resolver_match.url_name == 'funcionario_detail' %}FUNCIONÁRIOS
       {% elif request.resolver_match.url_name == 'documentos_lista' %}REGULAMENTO
