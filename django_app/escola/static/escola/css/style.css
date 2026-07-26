@@ -207,6 +207,7 @@
 }
 
 .cabecalho-novo__titulo {
+    color: #ffffff;
     font-size: 1.4rem;
     letter-spacing: 0.5px;
 }
@@ -250,4 +251,8 @@
 .pagina-inicio {
     background-color: #000000;
     color: #ffffff;
+}
+
+.secao--centrada h2 {
+    text-align: center;
 }
