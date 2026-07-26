@@ -194,3 +194,7 @@ def desenvolvidor_view(request):
     dev = DesenvolvidorSite.objects.first()
     contexto = {"dev": dev}
     return render(request, "escola/desenvolvidor.html", contexto)
+
+
+def inicio_view(request):
+    return render(request, "escola/inicio.html", {})
