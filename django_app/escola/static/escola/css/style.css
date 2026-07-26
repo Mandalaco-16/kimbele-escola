@@ -222,3 +222,34 @@
 .secao--centrada h3 {
     font-weight: bold;
 }
+
+.cabecalho-novo__logo-caixa {
+    position: relative;
+}
+
+.cabecalho-novo__faixa {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.55);
+    color: #ffffff;
+    padding: 12px 20px;
+    text-align: justify;
+    border-radius: 0 0 15px 15px;
+}
+
+.cabecalho-novo__faixa p {
+    margin: 4px 0;
+    font-size: 0.9rem;
+}
+
+.cabecalho-novo__faixa-credito {
+    background-color: #1a4d8f;
+    color: #4caf50;
+    font-weight: bold;
+    padding: 6px 10px;
+    border-radius: 8px;
+    display: inline-block;
+    margin-top: 8px;
+}
