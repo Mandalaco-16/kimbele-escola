@@ -249,7 +249,7 @@
 }
 
 .pagina-inicio {
-    background-color: #000000;
+    background-color: #4a7a4a;
     color: #ffffff;
 }
 
@@ -272,6 +272,3 @@ body {
     background-color: #cfead9;
 }
 
-body.pagina-inicio {
-    background-color: #000000;
-}
