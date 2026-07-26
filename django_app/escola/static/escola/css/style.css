@@ -192,8 +192,8 @@
 
 .menu-grade-novo a {
     border: none;
-    background-color: #ffffff;
-    color: #2f4f2f;
+    background-color: #4a7a4a;
+    color: #ffffff;
     transition: background-color 0.2s ease, transform 0.15s ease;
     font-size: 1.05rem;
     padding: 22px 12px;
