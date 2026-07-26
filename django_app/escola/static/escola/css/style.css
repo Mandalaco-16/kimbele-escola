@@ -256,3 +256,14 @@
 .secao--centrada h2 {
     text-align: center;
 }
+
+.rodape {
+    margin-top: 40px;
+    padding: 20px 15px;
+    border-top: 2px solid #4a7a4a;
+    text-align: center;
+}
+
+.rodape__conteudo p {
+    margin: 8px 0;
+}
