@@ -191,7 +191,7 @@
 }
 
 .menu-grade-novo a {
-    border: none;
+    border: 1px solid #ffffff;
     background-color: #4a7a4a;
     color: #ffffff;
     transition: background-color 0.2s ease, transform 0.15s ease;
