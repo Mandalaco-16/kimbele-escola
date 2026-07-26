@@ -172,13 +172,15 @@
 }
 
 .rodape__credito {
-    background-color: #1a4d8f;
-    color: #4caf50;
+    background-color: #ffffff;
+    color: #1a4d8f;
     font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 10px;
-    display: inline-block;
-    margin-top: 10px;
+    padding: 12px 15px;
+    display: block;
+    width: 100vw;
+    margin-left: calc(-50vw + 50%);
+    margin-right: calc(-50vw + 50%);
+    margin-top: 15px;
 }
 
 .menu-grade-novo {
@@ -258,7 +260,7 @@
 }
 
 .rodape {
-    margin-top: 40px;
+    margin-top: 10px;
     padding: 20px 15px;
     border-top: 2px solid #4a7a4a;
     text-align: center;
