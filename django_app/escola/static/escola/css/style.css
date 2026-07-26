@@ -175,11 +175,9 @@
     background-color: #ffffff;
     color: #1a4d8f;
     font-weight: bold;
-    padding: 12px 15px;
-    display: block;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    margin-right: calc(-50vw + 50%);
+    padding: 10px 15px;
+    border-radius: 10px;
+    display: inline-block;
     margin-top: 15px;
 }
 
