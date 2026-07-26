@@ -214,3 +214,11 @@
 .cabecalho-novo__logo {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
+
+.secao--centrada {
+    text-align: center;
+}
+
+.secao--centrada h3 {
+    font-weight: bold;
+}
