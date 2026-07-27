@@ -1,0 +1,48 @@
+[1mdiff --git a/django_app/escola/views.py b/django_app/escola/views.py[m
+[1mindex 587e0d9..ce4921f 100644[m
+[1m--- a/django_app/escola/views.py[m
+[1m+++ b/django_app/escola/views.py[m
+[36m@@ -6,7 +6,7 @@[m [mfrom django.contrib.auth.decorators import login_required, user_passes_test[m
+ from django.shortcuts import get_object_or_404, redirect, render[m
+ from django.utils import timezone[m
+ [m
+[31m-from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm[m
+[32m+[m[32mfrom .forms import ContributoForm, EnvioSMSForm, LoginAdminForm, MensagemFuncionarioForm[m
+ from .models import ([m
+     Comunicado,[m
+     Contributo,[m
+[36m@@ -145,20 +145,25 @@[m [mdef funcionarios_lista(request):[m
+     return render(request, "escola/funcionarios_lista.html", {"funcionarios": funcionarios})[m
+ [m
+ [m
+[32m+[m
+ def funcionario_detail(request, pk):[m
+     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)[m
+     if request.method == "POST":[m
+[31m-        form = ContributoForm(request.POST)[m
+[32m+[m[32m        form = MensagemFuncionarioForm(request.POST)[m
+         if form.is_valid():[m
+[31m-            Contributo.objects.create([m
+[31m-                nome=form.cleaned_data["nome"],[m
+[31m-                mensagem=form.cleaned_data["mensagem"],[m
+[31m-                funcionario=funcionario,[m
+[31m-            )[m
+[31m-            messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")[m
+[31m-            return redirect("escola:funcionario_detail", pk=pk)[m
+[32m+[m[32m            senha_digitada = form.cleaned_data["senha"].strip()[m
+[32m+[m[32m            if not funcionario.senha_pin or senha_digitada != funcionario.senha_pin:[m
+[32m+[m[32m                messages.error(request, "Senha incorreta. A mensagem não foi enviada.")[m
+[32m+[m[32m            else:[m
+[32m+[m[32m                Contributo.objects.create([m
+[32m+[m[32m                    nome=form.cleaned_data["nome"],[m
+[32m+[m[32m                    mensagem=form.cleaned_data["mensagem"],[m
+[32m+[m[32m                    funcionario=funcionario,[m
+[32m+[m[32m                )[m
+[32m+[m[32m                messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")[m
+[32m+[m[32m                return redirect("escola:funcionario_detail", pk=pk)[m
+     else:[m
+[31m-        form = ContributoForm()[m
+[32m+[m[32m        form = MensagemFuncionarioForm()[m
+     return render(request, "escola/funcionario_detail.html", {"f": funcionario, "form": form})[m
+ [m
+ [m

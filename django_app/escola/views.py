@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm
+from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm, MensagemFuncionarioForm
 from .models import (
     Comunicado,
     Contributo,
@@ -145,20 +145,25 @@ def funcionarios_lista(request):
     return render(request, "escola/funcionarios_lista.html", {"funcionarios": funcionarios})
 
 
+
 def funcionario_detail(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
     if request.method == "POST":
-        form = ContributoForm(request.POST)
+        form = MensagemFuncionarioForm(request.POST)
         if form.is_valid():
-            Contributo.objects.create(
-                nome=form.cleaned_data["nome"],
-                mensagem=form.cleaned_data["mensagem"],
-                funcionario=funcionario,
-            )
-            messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")
-            return redirect("escola:funcionario_detail", pk=pk)
+            senha_digitada = form.cleaned_data["senha"].strip()
+            if not funcionario.senha_pin or senha_digitada != funcionario.senha_pin:
+                messages.error(request, "Senha incorreta. A mensagem não foi enviada.")
+            else:
+                Contributo.objects.create(
+                    nome=form.cleaned_data["nome"],
+                    mensagem=form.cleaned_data["mensagem"],
+                    funcionario=funcionario,
+                )
+                messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")
+                return redirect("escola:funcionario_detail", pk=pk)
     else:
-        form = ContributoForm()
+        form = MensagemFuncionarioForm()
     return render(request, "escola/funcionario_detail.html", {"f": funcionario, "form": form})
 
 

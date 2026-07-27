@@ -27,6 +27,7 @@ class FuncionarioAdmin(admin.ModelAdmin):
         ("Identificação", {"fields": ("nome", "cargo", "desde", "foto", "ativo", "ordem")}),
         ("Ensino", {"fields": ("disciplinas", "turma", "periodo", "entrada", "saida")}),
         ("Contactos", {"fields": ("telefone", "whatsapp", "email")}),
+        ("Segurança", {"fields": ("senha_pin",)}),
     )
 
 

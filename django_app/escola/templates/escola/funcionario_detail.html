@@ -36,13 +36,14 @@
 
     <div class="formulario--sugestao">
       <h3>Enviar ideia ou informação à direção</h3>
-      <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola.</p>
+      <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola. Precisas de confirmar a tua senha de 3 dígitos antes de enviar.</p>
       <form method="post" class="formulario">
         {% csrf_token %}
         {% for field in form %}
           <div class="formulario__campo">
             {{ field.label_tag }}
             {{ field }}
+            {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
             {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
           </div>
         {% endfor %}

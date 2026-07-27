@@ -34,3 +34,24 @@ class EnvioSMSForm(forms.Form):
             if valor:
                 numeros.append(valor.strip())
         return numeros
+
+
+class MensagemFuncionarioForm(forms.Form):
+    senha = forms.CharField(
+        label="Senha (3 dígitos)",
+        max_length=3,
+        widget=forms.PasswordInput(
+            attrs={"placeholder": "•••", "inputmode": "numeric", "maxlength": "3"}
+        ),
+        help_text="Confirma que és mesmo tu antes de enviar a mensagem.",
+    )
+    nome = forms.CharField(
+        label="O seu nome (opcional)",
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(attrs={"placeholder": "Podes deixar em branco"}),
+    )
+    mensagem = forms.CharField(
+        label="A sua mensagem, opinião ou contributo",
+        widget=forms.Textarea,
+    )

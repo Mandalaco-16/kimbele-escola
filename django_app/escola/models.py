@@ -21,6 +21,13 @@ class Funcionario(models.Model):
     whatsapp = models.CharField("WhatsApp", max_length=30, blank=True)
     email = models.EmailField("E-mail", blank=True)
 
+    senha_pin = models.CharField(
+        "Senha (3 dígitos)",
+        max_length=3,
+        blank=True,
+        help_text="Senha de 3 dígitos que o funcionário usa para confirmar identidade antes de enviar mensagens à direção.",
+    )
+
     class Meta:
         verbose_name = "Funcionário"
         verbose_name_plural = "Funcionários"
