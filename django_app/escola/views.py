@@ -198,3 +198,68 @@ def desenvolvidor_view(request):
 
 def inicio_view(request):
     return render(request, "escola/inicio.html", {})
+
+
+def funcionario_historico(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    contributos = Contributo.objects.filter(funcionario=funcionario).order_by("criado_em")
+    return render(
+        request,
+        "escola/funcionario_historico.html",
+        {"f": funcionario, "contributos": contributos},
+    )
+
+
+def funcionario_historico_pdf(request, pk):
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    import textwrap
+
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    contributos = Contributo.objects.filter(funcionario=funcionario).order_by("criado_em")
+
+    response = HttpResponse(content_type="application/pdf")
+    nome_ficheiro = f"historico_{funcionario.nome.replace(' ', '_')}.pdf"
+    response["Content-Disposition"] = f'attachment; filename="{nome_ficheiro}"'
+
+    largura, altura = A4
+    margem = 2 * cm
+    y = altura - margem
+    p = canvas.Canvas(response, pagesize=A4)
+
+    def nova_pagina():
+        nonlocal y
+        p.showPage()
+        y = altura - margem
+
+    def escrever_linha(texto, tamanho=11, negrito=False, espaco=14):
+        nonlocal y
+        if y < margem:
+            nova_pagina()
+        p.setFont("Helvetica-Bold" if negrito else "Helvetica", tamanho)
+        p.drawString(margem, y, texto)
+        y -= espaco
+
+    escrever_linha(f"Histórico da Conversa - {funcionario.nome}", tamanho=14, negrito=True, espaco=22)
+    escrever_linha(f"Cargo: {funcionario.cargo}", tamanho=10, espaco=20)
+
+    if not contributos:
+        escrever_linha("Ainda não há mensagens trocadas.")
+    else:
+        for c in contributos:
+            escrever_linha(f"Enviado em {c.criado_em:%d/%m/%Y %H:%M}", tamanho=10, negrito=True)
+            for linha in textwrap.wrap(c.mensagem, width=95):
+                escrever_linha(linha)
+            if c.resposta:
+                escrever_linha(f"Resposta da Direção ({c.respondido_em:%d/%m/%Y %H:%M}):", tamanho=10, negrito=True)
+                for linha in textwrap.wrap(c.resposta, width=95):
+                    escrever_linha(linha)
+            else:
+                escrever_linha("(Ainda sem resposta da Direção)")
+            y -= 8
+
+    p.showPage()
+    p.save()
+    return response

@@ -1,0 +1,40 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Histórico da Conversa - {{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao secao--ficha">
+  <a href="{% url 'escola:funcionario_detail' pk=f.pk %}" class="link-voltar">&larr; Voltar ao perfil de {{ f.nome }}</a>
+
+  <h2>Histórico da Conversa</h2>
+  <p class="secao__intro">Mensagens trocadas entre {{ f.nome }} e a Direção da escola.</p>
+
+  <p>
+    <a href="{% url 'escola:funcionario_historico_pdf' pk=f.pk %}" class="botao botao--secundario">
+      ⬇️ Baixar histórico em PDF
+    </a>
+  </p>
+
+  <hr class="risca">
+
+  {% if not contributos %}
+    <p>Ainda não há mensagens trocadas.</p>
+  {% else %}
+    {% for c in contributos %}
+      <div class="conversa__mensagem">
+        <p class="conversa__data">📩 Enviado em {{ c.criado_em|date:"d/m/Y H:i" }}</p>
+        <p class="conversa__texto">{{ c.mensagem|linebreaksbr }}</p>
+
+        {% if c.resposta %}
+          <div class="conversa__resposta">
+            <p class="conversa__data">↩️ Resposta da Direção em {{ c.respondido_em|date:"d/m/Y H:i" }}</p>
+            <p class="conversa__texto">{{ c.resposta|linebreaksbr }}</p>
+          </div>
+        {% else %}
+          <p class="conversa__pendente">⏳ Ainda sem resposta da Direção.</p>
+        {% endif %}
+      </div>
+      <hr class="risca">
+    {% endfor %}
+  {% endif %}
+</section>
+{% endblock %}
