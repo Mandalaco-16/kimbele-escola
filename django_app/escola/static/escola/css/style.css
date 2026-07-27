@@ -272,3 +272,60 @@ body {
     background-color: #cfead9;
 }
 
+
+/* Ajustes de responsividade para ecrãs largos (computador, projetor) */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body {
+    overflow-x: hidden;
+}
+
+.menu-grade-novo {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: min(700px, 94vw);
+}
+
+.menu-grade-novo a {
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+@media (min-width: 900px) {
+    .menu-grade-novo {
+        max-width: 960px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .secao,
+    .ficha-funcionario,
+    .formulario,
+    .secao--estreita {
+        max-width: 900px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    body {
+        font-size: 1.05rem;
+    }
+}
+
+@media (min-width: 1400px) {
+    .menu-grade-novo {
+        max-width: 1100px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .secao,
+    .ficha-funcionario,
+    .formulario,
+    .secao--estreita {
+        max-width: 1000px;
+    }
+
+    body {
+        font-size: 1.15rem;
+    }
+}
