@@ -294,8 +294,8 @@ body {
 
 @media (min-width: 900px) {
     .menu-grade-novo {
-        max-width: 960px;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        max-width: 1100px;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     .secao,
@@ -315,7 +315,7 @@ body {
 @media (min-width: 1400px) {
     .menu-grade-novo {
         max-width: 1100px;
-        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-template-columns: repeat(5, minmax(0, 1fr));
     }
 
     .secao,
