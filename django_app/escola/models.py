@@ -29,6 +29,7 @@ class Funcionario(models.Model):
         help_text="Senha de 3 dígitos que o funcionário usa para confirmar identidade antes de enviar mensagens à direção.",
     )
 
+
     class Meta:
         verbose_name = "Funcionário"
         verbose_name_plural = "Funcionários"
