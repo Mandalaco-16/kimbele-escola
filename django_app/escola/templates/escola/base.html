@@ -26,9 +26,6 @@
     <a href="{% url 'escola:logout' %}">Sair</a>
   </nav>
 
-  <div class="cabecalho-novo__logo-caixa">
-    <img src="{% static 'escola/logo.jpg' %}" alt="Logótipo da {{ NOME_ESCOLA }}" class="cabecalho-novo__logo">
-  </div>
   {% else %}
   <div class="cabecalho-novo__voltar">
     <a href="{% url 'escola:home' %}" class="cabecalho-novo__seta">◀</a>
