@@ -1,7 +1,11 @@
 {% extends "escola/base.html" %}
+{% load static %}
 {% block titulo %}Início - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
 <section class="secao secao--estreita secao--centrada">
+  <div class="foto-escola-inicio-caixa">
+    <img src="{% static 'escola/img/foto_escola.jpg' %}" alt="Prédio da {{ NOME_ESCOLA }}" class="foto-escola-inicio">
+  </div>
   <h2>ESCOLA PRIMÁRIA N° 013 DA MISSÃO CATÓLICA DE KIMBELE</h2>
   <p style="white-space: pre-line;">É uma instituição de ensino primário localizada no município de Kimbele, província do Uíge, dedicada à educação e formação de crianças nos primeiros anos de escolaridade. A escola integra a missão educativa da Igreja Católica e contribui para o desenvolvimento da comunidade.</p>
 

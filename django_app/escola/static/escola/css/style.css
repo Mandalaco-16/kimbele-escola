@@ -335,3 +335,25 @@ body {
     color: #4a7a4a;
     font-weight: 600;
 }
+
+.foto-escola-inicio-caixa {
+    position: relative;
+    width: min(640px, 92%);
+    margin: 0 auto 1.75rem auto;
+    overflow: hidden;
+    border-radius: 8px;
+}
+
+.foto-escola-inicio {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.foto-escola-inicio-caixa::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    box-shadow: inset 0 0 22px 13px #cfead9;
+    pointer-events: none;
+}
