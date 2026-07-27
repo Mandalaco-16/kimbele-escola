@@ -15,7 +15,7 @@
       <legend>Números de telefone <span class="campo-grupo__limite">(máximo 5)</span></legend>
       {% for campo in form %}
         {% if "numero_" in campo.name %}
-          <div class="campo campo--numero" data-indice="{{ forloop.counter }}">
+          <div class="campo campo--numero" id="campo-numero-{{ forloop.counter }}" data-indice="{{ forloop.counter }}"{% if forloop.counter > 1 and not campo.value %} style="display:none;"{% endif %}>
             <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
             {{ campo }}
             {% for erro in campo.errors %}<p class="campo__erro">{{ erro }}</p>{% endfor %}
@@ -34,4 +34,33 @@
     <button type="submit" class="botao botao--primario">Enviar SMS agora</button>
   </form>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  var botao = document.getElementById('botao-mais-numero');
+  if (!botao) return;
+  var proximo = 2;
+  for (var i = 2; i <= 5; i++) {
+    var campo = document.getElementById('campo-numero-' + i);
+    if (campo && campo.style.display !== 'none') {
+      proximo = i + 1;
+    }
+  }
+  function atualizarBotao() {
+    if (proximo > 5) {
+      botao.style.display = 'none';
+    }
+  }
+  botao.addEventListener('click', function () {
+    if (proximo > 5) return;
+    var campo = document.getElementById('campo-numero-' + proximo);
+    if (campo) {
+      campo.style.display = 'block';
+      proximo++;
+      atualizarBotao();
+    }
+  });
+  atualizarBotao();
+});
+</script>
 {% endblock %}
