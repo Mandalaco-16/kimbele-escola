@@ -25,6 +25,7 @@ class Funcionario(models.Model):
         "Senha (3 dígitos)",
         max_length=3,
         blank=True,
+        default="",
         help_text="Senha de 3 dígitos que o funcionário usa para confirmar identidade antes de enviar mensagens à direção.",
     )
 
