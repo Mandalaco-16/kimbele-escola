@@ -78,13 +78,13 @@
 }
 .cartao-funcionario__cargo {
   background: #000000 !important;
-  color: #ffffff !important;
+  color: #8fae7f !important;
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
   display: inline-block;
 }
 .cartao-funcionario__nome {
-  color: #ffffff !important;
+  color: #2f4f2f !important;
   font-weight: 700;
 }
 
@@ -325,4 +325,13 @@ body {
     body {
         font-size: 1.15rem;
     }
+}
+
+.ficha-funcionario h2 {
+    color: #2f4f2f;
+}
+
+.ficha-funcionario__cargo {
+    color: #4a7a4a;
+    font-weight: 600;
 }
