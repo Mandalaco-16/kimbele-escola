@@ -70,9 +70,6 @@
   grid-template-columns: repeat(2, 1fr) !important;
   gap: 1rem !important;
 }
-.cartao-funcionario {
-  background: #1565c0 !important;
-}
 .cartao-funcionario__label {
   color: #ff0000 !important;
   font-weight: 700;
