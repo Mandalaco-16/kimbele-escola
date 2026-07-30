@@ -28,6 +28,7 @@
   flex-direction: column;
   align-items: center;
   transition: transform 0.15s ease;
+  text-decoration: none;
 }
 .cartao-funcionario:hover { transform: translateY(-3px); }
 
@@ -78,14 +79,16 @@
 }
 .cartao-funcionario__cargo {
   background: #000000 !important;
-  color: #8fae7f !important;
+  color: #ffffff !important;
   padding: 0.15rem 0.5rem;
   border-radius: 6px;
   display: inline-block;
+  text-decoration: none;
 }
 .cartao-funcionario__nome {
-  color: #2f4f2f !important;
+  color: #1a56db !important;
   font-weight: 700;
+  text-decoration: none;
 }
 
 :root {
