@@ -55,15 +55,12 @@
     {% else %}
       <div class="formulario--senha">
         <h3>Senha</h3>
-        <p>Digite a tua senha de 3 dígitos para veres o histórico da conversa e enviares mensagens à direção.</p>
         <form method="post" class="formulario">
           {% csrf_token %}
           <input type="hidden" name="acao" value="desbloquear">
           {% for field in senha_form %}
             <div class="formulario__campo">
-              {{ field.label_tag }}
               {{ field }}
-              {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
               {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
             </div>
           {% endfor %}
