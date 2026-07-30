@@ -41,7 +41,7 @@ class SenhaFuncionarioForm(forms.Form):
         label="Senha (3 dígitos)",
         max_length=3,
         widget=forms.PasswordInput(
-            attrs={"placeholder": "•••", "inputmode": "numeric", "maxlength": "3"}
+            attrs={"inputmode": "numeric", "maxlength": "3"}
         ),
         help_text="So quem sabe a senha ve o historico e envia mensagens a direcao.",
     )
