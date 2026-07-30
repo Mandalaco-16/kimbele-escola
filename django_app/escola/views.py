@@ -186,6 +186,13 @@ def funcionario_detail(request, pk):
     })
 
 
+def funcionario_bloquear(request, pk):
+    chave_sessao = f"funcionario_desbloqueado_{pk}"
+    if chave_sessao in request.session:
+        del request.session[chave_sessao]
+    return redirect("escola:funcionario_detail", pk=pk)
+
+
 def contributo_view(request):
     if request.method == "POST":
         form = ContributoForm(request.POST)
