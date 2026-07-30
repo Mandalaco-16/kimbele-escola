@@ -4,6 +4,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
+from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
 from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm, MensagemFuncionarioForm, SenhaFuncionarioForm
@@ -146,6 +147,7 @@ def funcionarios_lista(request):
 
 
 
+@never_cache
 def funcionario_detail(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
     chave_sessao = f"funcionario_desbloqueado_{pk}"
@@ -186,6 +188,7 @@ def funcionario_detail(request, pk):
     })
 
 
+@never_cache
 def funcionario_bloquear(request, pk):
     chave_sessao = f"funcionario_desbloqueado_{pk}"
     if chave_sessao in request.session:
