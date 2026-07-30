@@ -30,26 +30,47 @@
 
     <hr class="risca">
 
-    <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario">📜 Histórico da Conversa</a></p>
+    {% if desbloqueado %}
+      <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario">📜 Histórico da Conversa</a></p>
 
-    <hr class="risca">
+      <hr class="risca">
 
-    <div class="formulario--sugestao">
-      <h3>Enviar ideia ou informação à direção</h3>
-      <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola. Precisas de confirmar a tua senha de 3 dígitos antes de enviar.</p>
-      <form method="post" class="formulario">
-        {% csrf_token %}
-        {% for field in form %}
-          <div class="formulario__campo">
-            {{ field.label_tag }}
-            {{ field }}
-            {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
-            {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
-          </div>
-        {% endfor %}
-        <button type="submit" class="botao botao--primario">Enviar</button>
-      </form>
-    </div>
+      <div class="formulario--sugestao">
+        <h3>Enviar ideia ou informação à direção</h3>
+        <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola.</p>
+        <form method="post" class="formulario">
+          {% csrf_token %}
+          <input type="hidden" name="acao" value="enviar_mensagem">
+          {% for field in form %}
+            <div class="formulario__campo">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+              {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="botao botao--primario">Enviar</button>
+        </form>
+      </div>
+    {% else %}
+      <div class="formulario--senha">
+        <h3>Senha</h3>
+        <p>Digite a tua senha de 3 dígitos para veres o histórico da conversa e enviares mensagens à direção.</p>
+        <form method="post" class="formulario">
+          {% csrf_token %}
+          <input type="hidden" name="acao" value="desbloquear">
+          {% for field in senha_form %}
+            <div class="formulario__campo">
+              {{ field.label_tag }}
+              {{ field }}
+              {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+              {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+            </div>
+          {% endfor %}
+          <button type="submit" class="botao botao--primario">Entrar</button>
+        </form>
+      </div>
+    {% endif %}
   </div>
 </section>
 {% endblock %}

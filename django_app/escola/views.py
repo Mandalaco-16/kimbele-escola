@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
-from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm, MensagemFuncionarioForm
+from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm, MensagemFuncionarioForm, SenhaFuncionarioForm
 from .models import (
     Comunicado,
     Contributo,
@@ -148,13 +148,28 @@ def funcionarios_lista(request):
 
 def funcionario_detail(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    chave_sessao = f"funcionario_desbloqueado_{pk}"
+    desbloqueado = request.session.get(chave_sessao, False)
+
+    senha_form = SenhaFuncionarioForm()
+    form = MensagemFuncionarioForm()
+
     if request.method == "POST":
-        form = MensagemFuncionarioForm(request.POST)
-        if form.is_valid():
-            senha_digitada = form.cleaned_data["senha"].strip()
-            if not funcionario.senha_pin or senha_digitada != funcionario.senha_pin:
-                messages.error(request, "Senha incorreta. A mensagem não foi enviada.")
-            else:
+        acao = request.POST.get("acao")
+
+        if acao == "desbloquear":
+            senha_form = SenhaFuncionarioForm(request.POST)
+            if senha_form.is_valid():
+                senha_digitada = senha_form.cleaned_data["senha"].strip()
+                if funcionario.senha_pin and senha_digitada == funcionario.senha_pin:
+                    request.session[chave_sessao] = True
+                    return redirect("escola:funcionario_detail", pk=pk)
+                else:
+                    messages.error(request, "Senha incorreta.")
+
+        elif acao == "enviar_mensagem" and desbloqueado:
+            form = MensagemFuncionarioForm(request.POST)
+            if form.is_valid():
                 Contributo.objects.create(
                     nome=form.cleaned_data["nome"],
                     mensagem=form.cleaned_data["mensagem"],
@@ -162,9 +177,13 @@ def funcionario_detail(request, pk):
                 )
                 messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")
                 return redirect("escola:funcionario_detail", pk=pk)
-    else:
-        form = MensagemFuncionarioForm()
-    return render(request, "escola/funcionario_detail.html", {"f": funcionario, "form": form})
+
+    return render(request, "escola/funcionario_detail.html", {
+        "f": funcionario,
+        "desbloqueado": desbloqueado,
+        "senha_form": senha_form,
+        "form": form,
+    })
 
 
 def contributo_view(request):

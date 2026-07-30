@@ -36,15 +36,18 @@ class EnvioSMSForm(forms.Form):
         return numeros
 
 
-class MensagemFuncionarioForm(forms.Form):
+class SenhaFuncionarioForm(forms.Form):
     senha = forms.CharField(
         label="Senha (3 dígitos)",
         max_length=3,
         widget=forms.PasswordInput(
             attrs={"placeholder": "•••", "inputmode": "numeric", "maxlength": "3"}
         ),
-        help_text="Confirma que és mesmo tu antes de enviar a mensagem.",
+        help_text="So quem sabe a senha ve o historico e envia mensagens a direcao.",
     )
+
+
+class MensagemFuncionarioForm(forms.Form):
     nome = forms.CharField(
         label="O seu nome (opcional)",
         max_length=150,
