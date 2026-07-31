@@ -33,8 +33,6 @@
     {% if desbloqueado %}
       <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario">📜 Histórico da Conversa</a></p>
 
-      <p><a href="{% url 'escola:funcionario_bloquear' pk=f.pk %}" class="link-voltar">🔒 Bloquear novamente</a></p>
-
       <hr class="risca">
 
       <div class="formulario--sugestao">
@@ -43,6 +41,7 @@
         <form method="post" class="formulario">
           {% csrf_token %}
           <input type="hidden" name="acao" value="enviar_mensagem">
+          <input type="hidden" name="senha_confirmada" value="{{ senha_confirmada }}">
           {% for field in form %}
             <div class="formulario__campo">
               {{ field.label_tag }}

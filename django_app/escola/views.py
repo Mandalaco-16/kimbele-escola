@@ -150,8 +150,8 @@ def funcionarios_lista(request):
 @never_cache
 def funcionario_detail(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
-    chave_sessao = f"funcionario_desbloqueado_{pk}"
-    desbloqueado = request.session.get(chave_sessao, False)
+    desbloqueado = False
+    senha_confirmada = ""
 
     senha_form = SenhaFuncionarioForm()
     form = MensagemFuncionarioForm()
@@ -164,14 +164,16 @@ def funcionario_detail(request, pk):
             if senha_form.is_valid():
                 senha_digitada = senha_form.cleaned_data["senha"].strip()
                 if funcionario.senha_pin and senha_digitada == funcionario.senha_pin:
-                    request.session[chave_sessao] = True
-                    return redirect("escola:funcionario_detail", pk=pk)
+                    desbloqueado = True
+                    senha_confirmada = senha_digitada
+                    senha_form = SenhaFuncionarioForm()
                 else:
                     messages.error(request, "Senha incorreta.")
 
-        elif acao == "enviar_mensagem" and desbloqueado:
+        elif acao == "enviar_mensagem":
             form = MensagemFuncionarioForm(request.POST)
-            if form.is_valid():
+            senha_digitada = request.POST.get("senha_confirmada", "").strip()
+            if funcionario.senha_pin and senha_digitada == funcionario.senha_pin and form.is_valid():
                 Contributo.objects.create(
                     nome=form.cleaned_data["nome"],
                     mensagem=form.cleaned_data["mensagem"],
@@ -179,21 +181,16 @@ def funcionario_detail(request, pk):
                 )
                 messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")
                 return redirect("escola:funcionario_detail", pk=pk)
+            else:
+                messages.error(request, "Não foi possível enviar. Digite a senha novamente.")
 
     return render(request, "escola/funcionario_detail.html", {
         "f": funcionario,
         "desbloqueado": desbloqueado,
         "senha_form": senha_form,
         "form": form,
+        "senha_confirmada": senha_confirmada,
     })
-
-
-@never_cache
-def funcionario_bloquear(request, pk):
-    chave_sessao = f"funcionario_desbloqueado_{pk}"
-    if chave_sessao in request.session:
-        del request.session[chave_sessao]
-    return redirect("escola:funcionario_detail", pk=pk)
 
 
 def contributo_view(request):
