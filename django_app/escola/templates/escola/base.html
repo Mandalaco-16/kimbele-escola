@@ -18,7 +18,7 @@
     <a href="{% url 'escola:funcionarios_lista' %}">Funcionários</a>
     <a href="{% url 'escola:documentos_lista' %}">Regulamento</a>
     <a href="{% url 'escola:lazer' %}">Lazer</a>
-    <a href="{% url 'escola:painel_sms' %}">Painel das faltas</a>
+    <a href="{% url 'escola:painel_sms' %}">Direção Da Escola</a>
     <a href="{% url 'escola:horarios' %}">Horários</a>
     <a href="{% url 'escola:vitrine' %}">Vitrine</a>
     <a href="{% url 'escola:desenvolvidor' %}">Desenvolvidor do site</a>
@@ -33,7 +33,7 @@
       {% if request.resolver_match.url_name == 'funcionarios_lista' or request.resolver_match.url_name == 'funcionario_detail' %}FUNCIONÁRIOS
       {% elif request.resolver_match.url_name == 'documentos_lista' %}REGULAMENTO
       {% elif request.resolver_match.url_name == 'lazer' %}LAZER
-      {% elif request.resolver_match.url_name == 'painel_sms' %}PAINEL DAS FALTAS
+      {% elif request.resolver_match.url_name == 'painel_sms' %}DIREÇÃO DA ESCOLA
       {% elif request.resolver_match.url_name == 'horarios' %}HORÁRIOS
       {% elif request.resolver_match.url_name == 'vitrine' %}VITRINE
       {% elif request.resolver_match.url_name == 'desenvolvidor' %}DESENVOLVIDOR DO SITE
