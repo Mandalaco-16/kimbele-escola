@@ -6,15 +6,17 @@
   <div class="grade-recursos">
     {% for doc in documentos %}
       <div class="cartao-recurso">
-        <div class="cartao-recurso__icone-caixa">
-          <span class="cartao-recurso__icone">📄</span>
-        </div>
+        <svg class="cartao-recurso__icone-svg" width="56" height="64" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M4 2h11l5 5v19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
+          <path d="M15 2v5h5"/>
+          <line x1="6" y1="13" x2="16" y2="13"/>
+          <line x1="6" y1="16" x2="16" y2="16"/>
+          <line x1="6" y1="19" x2="13" y2="19"/>
+        </svg>
         <p class="cartao-recurso__titulo">{{ doc.titulo }}</p>
         <p class="cartao-recurso__data">{{ doc.publicado_em|date:"d/m/Y" }}</p>
-        <div class="cartao-recurso__acoes">
-          <a href="{{ doc.ficheiro.url }}" target="_blank" rel="noopener" class="botao botao--secundario">👁️ Ver</a>
-          <a href="{{ doc.ficheiro.url }}" download class="cartao-recurso__botao-pilula">⬇️ Baixar</a>
-        </div>
+        <a href="{{ doc.ficheiro.url }}" target="_blank" rel="noopener" class="cartao-recurso__link-ver">👁️ Ver</a>
+        <a href="{{ doc.ficheiro.url }}" download class="cartao-recurso__botao-pilula">Descarregar PDF</a>
       </div>
     {% empty %}
       <p>{{ vazio_texto }}</p>
