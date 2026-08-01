@@ -2,9 +2,20 @@
 {% block titulo %}{{ titulo_pagina }} - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
 <section class="secao">
-  <div class="galeria-grade">
+  <h2>{{ titulo_pagina }}</h2>
+  <div class="grade-recursos">
     {% for img in imagens %}
-      <img src="{{ img.imagem.url }}" alt="{{ img.titulo }}" class="galeria-grade__imagem">
+      <div class="cartao-recurso">
+        <a href="{{ img.imagem.url }}" target="_blank" rel="noopener" class="cartao-recurso__icone-caixa cartao-recurso__icone-caixa--imagem">
+          <img src="{{ img.imagem.url }}" alt="{{ img.titulo }}" class="cartao-recurso__miniatura">
+        </a>
+        <p class="cartao-recurso__titulo">{{ img.titulo }}</p>
+        <p class="cartao-recurso__data">{{ img.publicado_em|date:"d/m/Y" }}</p>
+        <div class="cartao-recurso__acoes">
+          <a href="{{ img.imagem.url }}" target="_blank" rel="noopener" class="botao botao--secundario">👁️ Ver</a>
+          <a href="{{ img.imagem.url }}" download class="cartao-recurso__botao-pilula">⬇️ Baixar</a>
+        </div>
+      </div>
     {% empty %}
       <p>{{ vazio_texto }}</p>
     {% endfor %}

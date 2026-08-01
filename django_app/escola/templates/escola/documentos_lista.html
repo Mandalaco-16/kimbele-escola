@@ -2,11 +2,19 @@
 {% block titulo %}{{ titulo_pagina }} - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
 <section class="secao">
-  <div class="lista-documentos">
+  <h2>{{ titulo_pagina }}</h2>
+  <div class="grade-recursos">
     {% for doc in documentos %}
-      <div class="cartao-download">
-        <span class="cartao-download__icone">📄</span>
-        <a href="{{ doc.ficheiro.url }}" target="_blank">{{ doc.titulo }}</a>
+      <div class="cartao-recurso">
+        <div class="cartao-recurso__icone-caixa">
+          <span class="cartao-recurso__icone">📄</span>
+        </div>
+        <p class="cartao-recurso__titulo">{{ doc.titulo }}</p>
+        <p class="cartao-recurso__data">{{ doc.publicado_em|date:"d/m/Y" }}</p>
+        <div class="cartao-recurso__acoes">
+          <a href="{{ doc.ficheiro.url }}" target="_blank" rel="noopener" class="botao botao--secundario">👁️ Ver</a>
+          <a href="{{ doc.ficheiro.url }}" download class="cartao-recurso__botao-pilula">⬇️ Baixar</a>
+        </div>
       </div>
     {% empty %}
       <p>{{ vazio_texto }}</p>
