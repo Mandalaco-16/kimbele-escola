@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="{% static 'escola/css/style.css' %}">
 </head>
 <body class="{% if request.resolver_match.url_name == 'home' %}pagina-inicio{% endif %}">
+{% block marca_dagua %}{% endblock %}
 
 <header class="cabecalho-novo">
   {% if request.resolver_match.url_name == 'home' %}
@@ -63,5 +64,40 @@
   </div>
 </footer>
 
+<style>
+  @media print {
+    body * {
+      visibility: hidden !important;
+    }
+    body::after {
+      content: "Conteudo protegido - impressao desativada.";
+      visibility: visible;
+      display: block;
+      text-align: center;
+      margin-top: 40vh;
+      font-size: 1.5rem;
+    }
+  }
+  body, img {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+</style>
+<script>
+  document.addEventListener("contextmenu", function (evento) {
+    evento.preventDefault();
+  });
+  document.addEventListener("copy", function (evento) {
+    evento.preventDefault();
+  });
+  document.addEventListener("cut", function (evento) {
+    evento.preventDefault();
+  });
+  document.addEventListener("dragstart", function (evento) {
+    evento.preventDefault();
+  });
+</script>
 </body>
     </html>

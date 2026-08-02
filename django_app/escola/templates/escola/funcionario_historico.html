@@ -1,6 +1,12 @@
 {% extends "escola/base.html" %}
 {% block titulo %}Histórico da Conversa - {{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
 
+{% block marca_dagua %}
+<div class="marca-dagua">
+  {% for i in "123456789012" %}<span>{{ f.nome }} - {% now "d/m/Y H:i" %}</span>{% endfor %}
+</div>
+{% endblock %}
+
 {% block conteudo %}
 <section class="secao secao--ficha">
   <a href="{% url 'escola:funcionario_detail' pk=f.pk %}" class="link-voltar">&larr; Voltar ao perfil de {{ f.nome }}</a>
