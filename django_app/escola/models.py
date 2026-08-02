@@ -1,6 +1,7 @@
 import uuid
 from django.conf import settings
 from django.db import models
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
 
 
 class Funcionario(models.Model):
@@ -46,7 +47,7 @@ class Documento(models.Model):
 
     titulo = models.CharField("Título", max_length=200)
     categoria = models.CharField("Categoria", max_length=20, choices=Categoria.choices)
-    ficheiro = models.FileField("Ficheiro", upload_to="documentos/%Y/%m/")
+    ficheiro = models.FileField("Ficheiro", upload_to="documentos/%Y/%m/", storage=RawMediaCloudinaryStorage())
     publicado_em = models.DateTimeField("Publicado em", auto_now_add=True)
     ativo = models.BooleanField("Ativo", default=True)
 
