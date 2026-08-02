@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.admin import AdminSite
 from .models import (
     Comunicado,
     Contributo,
@@ -49,6 +50,7 @@ class ImagemGaleriaAdmin(admin.ModelAdmin):
 class ContributoAdmin(admin.ModelAdmin):
     list_display = ("nome", "funcionario", "criado_em", "lido", "tem_resposta")
     list_filter = ("lido",)
+    list_editable = ("lido",)
     search_fields = ("nome", "mensagem", "resposta")
     readonly_fields = ("nome", "funcionario", "mensagem", "anexo", "criado_em")
     fields = ("nome", "funcionario", "mensagem", "anexo", "criado_em", "lido", "resposta")
@@ -88,3 +90,19 @@ class DestinatarioAdmin(admin.ModelAdmin):
     list_display = ("telefone", "trabalhador", "comunicado", "estado_envio", "enviado_em")
     list_filter = ("estado_envio",)
     readonly_fields = ("token", "resposta_gateway", "enviado_em", "acedido_em", "ip_acesso")
+
+
+# --- Sinal de sugestões/mensagens não lidas no menu do admin ---
+_get_app_list_original = AdminSite.get_app_list
+
+def _get_app_list_com_sinal(self, request, app_label=None):
+    app_list = _get_app_list_original(self, request, app_label)
+    nao_lidos = Contributo.objects.filter(lido=False).count()
+    if nao_lidos:
+        for app in app_list:
+            for model in app["models"]:
+                if model["object_name"] == "Contributo":
+                    model["name"] = f'🔴 {model["name"]} ({nao_lidos} nova{"s" if nao_lidos != 1 else ""})'
+    return app_list
+
+AdminSite.get_app_list = _get_app_list_com_sinal

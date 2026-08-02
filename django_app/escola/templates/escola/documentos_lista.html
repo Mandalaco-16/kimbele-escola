@@ -15,6 +15,7 @@
         </svg>
         <p class="cartao-recurso__titulo">{{ doc.titulo }}</p>
         <p class="cartao-recurso__data">{{ doc.publicado_em|date:"d/m/Y" }}</p>
+        {% if doc.mensagem %}<p class="cartao-recurso__mensagem">{{ doc.mensagem|linebreaksbr }}</p>{% endif %}
         <a href="{{ doc.ficheiro.url }}" target="_blank" rel="noopener" class="cartao-recurso__link-ver">👁️ Ver</a>
         <a href="{{ doc.ficheiro.url }}" download class="cartao-recurso__botao-pilula">Descarregar PDF</a>
       </div>
