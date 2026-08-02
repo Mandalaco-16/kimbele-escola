@@ -13,4 +13,4 @@ COPY . .
 
 RUN mkdir -p /app/staticfiles /app/mediafiles
 EXPOSE 8000
-CMD python manage.py collectstatic --noinput && python manage.py migrate --noinput && (python manage.py createsuperuser --noinput || true) && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
+CMD python manage.py collectstatic --noinput --ignore=i18n && python manage.py migrate --noinput && (python manage.py createsuperuser --noinput || true) && gunicorn core.wsgi:application --bind 0.0.0.0:$PORT
