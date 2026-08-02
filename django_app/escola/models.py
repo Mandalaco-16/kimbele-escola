@@ -145,7 +145,14 @@ class Destinatario(models.Model):
 
 class Contributo(models.Model):
     nome = models.CharField("Nome", max_length=150, blank=True, help_text="Opcional")
-    mensagem = models.TextField("Mensagem")
+    mensagem = models.TextField("Mensagem", blank=True)
+    anexo = models.FileField(
+        "Foto ou documento (PDF)",
+        upload_to="contributos/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text="Opcional. Aceita fotos ou ficheiros PDF.",
+    )
     criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
     lido = models.BooleanField("Lido", default=False)
     funcionario = models.ForeignKey(

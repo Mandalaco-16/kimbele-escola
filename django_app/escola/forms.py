@@ -57,4 +57,20 @@ class MensagemFuncionarioForm(forms.Form):
     mensagem = forms.CharField(
         label="A sua mensagem, opinião ou contributo",
         widget=forms.Textarea,
+        required=False,
     )
+    anexo = forms.FileField(
+        label="Anexar foto ou documento (PDF)",
+        required=False,
+        help_text="Opcional. Aceita imagens (JPG, PNG) ou PDF.",
+    )
+
+    def clean(self):
+        dados = super().clean()
+        mensagem = dados.get("mensagem", "").strip()
+        anexo = dados.get("anexo")
+        if not mensagem and not anexo:
+            raise forms.ValidationError(
+                "Escreva uma mensagem ou anexe uma foto/documento antes de enviar."
+            )
+        return dados

@@ -38,10 +38,11 @@
       <div class="formulario--sugestao">
         <h3>Enviar ideia ou informação à direção</h3>
         <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola.</p>
-        <form method="post" class="formulario">
+        <form method="post" class="formulario" enctype="multipart/form-data">
           {% csrf_token %}
           <input type="hidden" name="acao" value="enviar_mensagem">
           <input type="hidden" name="senha_confirmada" value="{{ senha_confirmada }}">
+          {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
           {% for field in form %}
             <div class="formulario__campo">
               {{ field.label_tag }}

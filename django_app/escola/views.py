@@ -171,12 +171,13 @@ def funcionario_detail(request, pk):
                     messages.error(request, "Senha incorreta.")
 
         elif acao == "enviar_mensagem":
-            form = MensagemFuncionarioForm(request.POST)
+            form = MensagemFuncionarioForm(request.POST, request.FILES)
             senha_digitada = request.POST.get("senha_confirmada", "").strip()
             if funcionario.senha_pin and senha_digitada == funcionario.senha_pin and form.is_valid():
                 Contributo.objects.create(
                     nome=form.cleaned_data["nome"],
                     mensagem=form.cleaned_data["mensagem"],
+                    anexo=form.cleaned_data["anexo"],
                     funcionario=funcionario,
                 )
                 messages.success(request, "Obrigado! A sua sugestão foi enviada à direção da escola.")

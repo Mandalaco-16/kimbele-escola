@@ -50,8 +50,8 @@ class ContributoAdmin(admin.ModelAdmin):
     list_display = ("nome", "funcionario", "criado_em", "lido", "tem_resposta")
     list_filter = ("lido",)
     search_fields = ("nome", "mensagem", "resposta")
-    readonly_fields = ("nome", "funcionario", "mensagem", "criado_em")
-    fields = ("nome", "funcionario", "mensagem", "criado_em", "lido", "resposta")
+    readonly_fields = ("nome", "funcionario", "mensagem", "anexo", "criado_em")
+    fields = ("nome", "funcionario", "mensagem", "anexo", "criado_em", "lido", "resposta")
 
     def tem_resposta(self, obj):
         return bool(obj.resposta)

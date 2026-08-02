@@ -24,6 +24,8 @@
         <p class="conversa__data">📩 Enviado em {{ c.criado_em|date:"d/m/Y H:i" }}</p>
         <p class="conversa__texto">{{ c.mensagem|linebreaksbr }}</p>
 
+          {% if c.anexo %}<p><a href="{{ c.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo enviado</a></p>{% endif %}
+
         {% if c.resposta %}
           <div class="conversa__resposta">
             <p class="conversa__data">↩️ Resposta da Direção em {{ c.respondido_em|date:"d/m/Y H:i" }}</p>
