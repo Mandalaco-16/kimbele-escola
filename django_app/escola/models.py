@@ -68,6 +68,11 @@ class ImagemGaleria(models.Model):
     titulo = models.CharField("Título", max_length=200)
     categoria = models.CharField("Categoria", max_length=20, choices=Categoria.choices)
     imagem = models.ImageField("Imagem", upload_to="galeria/%Y/%m/")
+    mensagem = models.TextField(
+        "Mensagem sobre a foto",
+        blank=True,
+        help_text="Opcional. Explica o contexto da foto para quem for ver.",
+    )
     publicado_em = models.DateTimeField("Publicado em", auto_now_add=True)
     ativo = models.BooleanField("Ativo", default=True)
 

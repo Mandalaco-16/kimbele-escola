@@ -535,3 +535,11 @@ body {
     margin: 2.5rem;
     white-space: nowrap;
 }
+
+.cartao-recurso__mensagem {
+    font-size: 0.9rem;
+    color: var(--tinta);
+    font-style: italic;
+    margin: 0 0 1rem 0;
+    line-height: 1.4;
+}

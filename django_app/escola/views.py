@@ -114,7 +114,7 @@ def documentos_lista(request):
 def vitrine(request):
     documentos = Documento.objects.filter(categoria=Documento.Categoria.VITRINE, ativo=True)
     contexto = {
-        "titulo_pagina": "Vitrine / Novidades",
+        "titulo_pagina": "Vitrine / Novidades da Escola",
         "documentos": documentos,
         "vazio_texto": "Ainda não há novidades publicadas.",
     }
@@ -134,7 +134,7 @@ def horarios(request):
 def lazer(request):
     imagens = ImagemGaleria.objects.filter(categoria=ImagemGaleria.Categoria.LAZER, ativo=True)
     contexto = {
-        "titulo_pagina": "Lazer",
+        "titulo_pagina": "Lazer / Actividades da Escola",
         "imagens": imagens,
         "vazio_texto": "Ainda não há fotografias de lazer publicadas.",
     }

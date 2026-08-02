@@ -33,10 +33,10 @@
     <span class="cabecalho-novo__secao-atual">
       {% if request.resolver_match.url_name == 'funcionarios_lista' or request.resolver_match.url_name == 'funcionario_detail' %}FUNCIONÁRIOS
       {% elif request.resolver_match.url_name == 'documentos_lista' %}REGULAMENTO
-      {% elif request.resolver_match.url_name == 'lazer' %}LAZER
+      {% elif request.resolver_match.url_name == 'lazer' %}LAZER / ACTIVIDADES DA ESCOLA
       {% elif request.resolver_match.url_name == 'painel_sms' %}DIREÇÃO DA ESCOLA
       {% elif request.resolver_match.url_name == 'horarios' %}HORÁRIOS
-      {% elif request.resolver_match.url_name == 'vitrine' %}VITRINE
+      {% elif request.resolver_match.url_name == 'vitrine' %}VITRINE / NOVIDADES DA ESCOLA
       {% elif request.resolver_match.url_name == 'desenvolvidor' %}DESENVOLVIDOR DO SITE
       {% elif request.resolver_match.url_name == 'contributo' %}FALA COM A DIREÇÃO DA ESCOLA
       {% else %}{{ NOME_ESCOLA|upper }}

@@ -11,6 +11,7 @@
         </a>
         <p class="cartao-recurso__titulo">{{ img.titulo }}</p>
         <p class="cartao-recurso__data">{{ img.publicado_em|date:"d/m/Y" }}</p>
+        {% if img.mensagem %}<p class="cartao-recurso__mensagem">{{ img.mensagem|linebreaksbr }}</p>{% endif %}
         <a href="{{ img.imagem.url }}" target="_blank" rel="noopener" class="cartao-recurso__link-ver">👁️ Ver</a>
         <a href="{{ img.imagem.url }}" download class="cartao-recurso__botao-pilula">Descarregar Imagem</a>
       </div>
