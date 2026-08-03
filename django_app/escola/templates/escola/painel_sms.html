@@ -1,66 +1,12 @@
 {% extends "escola/base.html" %}
-{% block titulo %}Painel de faltas - {{ NOME_ESCOLA }}{% endblock %}
+{% block titulo %}Direção da Escola - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
 <section class="secao secao--estreita">
   <span class="eyebrow">Apenas administrador</span>
   <p style="margin-top: 1rem; text-align: center;"><a href="/django-admin/escola/contributo/" target="_blank" style="font-weight: 700;">📋 Ver sugestões e ideias dos funcionários</a></p>
-  <p class="secao__intro">
-    Introduz até <strong>5 números de telefone</strong> dos trabalhadores e o
-    texto da mensagem. O SMS é enviado em tempo real através da Infobip, com
-    um link pessoal para cada trabalhador consultar a sua falta.
+
+  <p class="secao__intro" style="text-align: center; margin-top: 2rem;">
+    Esta secção está reservada para uma nova funcionalidade da Direção da Escola.
   </p>
-  <form method="post" class="formulario formulario--cartao" novalidate>
-    {% csrf_token %}
-    <fieldset class="campo-grupo">
-      <legend>Números de telefone <span class="campo-grupo__limite">(máximo 5)</span></legend>
-      {% for campo in form %}
-        {% if "numero_" in campo.name %}
-          <div class="campo campo--numero" id="campo-numero-{{ forloop.counter }}" data-indice="{{ forloop.counter }}"{% if forloop.counter > 1 and not campo.value %} style="display:none;"{% endif %}>
-            <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
-            {{ campo }}
-            {% for erro in campo.errors %}<p class="campo__erro">{{ erro }}</p>{% endfor %}
-          </div>
-        {% endif %}
-      {% endfor %}
-      <button type="button" id="botao-mais-numero" class="botao botao--secundario botao--pequeno">+ Adicionar número</button>
-    </fieldset>
-
-    <div class="formulario__campo">
-      {{ form.corpo_mensagem.label_tag }}
-      {{ form.corpo_mensagem }}
-      {% for erro in form.corpo_mensagem.errors %}<p class="campo__erro">{{ erro }}</p>{% endfor %}
-    </div>
-
-    <button type="submit" class="botao botao--primario">Enviar SMS agora</button>
-  </form>
 </section>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-  var botao = document.getElementById('botao-mais-numero');
-  if (!botao) return;
-  var proximo = 2;
-  for (var i = 2; i <= 5; i++) {
-    var campo = document.getElementById('campo-numero-' + i);
-    if (campo && campo.style.display !== 'none') {
-      proximo = i + 1;
-    }
-  }
-  function atualizarBotao() {
-    if (proximo > 5) {
-      botao.style.display = 'none';
-    }
-  }
-  botao.addEventListener('click', function () {
-    if (proximo > 5) return;
-    var campo = document.getElementById('campo-numero-' + proximo);
-    if (campo) {
-      campo.style.display = 'block';
-      proximo++;
-      atualizarBotao();
-    }
-  });
-  atualizarBotao();
-});
-</script>
 {% endblock %}

@@ -105,6 +105,3 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_URL = "escola:login"
 LOGIN_REDIRECT_URL = "escola:painel_sms"
 
-INFOBIP_API_KEY = os.environ.get("INFOBIP_API_KEY", "")
-INFOBIP_BASE_URL = os.environ.get("INFOBIP_BASE_URL", "")
-INFOBIP_SENDER = os.environ.get("INFOBIP_SENDER", "")

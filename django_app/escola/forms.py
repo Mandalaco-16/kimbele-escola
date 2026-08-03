@@ -19,23 +19,6 @@ class LoginAdminForm(AuthenticationForm):
     pass
 
 
-class EnvioSMSForm(forms.Form):
-    numero_1 = forms.CharField(label="Número de telefone 1", max_length=20, required=True)
-    numero_2 = forms.CharField(label="Número de telefone 2", max_length=20, required=False)
-    numero_3 = forms.CharField(label="Número de telefone 3", max_length=20, required=False)
-    numero_4 = forms.CharField(label="Número de telefone 4", max_length=20, required=False)
-    numero_5 = forms.CharField(label="Número de telefone 5", max_length=20, required=False)
-    corpo_mensagem = forms.CharField(label="Texto da mensagem", widget=forms.Textarea, max_length=459)
-
-    def limpar_numeros(self):
-        numeros = []
-        for i in range(1, 6):
-            valor = self.cleaned_data.get(f"numero_{i}")
-            if valor:
-                numeros.append(valor.strip())
-        return numeros
-
-
 class SenhaFuncionarioForm(forms.Form):
     senha = forms.CharField(
         label="Senha (3 dígitos)",

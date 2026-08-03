@@ -7,9 +7,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, EnvioSMSForm, LoginAdminForm, MensagemFuncionarioForm, SenhaFuncionarioForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, SenhaFuncionarioForm
 from .models import (
-    Comunicado,
     Contributo,
     Destinatario,
     Documento,
@@ -18,7 +17,6 @@ from .models import (
     Trabalhador,
     DesenvolvidorSite,
 )
-from .services import InfobipSMSService
 
 
 def get_client_ip(request):
@@ -48,55 +46,7 @@ def logout_view(request):
 
 @login_required
 def painel_sms(request):
-    if request.method == "POST":
-        form = EnvioSMSForm(request.POST)
-        if form.is_valid():
-            numeros = form.limpar_numeros()
-            texto = form.cleaned_data["corpo_mensagem"]
-            comunicado = Comunicado.objects.create(
-                corpo_mensagem=texto,
-                criado_por=request.user,
-                ip_criacao=get_client_ip(request),
-            )
-            servico_sms = InfobipSMSService()
-            enviados_com_sucesso = 0
-            for numero in numeros:
-                destinatario = Destinatario.objects.create(
-                    comunicado=comunicado,
-                    telefone=numero,
-                )
-                resultado = servico_sms.enviar(numero, texto, destinatario.token)
-                destinatario.resposta_gateway = str(resultado["detalhe"])[:2000]
-                destinatario.enviado_em = timezone.now()
-                destinatario.estado_envio = (
-                    Destinatario.Estado.ENVIADO
-                    if resultado["sucesso"]
-                    else Destinatario.Estado.FALHOU
-                )
-                destinatario.save()
-                if resultado["sucesso"]:
-                    enviados_com_sucesso += 1
-
-            if enviados_com_sucesso == len(numeros):
-                messages.success(
-                    request,
-                    f"SMS enviado em tempo real para {enviados_com_sucesso} trabalhador(es) com sucesso.",
-                )
-            elif enviados_com_sucesso > 0:
-                messages.warning(
-                    request,
-                    f"{enviados_com_sucesso} de {len(numeros)} SMS enviados. Verifica os que falharam no histórico abaixo.",
-                )
-            else:
-                messages.error(
-                    request,
-                    "Não foi possível enviar os SMS. Verifica a configuração da Infobip e a ligação à internet.",
-                )
-            return redirect("escola:painel_sms")
-    else:
-        form = EnvioSMSForm()
-
-    return render(request, "escola/painel_sms.html", {"form": form})
+    return render(request, "escola/painel_sms.html", {})
 
 
 def documentos_lista(request):
