@@ -1,4 +1,5 @@
 {% extends "escola/base.html" %}
+{% load escola_extras %}
 {% block titulo %}{{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
 
 {% block marca_dagua %}
@@ -31,9 +32,9 @@
     <hr class="risca">
 
     <div class="ficha-funcionario__contactos">
-      {% if f.telefone %}<p>📞 {{ f.telefone }}</p>{% endif %}
-      {% if f.whatsapp %}<p>💬 WhatsApp: {{ f.whatsapp }}</p>{% endif %}
-      {% if f.email %}<p>✉️ {{ f.email }}</p>{% endif %}
+      {% if f.telefone %}<p>📞 <a href="tel:{{ f.telefone|tel_limpo }}">{{ f.telefone }}</a></p>{% endif %}
+      {% if f.whatsapp %}<p>💬 WhatsApp: <a href="https://wa.me/{{ f.whatsapp|somente_digitos }}" target="_blank" rel="noopener">{{ f.whatsapp }}</a></p>{% endif %}
+      {% if f.email %}<p>✉️ <a href="mailto:{{ f.email }}">{{ f.email }}</a></p>{% endif %}
     </div>
 
     <hr class="risca">
