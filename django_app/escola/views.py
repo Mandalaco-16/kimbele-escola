@@ -94,12 +94,7 @@ def lazer(request):
 
 
 def funcionarios_lista(request):
-    resposta_nao_vista = Contributo.objects.filter(
-        funcionario=OuterRef("pk"), resposta_vista=False
-    ).exclude(resposta="")
-    funcionarios = Funcionario.objects.filter(ativo=True).annotate(
-        tem_notificacao=Exists(resposta_nao_vista)
-    )
+    funcionarios = Funcionario.objects.filter(ativo=True)
     return render(request, "escola/funcionarios_lista.html", {"funcionarios": funcionarios})
 
 
@@ -126,9 +121,6 @@ def funcionario_detail(request, pk):
                     senha_confirmada = senha_digitada
                     senha_form = SenhaFuncionarioForm()
                     request.session[chave_sessao] = True
-                    Contributo.objects.filter(
-                        funcionario=funcionario, resposta_vista=False
-                    ).exclude(resposta="").update(resposta_vista=True)
                 else:
                     messages.error(request, "Senha incorreta.")
 
@@ -148,6 +140,9 @@ def funcionario_detail(request, pk):
                 messages.error(request, "Não foi possível enviar. Digite a senha novamente.")
 
     mensagens_nao_lidas = MensagemInterna.objects.filter(destinatario=funcionario, lida=False).count()
+    tem_resposta_nao_vista = Contributo.objects.filter(
+        funcionario=funcionario, resposta_vista=False
+    ).exclude(resposta="").exists()
 
     return render(request, "escola/funcionario_detail.html", {
         "f": funcionario,
@@ -156,6 +151,7 @@ def funcionario_detail(request, pk):
         "form": form,
         "senha_confirmada": senha_confirmada,
         "mensagens_nao_lidas": mensagens_nao_lidas,
+        "tem_resposta_nao_vista": tem_resposta_nao_vista,
     })
 
 
@@ -315,6 +311,9 @@ def inicio_view(request):
 
 def funcionario_historico(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    Contributo.objects.filter(
+        funcionario=funcionario, resposta_vista=False
+    ).exclude(resposta="").update(resposta_vista=True)
     contributos = Contributo.objects.filter(funcionario=funcionario).order_by("criado_em")
     return render(
         request,
