@@ -131,6 +131,28 @@
   }
 </style>
 <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var titulo = document.querySelector(".cabecalho-novo__titulo");
+    if (!titulo) return;
+    var cores = ["#234d35", "#b98a2f", "#c76b4a", "#3f7a5a"];
+    var texto = titulo.textContent;
+    titulo.textContent = "";
+    var indiceCor = 0;
+    for (var i = 0; i < texto.length; i++) {
+      var letra = texto[i];
+      var span = document.createElement("span");
+      span.textContent = (letra === " ") ? "\u00A0" : letra;
+      if (letra !== " ") {
+        span.style.color = cores[indiceCor % cores.length];
+        span.style.animationDelay = (indiceCor * 0.06) + "s";
+        indiceCor++;
+      } else {
+        span.style.animation = "none";
+      }
+      titulo.appendChild(span);
+    }
+  });
+
   document.addEventListener("contextmenu", function (evento) {
     evento.preventDefault();
   });

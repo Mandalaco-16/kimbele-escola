@@ -613,3 +613,14 @@ body {
     text-align:center; font-size:.78rem; color:#a9bcaf;
 }
 .rodape-novo__credito strong{ color:#a9d3b5; }
+
+/* --- Título ondulado, letra a letra, com as 4 cores do prédio --- */
+.cabecalho-novo__titulo span {
+    display: inline-block;
+    animation: onda-titulo 2.4s ease-in-out infinite;
+}
+
+@keyframes onda-titulo {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
