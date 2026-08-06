@@ -1,0 +1,47 @@
+{% extends "escola/base.html" %}
+{% block titulo %}{{ f.nome }} e {{ destino.nome }} - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="link-voltar">&larr; Voltar aos colegas</a>
+  <h2>{{ f.nome }} &harr; {{ destino.nome }}</h2>
+
+  <p><a href="{% url 'escola:funcionario_conversa_pdf' pk=f.pk destino_pk=destino.pk %}" class="botao botao--secundario">📥 Descarregar Conversa (PDF)</a></p>
+
+  <hr class="risca">
+
+  <div class="conversa-interna">
+    {% for m in conversa %}
+      <div class="conversa-interna__balao {% if m.remetente_id == f.pk %}conversa-interna__balao--eu{% else %}conversa-interna__balao--colega{% endif %}">
+        <p class="conversa-interna__autor">{{ m.remetente.nome }} — {{ m.criado_em|date:"d/m/Y H:i" }}</p>
+        {% if m.mensagem %}<p class="conversa-interna__texto">{{ m.mensagem|linebreaksbr }}</p>{% endif %}
+        {% if m.anexo %}
+          <p class="conversa-interna__anexo">
+            📎 <a href="{{ m.anexo.url }}" target="_blank" rel="noopener">{{ m.anexo.name|slice:"-40:" }}</a>
+          </p>
+        {% endif %}
+      </div>
+    {% empty %}
+      <p>Ainda não há mensagens entre vocês. Escreva a primeira!</p>
+    {% endfor %}
+  </div>
+
+  <hr class="risca">
+
+  <div class="formulario--sugestao">
+    <h3>Nova mensagem</h3>
+    <form method="post" class="formulario" enctype="multipart/form-data">
+      {% csrf_token %}
+      {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      {% for field in form %}
+        <div class="formulario__campo">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+          {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="botao botao--primario">Enviar</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

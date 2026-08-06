@@ -1,0 +1,25 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Mensagens - {{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao">
+  <a href="{% url 'escola:funcionario_detail' f.pk %}" class="link-voltar">&larr; Voltar ao meu perfil</a>
+  <h2>Conversar com um colega</h2>
+  <p>Escolha um funcionário da lista para trocar mensagens, fotos ou documentos.</p>
+
+  <div class="lista-horizontal">
+    {% for colega in colegas|dictsort:'nome' %}
+      <a href="{% url 'escola:funcionario_conversa' pk=f.pk destino_pk=colega.pk %}" class="cartao-funcionario">
+        {% if colega.foto %}
+          <img src="{{ colega.foto.url }}" alt="{{ colega.nome }}" class="cartao-funcionario__foto">
+        {% else %}
+          <div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ colega.nome|first }}</div>
+        {% endif %}
+        <span class="cartao-funcionario__nome">{{ colega.nome }}</span>
+        <span class="cartao-funcionario__label">Função</span><span class="cartao-funcionario__cargo">{{ colega.cargo }}</span>
+      </a>
+    {% empty %}
+      <p>Não há outros funcionários cadastrados.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

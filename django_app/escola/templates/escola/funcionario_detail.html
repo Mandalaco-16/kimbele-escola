@@ -41,6 +41,7 @@
 
     {% if desbloqueado %}
       <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario">📜 Histórico da Conversa</a></p>
+      <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario">💬 Conversar com Colegas</a></p>
 
       <hr class="risca">
 

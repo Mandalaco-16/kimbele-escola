@@ -7,6 +7,7 @@ from .models import (
     Documento,
     Funcionario,
     ImagemGaleria,
+    MensagemInterna,
     Trabalhador,
     DesenvolvidorSite,
 )
@@ -65,6 +66,14 @@ class ContributoAdmin(admin.ModelAdmin):
             from django.utils import timezone
             obj.respondido_em = timezone.now()
         super().save_model(request, obj, form, change)
+
+
+@admin.register(MensagemInterna)
+class MensagemInternaAdmin(admin.ModelAdmin):
+    list_display = ("remetente", "destinatario", "criado_em")
+    list_filter = ("remetente", "destinatario")
+    readonly_fields = ("remetente", "destinatario", "mensagem", "anexo", "criado_em")
+    search_fields = ("mensagem",)
 
 
 @admin.register(DesenvolvidorSite)

@@ -180,6 +180,32 @@ class Contributo(models.Model):
         return f"Contributo de {self.nome or 'Anónimo'} - {self.criado_em:%d/%m/%Y}"
 
 
+class MensagemInterna(models.Model):
+    remetente = models.ForeignKey(
+        Funcionario, verbose_name="De", on_delete=models.CASCADE, related_name="mensagens_enviadas"
+    )
+    destinatario = models.ForeignKey(
+        Funcionario, verbose_name="Para", on_delete=models.CASCADE, related_name="mensagens_recebidas"
+    )
+    mensagem = models.TextField("Mensagem", blank=True)
+    anexo = models.FileField(
+        "Foto ou documento",
+        upload_to="mensagens_internas/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text="Opcional. Aceita fotos ou ficheiros PDF.",
+    )
+    criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Mensagem entre Funcionários"
+        verbose_name_plural = "Mensagens entre Funcionários"
+        ordering = ["criado_em"]
+
+    def __str__(self):
+        return f"{self.remetente.nome} -> {self.destinatario.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
+
+
 class DesenvolvidorSite(models.Model):
     nome = models.CharField("Nome", max_length=200, default="Desenvolvidor do site")
     informacoes = models.TextField("Informações do desenvolvedor", blank=True)

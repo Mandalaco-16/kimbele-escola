@@ -8,13 +8,14 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, SenhaFuncionarioForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, SenhaFuncionarioForm
 from .models import (
     Contributo,
     Destinatario,
     Documento,
     Funcionario,
     ImagemGaleria,
+    MensagemInterna,
     Trabalhador,
     DesenvolvidorSite,
 )
@@ -106,7 +107,8 @@ def funcionarios_lista(request):
 @never_cache
 def funcionario_detail(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
-    desbloqueado = False
+    chave_sessao = f"funcionario_desbloqueado_{pk}"
+    desbloqueado = request.session.get(chave_sessao, False)
     senha_confirmada = ""
 
     senha_form = SenhaFuncionarioForm()
@@ -123,6 +125,7 @@ def funcionario_detail(request, pk):
                     desbloqueado = True
                     senha_confirmada = senha_digitada
                     senha_form = SenhaFuncionarioForm()
+                    request.session[chave_sessao] = True
                     Contributo.objects.filter(
                         funcionario=funcionario, resposta_vista=False
                     ).exclude(resposta="").update(resposta_vista=True)
@@ -151,6 +154,113 @@ def funcionario_detail(request, pk):
         "form": form,
         "senha_confirmada": senha_confirmada,
     })
+
+
+def _exige_desbloqueio(request, funcionario):
+    chave_sessao = f"funcionario_desbloqueado_{funcionario.pk}"
+    return request.session.get(chave_sessao, False)
+
+
+def funcionario_mensagens_lista(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro para aceder às mensagens.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    colegas = Funcionario.objects.filter(ativo=True).exclude(pk=pk)
+    return render(request, "escola/funcionario_mensagens_lista.html", {
+        "f": funcionario,
+        "colegas": colegas,
+    })
+
+
+def funcionario_conversa(request, pk, destino_pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    destino = get_object_or_404(Funcionario, pk=destino_pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro para aceder às mensagens.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    form = MensagemInternaForm()
+    if request.method == "POST":
+        form = MensagemInternaForm(request.POST, request.FILES)
+        if form.is_valid():
+            MensagemInterna.objects.create(
+                remetente=funcionario,
+                destinatario=destino,
+                mensagem=form.cleaned_data["mensagem"],
+                anexo=form.cleaned_data["anexo"],
+            )
+            return redirect("escola:funcionario_conversa", pk=pk, destino_pk=destino_pk)
+
+    conversa = MensagemInterna.objects.filter(
+        remetente__in=[funcionario, destino], destinatario__in=[funcionario, destino]
+    ).order_by("criado_em")
+
+    return render(request, "escola/funcionario_conversa.html", {
+        "f": funcionario,
+        "destino": destino,
+        "conversa": conversa,
+        "form": form,
+    })
+
+
+def funcionario_conversa_pdf(request, pk, destino_pk):
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    import textwrap
+
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    destino = get_object_or_404(Funcionario, pk=destino_pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro para aceder às mensagens.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    conversa = MensagemInterna.objects.filter(
+        remetente__in=[funcionario, destino], destinatario__in=[funcionario, destino]
+    ).order_by("criado_em")
+
+    response = HttpResponse(content_type="application/pdf")
+    nome_ficheiro = f"conversa_{funcionario.nome.replace(' ', '_')}_{destino.nome.replace(' ', '_')}.pdf"
+    response["Content-Disposition"] = f'attachment; filename="{nome_ficheiro}"'
+
+    largura, altura = A4
+    margem = 2 * cm
+    y = altura - margem
+    p = canvas.Canvas(response, pagesize=A4)
+
+    def nova_pagina():
+        nonlocal y
+        p.showPage()
+        y = altura - margem
+
+    def escrever_linha(texto, tamanho=11, negrito=False, espaco=14):
+        nonlocal y
+        if y < margem:
+            nova_pagina()
+        p.setFont("Helvetica-Bold" if negrito else "Helvetica", tamanho)
+        p.drawString(margem, y, texto)
+        y -= espaco
+
+    escrever_linha(f"Conversa: {funcionario.nome} <-> {destino.nome}", tamanho=14, negrito=True, espaco=22)
+
+    if not conversa:
+        escrever_linha("Ainda não há mensagens trocadas.")
+    else:
+        for m in conversa:
+            escrever_linha(f"{m.remetente.nome} ({m.criado_em:%d/%m/%Y %H:%M}):", tamanho=10, negrito=True)
+            if m.mensagem:
+                for linha in textwrap.wrap(m.mensagem, width=95):
+                    escrever_linha(linha)
+            if m.anexo:
+                escrever_linha(f"[anexo: {m.anexo.name.split('/')[-1]}]", tamanho=9)
+            y -= 8
+
+    p.showPage()
+    p.save()
+    return response
 
 
 def contributo_view(request):
