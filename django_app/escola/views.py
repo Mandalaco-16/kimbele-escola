@@ -147,12 +147,15 @@ def funcionario_detail(request, pk):
             else:
                 messages.error(request, "Não foi possível enviar. Digite a senha novamente.")
 
+    mensagens_nao_lidas = MensagemInterna.objects.filter(destinatario=funcionario, lida=False).count()
+
     return render(request, "escola/funcionario_detail.html", {
         "f": funcionario,
         "desbloqueado": desbloqueado,
         "senha_form": senha_form,
         "form": form,
         "senha_confirmada": senha_confirmada,
+        "mensagens_nao_lidas": mensagens_nao_lidas,
     })
 
 
@@ -167,7 +170,12 @@ def funcionario_mensagens_lista(request, pk):
         messages.error(request, "Digite a sua senha primeiro para aceder às mensagens.")
         return redirect("escola:funcionario_detail", pk=pk)
 
-    colegas = Funcionario.objects.filter(ativo=True).exclude(pk=pk)
+    tem_msg_nao_lida = MensagemInterna.objects.filter(
+        remetente=OuterRef("pk"), destinatario=funcionario, lida=False
+    )
+    colegas = Funcionario.objects.filter(ativo=True).exclude(pk=pk).annotate(
+        tem_notificacao=Exists(tem_msg_nao_lida)
+    )
     return render(request, "escola/funcionario_mensagens_lista.html", {
         "f": funcionario,
         "colegas": colegas,
@@ -192,6 +200,10 @@ def funcionario_conversa(request, pk, destino_pk):
                 anexo=form.cleaned_data["anexo"],
             )
             return redirect("escola:funcionario_conversa", pk=pk, destino_pk=destino_pk)
+
+    MensagemInterna.objects.filter(
+        remetente=destino, destinatario=funcionario, lida=False
+    ).update(lida=True)
 
     conversa = MensagemInterna.objects.filter(
         remetente__in=[funcionario, destino], destinatario__in=[funcionario, destino]

@@ -196,6 +196,7 @@ class MensagemInterna(models.Model):
         help_text="Opcional. Aceita fotos ou ficheiros PDF.",
     )
     criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
+    lida = models.BooleanField("Lida pelo destinatário", default=False)
 
     class Meta:
         verbose_name = "Mensagem entre Funcionários"

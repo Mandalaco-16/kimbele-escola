@@ -9,6 +9,7 @@
   <div class="lista-horizontal">
     {% for colega in colegas|dictsort:'nome' %}
       <a href="{% url 'escola:funcionario_conversa' pk=f.pk destino_pk=colega.pk %}" class="cartao-funcionario">
+        {% if colega.tem_notificacao %}<span class="cartao-funcionario__sinal"></span>{% endif %}
         {% if colega.foto %}
           <img src="{{ colega.foto.url }}" alt="{{ colega.nome }}" class="cartao-funcionario__foto">
         {% else %}
