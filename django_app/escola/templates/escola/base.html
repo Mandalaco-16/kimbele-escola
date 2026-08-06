@@ -13,6 +13,11 @@
 <header class="cabecalho-novo">
   {% if request.resolver_match.url_name == 'home' %}
   <h1 class="cabecalho-novo__titulo">SISTEMA DE COMUNICAÇÃO ESCOLAR EM TEMPO REAL</h1>
+  <div class="divisor-estrelas">
+    <span class="barra-divisora"></span>
+    <span class="estrelas-grupo"></span>
+    <span class="barra-divisora"></span>
+  </div>
 
   <nav class="menu-grade-novo">
     <a href="{% url 'escola:home' %}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg>Início</a>
@@ -133,23 +138,41 @@
 <script>
   document.addEventListener("DOMContentLoaded", function () {
     var titulo = document.querySelector(".cabecalho-novo__titulo");
-    if (!titulo) return;
-    var cores = ["#234d35", "#b98a2f", "#c76b4a", "#3f7a5a"];
-    var texto = titulo.textContent;
-    titulo.textContent = "";
-    var indiceCor = 0;
-    for (var i = 0; i < texto.length; i++) {
-      var letra = texto[i];
-      var span = document.createElement("span");
-      span.textContent = (letra === " ") ? "\u00A0" : letra;
-      if (letra !== " ") {
-        span.style.color = cores[indiceCor % cores.length];
-        span.style.animationDelay = (indiceCor * 0.06) + "s";
-        indiceCor++;
-      } else {
-        span.style.animation = "none";
+    if (titulo) {
+      var corUnica = "#0d1b3e";
+      var frase = titulo.textContent.trim();
+      var palavras = frase.split(" ");
+      titulo.textContent = "";
+      var indice = 0;
+      palavras.forEach(function (palavra) {
+        var spanPalavra = document.createElement("span");
+        spanPalavra.style.display = "inline-block";
+        spanPalavra.style.whiteSpace = "nowrap";
+        spanPalavra.style.margin = "0 0.28em";
+        for (var i = 0; i < palavra.length; i++) {
+          var spanLetra = document.createElement("span");
+          spanLetra.textContent = palavra[i];
+          spanLetra.style.display = "inline-block";
+          spanLetra.style.color = corUnica;
+          spanLetra.style.animation = "onda-titulo 2.4s ease-in-out infinite";
+          spanLetra.style.animationDelay = (indice * 0.06) + "s";
+          indice++;
+          spanPalavra.appendChild(spanLetra);
+        }
+        titulo.appendChild(spanPalavra);
+      });
+    }
+
+    var divisor = document.querySelector(".divisor-estrelas");
+    if (divisor) {
+      var estrelasContainer = divisor.querySelector(".estrelas-grupo");
+      for (var e = 0; e < 7; e++) {
+        var est = document.createElement("span");
+        est.className = "estrela-brilhante";
+        est.textContent = "\u2605";
+        est.style.animationDelay = (e * 0.22) + "s";
+        estrelasContainer.appendChild(est);
       }
-      titulo.appendChild(span);
     }
   });
 

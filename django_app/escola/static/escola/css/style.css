@@ -624,3 +624,41 @@ body {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
 }
+
+/* --- Divisor com barras e estrelas brilhantes abaixo do titulo --- */
+.divisor-estrelas {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    max-width: 420px;
+    margin: 18px auto 0;
+}
+
+.barra-divisora {
+    flex: 1;
+    height: 2px;
+    background: #0d1b3e;
+    opacity: 0.4;
+}
+
+.estrelas-grupo {
+    display: flex;
+    gap: 6px;
+}
+
+.estrela-brilhante {
+    font-size: 1.15rem;
+    color: #b98a2f;
+    animation: brilhar-estrela 1.6s ease-in-out infinite;
+}
+
+@keyframes brilhar-estrela {
+    0%, 100% { opacity: 0.3; transform: scale(0.8) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.25) rotate(15deg); }
+}
+
+/* Espaco extra entre o titulo/estrelas e o menu, para o titulo respirar mais */
+.menu-grade-novo {
+    margin-top: 34px !important;
+}
