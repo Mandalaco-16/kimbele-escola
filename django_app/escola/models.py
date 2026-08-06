@@ -169,6 +169,7 @@ class Contributo(models.Model):
     )
     resposta = models.TextField("Resposta do administrador", blank=True)
     respondido_em = models.DateTimeField("Respondido em", null=True, blank=True)
+    resposta_vista = models.BooleanField("Resposta vista pelo funcionário", default=False)
 
     class Meta:
         verbose_name = "Contributo"

@@ -3,6 +3,7 @@ from django.contrib import messages
 from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
@@ -92,7 +93,12 @@ def lazer(request):
 
 
 def funcionarios_lista(request):
-    funcionarios = Funcionario.objects.filter(ativo=True)
+    resposta_nao_vista = Contributo.objects.filter(
+        funcionario=OuterRef("pk"), resposta_vista=False
+    ).exclude(resposta="")
+    funcionarios = Funcionario.objects.filter(ativo=True).annotate(
+        tem_notificacao=Exists(resposta_nao_vista)
+    )
     return render(request, "escola/funcionarios_lista.html", {"funcionarios": funcionarios})
 
 
@@ -117,6 +123,9 @@ def funcionario_detail(request, pk):
                     desbloqueado = True
                     senha_confirmada = senha_digitada
                     senha_form = SenhaFuncionarioForm()
+                    Contributo.objects.filter(
+                        funcionario=funcionario, resposta_vista=False
+                    ).exclude(resposta="").update(resposta_vista=True)
                 else:
                     messages.error(request, "Senha incorreta.")
 

@@ -662,3 +662,26 @@ body {
 .menu-grade-novo {
     margin-top: 34px !important;
 }
+
+/* --- Sinalizador de resposta nao vista no cartao do funcionario --- */
+.cartao-funcionario {
+    position: relative;
+}
+
+.cartao-funcionario__sinal {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #c0392b;
+    border: 2px solid #ffffff;
+    box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.35);
+    animation: pulsar-sinal 1.6s ease-in-out infinite;
+}
+
+@keyframes pulsar-sinal {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.25); opacity: 0.75; }
+}

@@ -9,6 +9,7 @@
   <div class="lista-horizontal">
     {% for f in funcionarios|dictsort:'nome' %}
       <a href="{% url 'escola:funcionario_detail' f.pk %}" class="cartao-funcionario">
+        {% if f.tem_notificacao %}<span class="cartao-funcionario__sinal"></span>{% endif %}
         {% if f.foto %}
           <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
         {% else %}
