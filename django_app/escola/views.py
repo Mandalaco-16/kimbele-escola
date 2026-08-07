@@ -127,7 +127,7 @@ def funcionario_detail(request, pk):
         elif acao == "enviar_mensagem":
             form = MensagemFuncionarioForm(request.POST, request.FILES)
             senha_digitada = request.POST.get("senha_confirmada", "").strip()
-            if funcionario.senha_pin and senha_digitada == funcionario.senha_pin and form.is_valid():
+            if desbloqueado and form.is_valid():
                 Contributo.objects.create(
                     nome=form.cleaned_data["nome"],
                     mensagem=form.cleaned_data["mensagem"],
