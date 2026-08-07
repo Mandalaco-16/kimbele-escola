@@ -106,6 +106,10 @@ def funcionario_detail(request, pk):
     desbloqueado = request.session.get(chave_sessao, False)
     senha_confirmada = ""
 
+    if request.method != "POST":
+        request.session.pop(chave_sessao, None)
+        desbloqueado = False
+
     senha_form = SenhaFuncionarioForm()
     form = MensagemFuncionarioForm()
 
