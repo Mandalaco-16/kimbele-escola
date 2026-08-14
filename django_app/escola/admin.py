@@ -50,6 +50,7 @@ class ImagemGaleriaAdmin(admin.ModelAdmin):
 @admin.register(Contributo)
 class ContributoAdmin(admin.ModelAdmin):
     list_display = ("nome", "funcionario", "criado_em", "lido", "tem_resposta")
+    list_display_links = ("nome", "funcionario")
     list_filter = ("lido",)
     list_editable = ("lido",)
     search_fields = ("nome", "mensagem", "resposta")
