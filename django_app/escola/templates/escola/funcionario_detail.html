@@ -2,14 +2,6 @@
 {% load escola_extras %}
 {% block titulo %}{{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
 
-{% block marca_dagua %}
-{% if desbloqueado %}
-<div class="marca-dagua">
-  {% for i in "123456789012" %}<span>{{ f.nome }} - {% now "d/m/Y H:i" %}</span>{% endfor %}
-</div>
-{% endif %}
-{% endblock %}
-
 {% block conteudo %}
 <section class="secao secao--ficha">
   <a href="{% url 'escola:funcionarios_lista' %}" class="link-voltar">&larr; Voltar aos funcionários</a>

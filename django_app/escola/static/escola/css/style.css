@@ -513,29 +513,6 @@ body {
     color: var(--branco);
 }
 
-.marca-dagua {
-    position: fixed;
-    inset: 0;
-    z-index: 9999;
-    pointer-events: none;
-    display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    justify-content: center;
-    overflow: hidden;
-    opacity: 0.12;
-}
-
-.marca-dagua span {
-    display: block;
-    transform: rotate(-30deg);
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: #000000;
-    margin: 2.5rem;
-    white-space: nowrap;
-}
-
 .cartao-recurso__mensagem {
     font-size: 0.9rem;
     color: var(--tinta);
