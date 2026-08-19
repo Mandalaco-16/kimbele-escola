@@ -65,6 +65,7 @@ DATABASES = {
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
         "HOST": os.environ.get("POSTGRES_HOST", "db"),
         "PORT": os.environ.get("POSTGRES_PORT", "5432"),
+        "OPTIONS": {"sslmode": os.environ.get("POSTGRES_SSLMODE", "prefer")},
     }
 }
 
