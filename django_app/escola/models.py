@@ -13,6 +13,8 @@ class Funcionario(models.Model):
 
     disciplinas = models.CharField("Disciplinas", max_length=200, blank=True)
     turma = models.CharField("Turma", max_length=100, blank=True)
+    classe = models.CharField("Classe", max_length=100, blank=True)
+    sala = models.CharField("Sala", max_length=100, blank=True)
     periodo = models.CharField("Período", max_length=100, blank=True)
     entrada = models.CharField("Entrada", max_length=20, blank=True)
     saida = models.CharField("Saída", max_length=20, blank=True)

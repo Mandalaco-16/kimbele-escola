@@ -21,13 +21,13 @@ class TrabalhadorAdmin(admin.ModelAdmin):
 
 @admin.register(Funcionario)
 class FuncionarioAdmin(admin.ModelAdmin):
-    list_display = ("nome", "cargo", "desde", "turma", "periodo", "ativo", "ordem")
+    list_display = ("nome", "cargo", "desde", "turma", "classe", "sala", "periodo", "ativo", "ordem")
     list_filter = ("ativo", "cargo")
     search_fields = ("nome", "cargo", "disciplinas")
     list_editable = ("ordem",)
     fieldsets = (
         ("Identificação", {"fields": ("nome", "cargo", "desde", "foto", "ativo", "ordem")}),
-        ("Ensino", {"fields": ("disciplinas", "turma", "periodo", "entrada", "saida")}),
+        ("Ensino", {"fields": ("disciplinas", "turma", "classe", "sala", "periodo", "entrada", "saida")}),
         ("Contactos", {"fields": ("telefone", "whatsapp", "email")}),
         ("Segurança", {"fields": ("senha_pin",)}),
     )
