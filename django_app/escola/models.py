@@ -215,8 +215,8 @@ class DesenvolvidorSite(models.Model):
     atualizado_em = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name = "Desenvolvidor do site"
-        verbose_name_plural = "Desenvolvidor do site"
+        verbose_name = "Histórico da Escola"
+        verbose_name_plural = "Histórico da Escola"
 
     def __str__(self):
         return self.nome

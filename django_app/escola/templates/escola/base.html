@@ -29,7 +29,7 @@
     <a href="{% url 'escola:funcionarios_lista' %}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="8" r="3.4"/><path d="M2 20c0-3.4 3-5.8 7-5.8s7 2.4 7 5.8"/><circle cx="17" cy="9" r="2.6"/></svg>Funcionários</a>
     <a href="{% url 'escola:contributo' %}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M21 11.5a8.4 8.4 0 0 1-8.9 8.4 8.6 8.6 0 0 1-3.6-.8L3 21l1.9-5.5a8.4 8.4 0 0 1-.8-3.5A8.4 8.4 0 0 1 12.6 3a8.4 8.4 0 0 1 8.4 8.5z"/></svg>Fala com a Direção da Escola</a>
     <a href="{% url 'escola:desenvolvidor' %}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M8 4l-6 8 6 8M16 4l6 8-6 8"/></svg>Histórico da Escola</a>
-    <a href="{% url 'escola:logout' %}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>Sair</a>
+    <a href="{% url 'escola:museu_escola' %}"><svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 21h18"/><path d="M4 21V10l8-6 8 6v11"/><path d="M9 21v-6h6v6"/></svg>Museu da Escola</a>
   </nav>
 
   {% else %}
@@ -44,6 +44,7 @@
       {% elif request.resolver_match.url_name == 'vitrine' %}VITRINE / NOVIDADES DA ESCOLA
       {% elif request.resolver_match.url_name == 'desenvolvidor' %}HISTÓRICO DA ESCOLA
       {% elif request.resolver_match.url_name == 'contributo' %}FALA COM A DIREÇÃO DA ESCOLA
+      {% elif request.resolver_match.url_name == 'museu_escola' %}MUSEU DA ESCOLA
       {% else %}{{ NOME_ESCOLA|upper }}
       {% endif %}
     </span>

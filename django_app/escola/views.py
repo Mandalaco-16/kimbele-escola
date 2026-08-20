@@ -68,6 +68,10 @@ def painel_sms(request):
     return render(request, "escola/painel_sms.html", {})
 
 
+def museu_escola(request):
+    return render(request, "escola/museu_escola.html", {})
+
+
 def documentos_lista(request):
     documentos = Documento.objects.filter(
         categoria=Documento.Categoria.REGULAMENTO, ativo=True
