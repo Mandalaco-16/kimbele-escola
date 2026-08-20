@@ -44,7 +44,7 @@ def portao_direcao(request):
 
 def login_view(request):
     if request.user.is_authenticated:
-        return redirect("escola:painel_sms")
+        auth_logout(request)
     if request.method == "POST":
         form = LoginAdminForm(request, data=request.POST)
         if form.is_valid():
