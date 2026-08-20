@@ -15,10 +15,11 @@
     <p class="ficha-funcionario__cargo">{{ f.cargo }}, desde {{ f.desde|date:"d/m/Y" }}.</p>
 
     {% if f.disciplinas %}
-      <p>
-        Leciona a disciplina de {{ f.disciplinas }}, na turma: {{ f.turma }}
-        período: {{ f.periodo }}, entrada: {{ f.entrada }}, saída: {{ f.saida }}.
-      </p>
+      <p><strong>Disciplinas:</strong> {{ f.disciplinas }}</p>
+      <p><strong>Turma:</strong> {{ f.turma }}</p>
+      <p><strong>Período:</strong> {{ f.periodo }}</p>
+      <p><strong>Entrada:</strong> {{ f.entrada }}</p>
+      <p><strong>Saída:</strong> {{ f.saida }}</p>
     {% endif %}
 
     <hr class="risca">
