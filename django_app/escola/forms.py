@@ -16,7 +16,11 @@ class ContributoForm(forms.Form):
 
 
 class LoginAdminForm(AuthenticationForm):
-    pass
+    error_messages = {
+        **AuthenticationForm.error_messages,
+        "invalid_login": "Senha incorreta. Tenta novamente.",
+        "inactive": "Esta conta está inactiva.",
+    }
 
 
 class SenhaFuncionarioForm(forms.Form):
@@ -86,7 +90,7 @@ class PortaoDirecaoForm(forms.Form):
     senha = forms.CharField(
         label="Senha de acesso",
         widget=forms.PasswordInput(
-            attrs={"inputmode": "numeric", "placeholder": "Introduza a senha"}
+            attrs={"placeholder": "Introduza a senha"}
         ),
         help_text="Acesso reservado ao Administrador da escola.",
     )
