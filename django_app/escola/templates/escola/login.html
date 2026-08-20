@@ -5,6 +5,7 @@
   <h2>Acesso do administrador</h2>
   <form method="post" class="formulario">
     {% csrf_token %}
+    {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
     {% for field in form %}
       <div class="formulario__campo">
         {{ field.label_tag }}
