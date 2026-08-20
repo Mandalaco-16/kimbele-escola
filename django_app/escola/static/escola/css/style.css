@@ -282,6 +282,22 @@ body {
     overflow-x: hidden;
 }
 
+/* Rodape sempre no fim da tela, mesmo com pouco conteudo */
+html, body {
+    height: 100%;
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+main {
+    flex: 1 0 auto;
+}
+.rodape-novo {
+    flex-shrink: 0;
+}
+
 .menu-grade-novo {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     max-width: min(700px, 94vw);
