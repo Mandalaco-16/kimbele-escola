@@ -3,21 +3,23 @@
 {% block conteudo %}
 <section class="secao secao--formulario">
   {% if etapa == "2" %}
-    <h2>Acesso reservado à Direção</h2>
-    <p>Introduza a senha de acesso para continuar.</p>
-    <form method="post" class="formulario">
-      {% csrf_token %}
-      {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
-      {% for field in form %}
-        <div class="formulario__campo">
-          {{ field.label_tag }}
-          {{ field }}
-          {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
-          {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="botao botao--primario">Confirmar</button>
-    </form>
+    <div style="text-align:center;">
+      <h2>Acesso reservado à Direção</h2>
+      <p>Introduza a senha de acesso para continuar.</p>
+      <form method="post" class="formulario" style="max-width:320px; margin:0 auto; text-align:left;">
+        {% csrf_token %}
+        {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+        {% for field in form %}
+          <div class="formulario__campo">
+            {{ field.label_tag }}
+            {{ field }}
+            {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+            {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+          </div>
+        {% endfor %}
+        <p style="text-align:center;"><button type="submit" class="botao botao--primario">Confirmar</button></p>
+      </form>
+    </div>
   {% else %}
     <div style="text-align:center;">
       <h2>Verificação de Acesso</h2>

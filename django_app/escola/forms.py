@@ -88,7 +88,7 @@ class PortaoDirecaoForm(forms.Form):
         widget=forms.PasswordInput(
             attrs={"inputmode": "numeric", "placeholder": "Introduza a senha"}
         ),
-        help_text="Acesso reservado a administradores e membros da direcao.",
+        help_text="Acesso reservado ao Administrador da escola.",
     )
 
     def clean_senha(self):
