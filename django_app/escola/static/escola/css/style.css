@@ -471,18 +471,19 @@ main {
 
 .cartao-recurso__miniatura-caixa {
     display: block;
-    width: 96px;
-    height: 96px;
-    border-radius: 50%;
+    width: 100%;
+    height: 240px;
+    border-radius: 14px;
     overflow: hidden;
     margin-bottom: 1rem;
     box-shadow: var(--sombra-cartao);
+    background: var(--branco);
 }
 
 .cartao-recurso__miniatura {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     display: block;
 }
 
