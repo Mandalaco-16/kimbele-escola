@@ -19,12 +19,12 @@
       <button type="submit" class="botao botao--primario">Confirmar</button>
     </form>
   {% else %}
-    <h2>Verificação de Acesso</h2>
-    <p>É administrador ou membro autorizado da direção desta escola?</p>
-    <div class="formulario">
-      <p>
-        <a href="?etapa=2" class="botao botao--primario">Sim</a>
-        <a href="{% url 'escola:home' %}" class="botao botao--secundario">Não</a>
+    <div style="text-align:center;">
+      <h2>Verificação de Acesso</h2>
+      <p>Esta área é reservada. Confirma que é o Administrador desta escola e que possui autorização para continuar?</p>
+      <p style="display:flex; justify-content:center; gap:1rem; margin-top:1.5rem;">
+        <a href="{% url 'escola:home' %}" class="botao botao--secundario" style="font-size:18px;">Não</a>
+        <a href="?etapa=2" class="botao botao--primario" style="font-size:18px;">Sim</a>
       </p>
     </div>
   {% endif %}
