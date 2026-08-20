@@ -1,0 +1,32 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Verificação de Acesso - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--formulario">
+  {% if etapa == "2" %}
+    <h2>Acesso reservado à Direção</h2>
+    <p>Introduza a senha de acesso para continuar.</p>
+    <form method="post" class="formulario">
+      {% csrf_token %}
+      {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      {% for field in form %}
+        <div class="formulario__campo">
+          {{ field.label_tag }}
+          {{ field }}
+          {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+          {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+        </div>
+      {% endfor %}
+      <button type="submit" class="botao botao--primario">Confirmar</button>
+    </form>
+  {% else %}
+    <h2>Verificação de Acesso</h2>
+    <p>É administrador ou membro autorizado da direção desta escola?</p>
+    <div class="formulario">
+      <p>
+        <a href="?etapa=2" class="botao botao--primario">Sim</a>
+        <a href="{% url 'escola:home' %}" class="botao botao--secundario">Não</a>
+      </p>
+    </div>
+  {% endif %}
+</section>
+{% endblock %}

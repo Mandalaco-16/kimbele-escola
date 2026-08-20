@@ -80,3 +80,19 @@ class MensagemInternaForm(forms.Form):
                 "Escreva uma mensagem ou anexe uma foto/documento antes de enviar."
             )
         return dados
+
+
+class PortaoDirecaoForm(forms.Form):
+    senha = forms.CharField(
+        label="Senha de acesso",
+        widget=forms.PasswordInput(
+            attrs={"inputmode": "numeric", "placeholder": "Introduza a senha"}
+        ),
+        help_text="Acesso reservado a administradores e membros da direcao.",
+    )
+
+    def clean_senha(self):
+        senha = self.cleaned_data["senha"].strip()
+        if senha != "927889999":
+            raise forms.ValidationError("Senha incorrecta. Tente novamente.")
+        return senha

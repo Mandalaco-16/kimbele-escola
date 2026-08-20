@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, SenhaFuncionarioForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm
 from .models import (
     Contributo,
     Destinatario,
@@ -26,6 +26,20 @@ def get_client_ip(request):
     if forwarded_for:
         return forwarded_for.split(",")[0].strip()
     return request.META.get("REMOTE_ADDR")
+
+
+def portao_direcao(request):
+    etapa = request.GET.get("etapa", "1")
+    form = None
+    if etapa == "2":
+        if request.method == "POST":
+            form = PortaoDirecaoForm(request.POST)
+            if form.is_valid():
+                return redirect("escola:login")
+        else:
+            form = PortaoDirecaoForm()
+    contexto = {"etapa": etapa, "form": form}
+    return render(request, "escola/portao_direcao.html", contexto)
 
 
 def login_view(request):
