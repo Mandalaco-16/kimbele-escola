@@ -28,6 +28,7 @@ def get_client_ip(request):
     return request.META.get("REMOTE_ADDR")
 
 
+@never_cache
 def portao_direcao(request):
     etapa = request.GET.get("etapa", "1")
     form = None
@@ -42,6 +43,7 @@ def portao_direcao(request):
     return render(request, "escola/portao_direcao.html", contexto)
 
 
+@never_cache
 def login_view(request):
     if request.user.is_authenticated:
         auth_logout(request)
@@ -61,6 +63,7 @@ def logout_view(request):
 
 
 @login_required
+@never_cache
 def painel_sms(request):
     return render(request, "escola/painel_sms.html", {})
 
