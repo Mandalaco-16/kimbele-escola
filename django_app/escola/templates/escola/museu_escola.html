@@ -1,8 +1,44 @@
 {% extends "escola/base.html" %}
 {% block titulo %}Museu da Escola - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
-<section class="secao secao--estreita secao--centrada">
-  <h2>Museu da Escola</h2>
-  <p>Em breve, aqui poderá conhecer o acervo histórico e as memórias da Escola Primária N° 013 da Missão Católica de Kimbele.</p>
+<section class="secao">
+  <h2 style="text-align:center;">Museu da Escola</h2>
+  <p style="text-align:center;">Fotografias e documentos que contam a história da Escola Primária N° 013 da Missão Católica de Kimbele.</p>
+
+  <div class="grade-recursos">
+    {% for img in imagens %}
+      <div class="cartao-recurso">
+        <a href="{{ img.imagem.url }}" target="_blank" rel="noopener" class="cartao-recurso__miniatura-caixa">
+          <img src="{{ img.imagem.url }}" alt="{{ img.titulo }}" class="cartao-recurso__miniatura">
+        </a>
+        <p class="cartao-recurso__titulo">{{ img.titulo }}</p>
+        <p class="cartao-recurso__data">{{ img.publicado_em|date:"d/m/Y" }}</p>
+        {% if img.mensagem %}<p class="cartao-recurso__mensagem">{{ img.mensagem|linebreaksbr }}</p>{% endif %}
+        <a href="{{ img.imagem.url }}" target="_blank" rel="noopener" class="cartao-recurso__link-ver">👁️ Ver</a>
+        <a href="{{ img.imagem.url }}" download class="cartao-recurso__botao-pilula">Descarregar Imagem</a>
+      </div>
+    {% endfor %}
+
+    {% for doc in documentos %}
+      <div class="cartao-recurso">
+        <svg class="cartao-recurso__icone-svg" width="56" height="64" viewBox="0 0 24 28" fill="none" stroke="currentColor" stroke-width="1.3">
+          <path d="M4 2h11l5 5v19a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
+          <path d="M15 2v5h5"/>
+          <line x1="6" y1="13" x2="16" y2="13"/>
+          <line x1="6" y1="16" x2="16" y2="16"/>
+          <line x1="6" y1="19" x2="13" y2="19"/>
+        </svg>
+        <p class="cartao-recurso__titulo">{{ doc.titulo }}</p>
+        <p class="cartao-recurso__data">{{ doc.publicado_em|date:"d/m/Y" }}</p>
+        {% if doc.mensagem %}<p class="cartao-recurso__mensagem">{{ doc.mensagem|linebreaksbr }}</p>{% endif %}
+        <a href="{{ doc.ficheiro.url }}" target="_blank" rel="noopener" class="cartao-recurso__link-ver">👁️ Ver</a>
+        <a href="{{ doc.ficheiro.url }}" download class="cartao-recurso__botao-pilula">Descarregar PDF</a>
+      </div>
+    {% endfor %}
+
+    {% if not imagens and not documentos %}
+      <p>Ainda não há fotografias ou documentos publicados no Museu da Escola.</p>
+    {% endif %}
+  </div>
 </section>
 {% endblock %}

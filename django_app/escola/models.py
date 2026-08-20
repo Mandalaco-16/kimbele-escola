@@ -44,6 +44,7 @@ class Documento(models.Model):
     class Categoria(models.TextChoices):
         REGULAMENTO = "REGULAMENTO", "Regulamento"
         VITRINE = "VITRINE", "Vitrine / Novidades"
+        MUSEU = "MUSEU", "Museu da Escola"
 
     titulo = models.CharField("Título", max_length=200)
     categoria = models.CharField("Categoria", max_length=20, choices=Categoria.choices)
@@ -69,6 +70,7 @@ class ImagemGaleria(models.Model):
     class Categoria(models.TextChoices):
         LAZER = "LAZER", "Lazer"
         HORARIO = "HORARIO", "Horário"
+        MUSEU = "MUSEU", "Museu da Escola"
 
     titulo = models.CharField("Título", max_length=200)
     categoria = models.CharField("Categoria", max_length=20, choices=Categoria.choices)

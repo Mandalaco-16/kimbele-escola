@@ -69,7 +69,13 @@ def painel_sms(request):
 
 
 def museu_escola(request):
-    return render(request, "escola/museu_escola.html", {})
+    imagens = ImagemGaleria.objects.filter(categoria=ImagemGaleria.Categoria.MUSEU, ativo=True)
+    documentos = Documento.objects.filter(categoria=Documento.Categoria.MUSEU, ativo=True)
+    contexto = {
+        "imagens": imagens,
+        "documentos": documentos,
+    }
+    return render(request, "escola/museu_escola.html", contexto)
 
 
 def documentos_lista(request):
