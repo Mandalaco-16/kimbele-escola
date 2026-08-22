@@ -23,5 +23,4 @@ urlpatterns = [
     path("lazer/", views.lazer, name="lazer"),
     path("contributo/", views.contributo_view, name="contributo"),
     path("museu-da-escola/", views.museu_escola, name="museu_escola"),
-    path("falta/<uuid:token>/", views.ver_falta, name="ver_falta"),
 ]

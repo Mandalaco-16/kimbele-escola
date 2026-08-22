@@ -1,22 +1,13 @@
 from django.contrib import admin
 from django.contrib.admin import AdminSite
 from .models import (
-    Comunicado,
     Contributo,
-    Destinatario,
     Documento,
     Funcionario,
     ImagemGaleria,
     MensagemInterna,
-    Trabalhador,
     DesenvolvidorSite,
 )
-
-
-@admin.register(Trabalhador)
-class TrabalhadorAdmin(admin.ModelAdmin):
-    list_display = ("nome", "telefone")
-    search_fields = ("nome", "telefone")
 
 
 @admin.register(Funcionario)
@@ -88,18 +79,6 @@ class DesenvolvidorSiteAdmin(admin.ModelAdmin):
         form.base_fields["informacoes"].widget.attrs["style"] = "width: 100%;"
         return form
 
-
-@admin.register(Comunicado)
-class ComunicadoAdmin(admin.ModelAdmin):
-    list_display = ("id", "criado_por", "criado_em")
-    readonly_fields = ("criado_por", "ip_criacao", "criado_em")
-
-
-@admin.register(Destinatario)
-class DestinatarioAdmin(admin.ModelAdmin):
-    list_display = ("telefone", "trabalhador", "comunicado", "estado_envio", "enviado_em")
-    list_filter = ("estado_envio",)
-    readonly_fields = ("token", "resposta_gateway", "enviado_em", "acedido_em", "ip_acesso")
 
 
 # --- Sinal de sugestões/mensagens não lidas no menu do admin ---

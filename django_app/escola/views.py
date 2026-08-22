@@ -11,12 +11,10 @@ from django.utils import timezone
 from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm
 from .models import (
     Contributo,
-    Destinatario,
     Documento,
     Funcionario,
     ImagemGaleria,
     MensagemInterna,
-    Trabalhador,
     DesenvolvidorSite,
 )
 
@@ -319,15 +317,6 @@ def contributo_view(request):
         form = ContributoForm()
 
     return render(request, "escola/contributo.html", {"form": form})
-
-
-def ver_falta(request, token):
-    destinatario = get_object_or_404(Destinatario, token=token)
-    if not destinatario.acedido_em:
-        destinatario.acedido_em = timezone.now()
-        destinatario.ip_acesso = get_client_ip(request)
-        destinatario.save(update_fields=["acedido_em", "ip_acesso"])
-    return render(request, "escola/falta_detail.html", {"destinatario": destinatario})
 
 
 def desenvolvidor_view(request):

@@ -92,69 +92,6 @@ class ImagemGaleria(models.Model):
         return self.titulo
 
 
-class Trabalhador(models.Model):
-    nome = models.CharField("Nome", max_length=200)
-    telefone = models.CharField("Telefone", max_length=30)
-
-    class Meta:
-        verbose_name = "Trabalhador"
-        verbose_name_plural = "Trabalhadores"
-
-    def __str__(self):
-        return f"{self.nome} ({self.telefone})"
-
-
-class Comunicado(models.Model):
-    corpo_mensagem = models.TextField(
-        "Corpo da mensagem",
-        max_length=459,
-        help_text="Texto que informa a falta. O link individual é acrescentado automaticamente.",
-    )
-    criado_por = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    ip_criacao = models.GenericIPAddressField("IP de origem", null=True, blank=True)
-    criado_em = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "Comunicado de falta"
-        verbose_name_plural = "Comunicados de falta"
-        ordering = ["-criado_em"]
-
-    def __str__(self):
-        return f"Comunicado #{self.pk} - {self.criado_em:%d/%m/%Y %H:%M}"
-
-
-class Destinatario(models.Model):
-    class Estado(models.TextChoices):
-        PENDENTE = "PENDENTE", "Pendente"
-        ENVIADO = "ENVIADO", "Enviado"
-        FALHOU = "FALHOU", "Falhou"
-
-    comunicado = models.ForeignKey(
-        Comunicado, on_delete=models.CASCADE, related_name="destinatarios"
-    )
-    trabalhador = models.ForeignKey(
-        Trabalhador, on_delete=models.SET_NULL, null=True, blank=True
-    )
-    telefone = models.CharField(max_length=20)
-    token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    estado_envio = models.CharField(
-        max_length=20, choices=Estado.choices, default=Estado.PENDENTE
-    )
-    resposta_gateway = models.CharField(max_length=2000, blank=True)
-    enviado_em = models.DateTimeField(null=True, blank=True)
-    acedido_em = models.DateTimeField(null=True, blank=True)
-    ip_acesso = models.GenericIPAddressField(null=True, blank=True)
-
-    class Meta:
-        verbose_name = "Destinatário"
-        verbose_name_plural = "Destinatários"
-
-    def __str__(self):
-        return f"{self.telefone} - {self.get_estado_envio_display()}"
-
-
 class Contributo(models.Model):
     nome = models.CharField("Nome", max_length=150, blank=True, help_text="Opcional")
     mensagem = models.TextField("Mensagem", blank=True)
