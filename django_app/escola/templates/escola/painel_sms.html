@@ -2,14 +2,14 @@
 {% block titulo %}Direção da Escola - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
 <section class="secao secao--estreita">
-  <span class="eyebrow">Apenas administrador</span>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <span class="eyebrow">Apenas administrador</span>
+    <a href="{% url 'escola:logout' %}" class="eyebrow">Sair da conta</a>
+  </div>
   <p style="margin-top: 1rem; text-align: center;"><a href="/django-admin/escola/contributo/" target="_blank" style="font-weight: 700;">📋 Ver sugestões e ideias dos funcionários</a></p>
 
   <p class="secao__intro" style="text-align: center; margin-top: 2rem;">
     Esta secção está reservada para uma nova funcionalidade da Direção da Escola.
-  </p>
-  <p style="text-align: center; margin-top: 2rem;">
-    <a href="{% url 'escola:logout' %}" class="botao botao--secundario">Sair da conta</a>
   </p>
 </section>
 {% endblock %}
