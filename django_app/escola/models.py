@@ -24,11 +24,11 @@ class Funcionario(models.Model):
     email = models.EmailField("E-mail", blank=True)
 
     senha_pin = models.CharField(
-        "Senha (3 dígitos)",
-        max_length=3,
+        "Senha (até 20 caracteres)",
+        max_length=20,
         blank=True,
         default="",
-        help_text="Senha de 3 dígitos que o funcionário usa para confirmar identidade antes de enviar mensagens à direção.",
+        help_text="Senha de até 20 caracteres que o funcionário usa para confirmar identidade antes de enviar mensagens à direção.",
     )
 
     class Meta:

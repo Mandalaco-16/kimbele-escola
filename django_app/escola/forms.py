@@ -25,10 +25,10 @@ class LoginAdminForm(AuthenticationForm):
 
 class SenhaFuncionarioForm(forms.Form):
     senha = forms.CharField(
-        label="Senha (3 dígitos)",
-        max_length=3,
+        label="Senha (até 20 caracteres)",
+        max_length=20,
         widget=forms.PasswordInput(
-            attrs={"maxlength": "3"}
+            attrs={"maxlength": "20"}
         ),
         help_text="So quem sabe a senha ve o historico e envia mensagens a direcao.",
     )
