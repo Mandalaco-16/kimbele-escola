@@ -109,3 +109,31 @@ class RecuperarSenhaForm(forms.Form):
         widget=forms.TextInput(attrs={"placeholder": "Ex: 938350665"}),
         help_text="Digite o número de telefone que está cadastrado no seu perfil.",
     )
+
+
+class AlterarSenhaForm(forms.Form):
+    senha_atual = forms.CharField(
+        label="Senha atual",
+        max_length=20,
+        widget=forms.PasswordInput(attrs={"maxlength": "20"}),
+    )
+    nova_senha = forms.CharField(
+        label="Nova senha",
+        max_length=20,
+        min_length=3,
+        widget=forms.PasswordInput(attrs={"maxlength": "20"}),
+        help_text="Entre 3 e 20 caracteres.",
+    )
+    confirmar_senha = forms.CharField(
+        label="Confirme a nova senha",
+        max_length=20,
+        widget=forms.PasswordInput(attrs={"maxlength": "20"}),
+    )
+
+    def clean(self):
+        dados = super().clean()
+        nova = dados.get("nova_senha")
+        confirmar = dados.get("confirmar_senha")
+        if nova and confirmar and nova != confirmar:
+            raise forms.ValidationError("As senhas novas não coincidem.")
+        return dados

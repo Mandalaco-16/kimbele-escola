@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm
 from .models import (
     Contributo,
     Documento,
@@ -435,4 +435,34 @@ def funcionario_recuperar_senha(request, pk):
         "form": form,
         "link_whatsapp": link_whatsapp,
         "senha_nova": senha_nova,
+    })
+
+
+def funcionario_alterar_senha(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    chave_sessao = f"funcionario_desbloqueado_{pk}"
+    desbloqueado = request.session.get(chave_sessao, False)
+
+    if not desbloqueado:
+        messages.error(request, "Digite a sua senha primeiro para aceder a esta área.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    if request.method == "POST":
+        form = AlterarSenhaForm(request.POST)
+        if form.is_valid():
+            senha_atual = form.cleaned_data["senha_atual"].strip()
+            nova_senha = form.cleaned_data["nova_senha"].strip()
+            if senha_atual == funcionario.senha_pin:
+                funcionario.senha_pin = nova_senha
+                funcionario.save(update_fields=["senha_pin"])
+                messages.success(request, "Senha alterada com sucesso!")
+                return redirect("escola:funcionario_detail", pk=pk)
+            else:
+                messages.error(request, "A senha atual está incorreta.")
+    else:
+        form = AlterarSenhaForm()
+
+    return render(request, "escola/funcionario_alterar_senha.html", {
+        "funcionario": funcionario,
+        "form": form,
     })
