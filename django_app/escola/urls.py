@@ -16,6 +16,7 @@ urlpatterns = [
     path("funcionarios/<int:pk>/mensagens/", views.funcionario_mensagens_lista, name="funcionario_mensagens_lista"),
     path("funcionarios/<int:pk>/mensagens/<int:destino_pk>/", views.funcionario_conversa, name="funcionario_conversa"),
     path("funcionarios/<int:pk>/mensagens/<int:destino_pk>/pdf/", views.funcionario_conversa_pdf, name="funcionario_conversa_pdf"),
+    path("funcionarios/<int:pk>/recuperar-senha/", views.funcionario_recuperar_senha, name="funcionario_recuperar_senha"),
     path("regulamento/", views.documentos_lista, name="documentos_lista"),
     path("vitrine/", views.vitrine, name="vitrine"),
     path("desenvolvidor/", views.desenvolvidor_view, name="desenvolvidor"),

@@ -100,3 +100,12 @@ class PortaoDirecaoForm(forms.Form):
         if senha != "927889999":
             raise forms.ValidationError("Senha incorrecta. Tente novamente.")
         return senha
+
+
+class RecuperarSenhaForm(forms.Form):
+    telefone = forms.CharField(
+        label="Confirme o seu número de telefone",
+        max_length=30,
+        widget=forms.TextInput(attrs={"placeholder": "Ex: 938350665"}),
+        help_text="Digite o número de telefone que está cadastrado no seu perfil.",
+    )

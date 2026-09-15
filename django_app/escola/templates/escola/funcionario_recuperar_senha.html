@@ -1,0 +1,31 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Recuperar senha - {{ NOME_ESCOLA }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:funcionario_detail' funcionario.pk %}" class="link-voltar">&larr; Voltar</a>
+
+  <h2>Recuperar senha de {{ funcionario.nome }}</h2>
+
+  {% if link_whatsapp %}
+    <p style="text-align: center; margin-top: 1.5rem;">
+      Uma nova senha foi gerada com sucesso. Toque no botão abaixo para enviar por WhatsApp:
+    </p>
+    <p style="text-align: center; margin-top: 1rem;">
+      <a href="{{ link_whatsapp }}" target="_blank" rel="noopener" class="botao">
+        📲 Enviar nova senha por WhatsApp
+      </a>
+    </p>
+  {% else %}
+    <p class="secao__intro">
+      Para recuperar a sua senha, confirme o número de telefone cadastrado no seu perfil.
+      Uma nova senha será gerada e enviada por WhatsApp para esse número.
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit">Recuperar senha</button>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

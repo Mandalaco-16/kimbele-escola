@@ -1,3 +1,6 @@
+import random
+import string
+from urllib.parse import quote
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import login as auth_login
@@ -8,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm
 from .models import (
     Contributo,
     Documento,
@@ -395,3 +398,41 @@ def funcionario_historico_pdf(request, pk):
     p.showPage()
     p.save()
     return response
+
+
+def funcionario_recuperar_senha(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    link_whatsapp = None
+    senha_nova = None
+
+    if request.method == "POST":
+        form = RecuperarSenhaForm(request.POST)
+        if form.is_valid():
+            telefone_digitado = "".join(c for c in form.cleaned_data["telefone"] if c.isdigit())
+            telefone_cadastrado = "".join(c for c in (funcionario.telefone or "") if c.isdigit())
+            whatsapp_cadastrado = "".join(c for c in (funcionario.whatsapp or "") if c.isdigit())
+
+            if telefone_digitado and (
+                telefone_digitado == telefone_cadastrado
+                or telefone_digitado == whatsapp_cadastrado
+            ):
+                senha_nova = "".join(random.choices(string.digits, k=6))
+                funcionario.senha_pin = senha_nova
+                funcionario.save(update_fields=["senha_pin"])
+
+                numero_envio = whatsapp_cadastrado or telefone_cadastrado
+                texto = (
+                    f"Ola {funcionario.nome}, a sua nova senha de acesso e: {senha_nova}"
+                )
+                link_whatsapp = f"https://wa.me/{numero_envio}?text={quote(texto)}"
+            else:
+                messages.error(request, "O número de telefone não confere com o cadastrado.")
+    else:
+        form = RecuperarSenhaForm()
+
+    return render(request, "escola/funcionario_recuperar_senha.html", {
+        "funcionario": funcionario,
+        "form": form,
+        "link_whatsapp": link_whatsapp,
+        "senha_nova": senha_nova,
+    })

@@ -72,6 +72,7 @@
             </div>
           {% endfor %}
           <button type="submit" class="botao botao--primario">Entrar</button>
+          <p style="text-align: center; margin-top: 1rem;"><a href="{% url 'escola:funcionario_recuperar_senha' f.pk %}">Esqueci a senha</a></p>
         </form>
       </div>
     {% endif %}
