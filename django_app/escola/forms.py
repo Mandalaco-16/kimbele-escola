@@ -104,10 +104,9 @@ class PortaoDirecaoForm(forms.Form):
 
 class RecuperarSenhaForm(forms.Form):
     telefone = forms.CharField(
-        label="Confirme o seu número de telefone",
+        label="Digite o seu número telefónico",
         max_length=30,
-        widget=forms.TextInput(attrs={"placeholder": "Ex: 938350665"}),
-        help_text="Digite o número de telefone que está cadastrado no seu perfil.",
+        widget=forms.TextInput(),
     )
 
 
