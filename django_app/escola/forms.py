@@ -121,7 +121,6 @@ class AlterarSenhaForm(forms.Form):
         max_length=20,
         min_length=3,
         widget=forms.PasswordInput(attrs={"maxlength": "20"}),
-        help_text="Entre 3 e 20 caracteres.",
     )
     confirmar_senha = forms.CharField(
         label="Confirme a nova senha",
