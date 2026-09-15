@@ -8,7 +8,10 @@
 
   <div class="ficha-funcionario">
     {% if f.foto %}
-      <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="ficha-funcionario__foto">
+      <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="ficha-funcionario__foto" onclick="document.getElementById('lightbox-foto').style.display='flex'" style="cursor: pointer;">
+      <div id="lightbox-foto" onclick="this.style.display='none'" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; align-items:center; justify-content:center;">
+        <img src="{{ f.foto.url }}" alt="{{ f.nome }}" style="max-width:95%; max-height:95%; border-radius:8px;">
+      </div>
     {% endif %}
 
     <h2>{{ f.nome }}</h2>
