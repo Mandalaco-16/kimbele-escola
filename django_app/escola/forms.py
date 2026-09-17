@@ -135,26 +135,3 @@ class AlterarSenhaForm(forms.Form):
         if nova and confirmar and nova != confirmar:
             raise forms.ValidationError("As senhas novas não coincidem.")
         return dados
-
-
-class MensagemDirecaoForm(forms.Form):
-    mensagem = forms.CharField(
-        label="Mensagem",
-        widget=forms.Textarea,
-        required=False,
-    )
-    anexo = forms.FileField(
-        label="Anexar foto ou documento (PDF)",
-        required=False,
-        help_text="Opcional. Aceita imagens (JPG, PNG) ou PDF.",
-    )
-
-    def clean(self):
-        dados = super().clean()
-        mensagem = dados.get("mensagem", "").strip()
-        anexo = dados.get("anexo")
-        if not mensagem and not anexo:
-            raise forms.ValidationError(
-                "Escreva uma mensagem ou anexe uma foto/documento antes de enviar."
-            )
-        return dados

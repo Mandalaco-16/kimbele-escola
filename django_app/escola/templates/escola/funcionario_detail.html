@@ -38,7 +38,6 @@
     <hr class="risca">
 
     {% if desbloqueado %}
-      <p><a href="{% url 'escola:funcionario_mensagens_direcao' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">📩 Mensagens da Direção{% if tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">📜 Histórico da Conversa{% if tem_resposta_nao_vista %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Colegas{% if mensagens_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_alterar_senha' pk=f.pk %}" class="botao botao--secundario">🔒 Alterar senha</a></p>

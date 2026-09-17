@@ -8,18 +8,8 @@
   </div>
   <p style="margin-top: 1rem; text-align: center;"><a href="/django-admin/escola/contributo/" target="_blank" style="font-weight: 700;">📋 Ver sugestões e ideias dos funcionários</a></p>
 
-  <h3 style="text-align: center; margin-top: 2rem;">Enviar mensagem a um funcionário</h3>
-  <p class="secao__intro" style="text-align: center;">
-    Selecione um funcionário para lhe enviar uma mensagem e/ou anexar uma foto ou documento.
+  <p class="secao__intro" style="text-align: center; margin-top: 2rem;">
+    Esta secção está reservada para uma nova funcionalidade da Direção da Escola.
   </p>
-  <ul style="list-style: none; padding: 0;">
-    {% for f in funcionarios %}
-      <li style="margin-bottom: 0.5rem; text-align: center;">
-        <a href="{% url 'escola:funcionario_enviar_mensagem_direcao' f.pk %}" class="botao botao--secundario">
-          {{ f.nome }} — {{ f.cargo }}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
 </section>
 {% endblock %}
