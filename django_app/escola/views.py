@@ -11,8 +11,9 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm, MensagemDirecaoForm
 from .models import (
+    MensagemDirecao,
     Contributo,
     Documento,
     Funcionario,
@@ -66,7 +67,8 @@ def logout_view(request):
 @login_required
 @never_cache
 def painel_sms(request):
-    return render(request, "escola/painel_sms.html", {})
+    funcionarios = Funcionario.objects.filter(ativo=True)
+    return render(request, "escola/painel_sms.html", {"funcionarios": funcionarios})
 
 
 def museu_escola(request):
@@ -175,6 +177,9 @@ def funcionario_detail(request, pk):
     tem_resposta_nao_vista = Contributo.objects.filter(
         funcionario=funcionario, resposta_vista=False
     ).exclude(resposta="").exists()
+    tem_mensagem_direcao_nao_lida = MensagemDirecao.objects.filter(
+        funcionario=funcionario, lida=False
+    ).exists()
 
     return render(request, "escola/funcionario_detail.html", {
         "f": funcionario,
@@ -184,6 +189,7 @@ def funcionario_detail(request, pk):
         "senha_confirmada": senha_confirmada,
         "mensagens_nao_lidas": mensagens_nao_lidas,
         "tem_resposta_nao_vista": tem_resposta_nao_vista,
+        "tem_mensagem_direcao_nao_lida": tem_mensagem_direcao_nao_lida,
     })
 
 
@@ -465,4 +471,43 @@ def funcionario_alterar_senha(request, pk):
     return render(request, "escola/funcionario_alterar_senha.html", {
         "funcionario": funcionario,
         "form": form,
+    })
+
+
+@login_required
+@never_cache
+def funcionario_enviar_mensagem_direcao(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+
+    if request.method == "POST":
+        form = MensagemDirecaoForm(request.POST, request.FILES)
+        if form.is_valid():
+            MensagemDirecao.objects.create(
+                funcionario=funcionario,
+                mensagem=form.cleaned_data["mensagem"],
+                anexo=form.cleaned_data["anexo"],
+            )
+            messages.success(request, f"Mensagem enviada para {funcionario.nome} com sucesso!")
+            return redirect("escola:painel_sms")
+    else:
+        form = MensagemDirecaoForm()
+
+    return render(request, "escola/funcionario_enviar_mensagem_direcao.html", {
+        "funcionario": funcionario,
+        "form": form,
+    })
+
+
+def funcionario_mensagens_direcao(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro para aceder às mensagens.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    mensagens = MensagemDirecao.objects.filter(funcionario=funcionario)
+    mensagens.filter(lida=False).update(lida=True)
+
+    return render(request, "escola/funcionario_mensagens_direcao.html", {
+        "funcionario": funcionario,
+        "mensagens": mensagens,
     })

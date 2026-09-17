@@ -1,0 +1,23 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Enviar mensagem - {{ NOME_ESCOLA }}{% endblock %}
+
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:painel_sms' %}" class="link-voltar">&larr; Voltar</a>
+
+  <h2>Enviar mensagem para {{ funcionario.nome }}</h2>
+
+  <form method="post" enctype="multipart/form-data" class="formulario">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="formulario__campo">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+        {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="botao botao--primario">Enviar</button>
+  </form>
+</section>
+{% endblock %}

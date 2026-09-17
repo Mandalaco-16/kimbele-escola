@@ -6,6 +6,7 @@ from .models import (
     Funcionario,
     ImagemGaleria,
     MensagemInterna,
+    MensagemDirecao,
     DesenvolvidorSite,
 )
 
@@ -65,6 +66,13 @@ class MensagemInternaAdmin(admin.ModelAdmin):
     list_display = ("remetente", "destinatario", "criado_em")
     list_filter = ("remetente", "destinatario")
     readonly_fields = ("remetente", "destinatario", "mensagem", "anexo", "criado_em")
+    search_fields = ("mensagem",)
+
+
+@admin.register(MensagemDirecao)
+class MensagemDirecaoAdmin(admin.ModelAdmin):
+    list_display = ("funcionario", "criado_em", "lida")
+    list_filter = ("funcionario", "lida")
     search_fields = ("mensagem",)
 
 
