@@ -109,6 +109,13 @@ class Contributo(models.Model):
         null=True, blank=True, on_delete=models.SET_NULL, related_name="contributos"
     )
     resposta = models.TextField("Resposta do administrador", blank=True)
+    resposta_anexo = models.FileField(
+        "Foto ou documento da resposta",
+        upload_to="respostas_contributos/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text="Opcional. Aceita fotos ou ficheiros PDF para enviar junto com a resposta.",
+    )
     respondido_em = models.DateTimeField("Respondido em", null=True, blank=True)
     resposta_vista = models.BooleanField("Resposta vista pelo funcionário", default=False)
 

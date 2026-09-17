@@ -30,6 +30,7 @@
           <div class="conversa__resposta">
             <p class="conversa__data">↩️ Resposta da Direção em {{ c.respondido_em|date:"d/m/Y H:i" }}</p>
             <p class="conversa__texto">{{ c.resposta|linebreaksbr }}</p>
+            {% if c.resposta_anexo %}<p><a href="{{ c.resposta_anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo da Direção</a></p>{% endif %}
           </div>
         {% else %}
           <p class="conversa__pendente">⏳ Ainda sem resposta da Direção.</p>
