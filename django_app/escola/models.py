@@ -166,3 +166,27 @@ class DesenvolvidorSite(models.Model):
 
     def __str__(self):
         return self.nome
+
+
+class MensagemDirecao(models.Model):
+    funcionario = models.ForeignKey(
+        Funcionario, verbose_name="Para", on_delete=models.CASCADE, related_name="mensagens_direcao"
+    )
+    mensagem = models.TextField("Mensagem", blank=True)
+    anexo = models.FileField(
+        "Foto ou documento (PDF)",
+        upload_to="mensagens_direcao/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text="Opcional. Aceita fotos ou ficheiros PDF.",
+    )
+    criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
+    lida = models.BooleanField("Lida pelo funcionário", default=False)
+
+    class Meta:
+        verbose_name = "Mensagem da Direção"
+        verbose_name_plural = "Mensagens da Direção"
+        ordering = ["-criado_em"]
+
+    def __str__(self):
+        return f"Direção -> {self.funcionario.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
