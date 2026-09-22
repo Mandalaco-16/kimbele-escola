@@ -5,13 +5,12 @@
 <section class="secao secao--ficha">
   <a href="{% url 'escola:funcionario_detail' pk=f.pk %}" class="link-voltar">&larr; Voltar ao perfil de {{ f.nome }}</a>
 
-  <h2>Conversa com a Direção</h2>
-
-  <p>
+  <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+    <h2 style="margin: 0;">Conversa com a Direção</h2>
     <a href="{% url 'escola:funcionario_historico_pdf' pk=f.pk %}" class="botao botao--secundario">
       ⬇️ Baixar histórico em PDF
     </a>
-  </p>
+  </div>
 
   <hr class="risca">
 
