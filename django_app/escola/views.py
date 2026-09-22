@@ -131,7 +131,12 @@ def lazer(request):
 
 
 def funcionarios_lista(request):
-    funcionarios = Funcionario.objects.filter(ativo=True)
+    tem_msg_direcao_nao_lida = MensagemDirecao.objects.filter(
+        funcionario=OuterRef("pk"), lida=False
+    )
+    funcionarios = Funcionario.objects.filter(ativo=True).annotate(
+        tem_msg_direcao_nao_lida=Exists(tem_msg_direcao_nao_lida)
+    )
     return render(request, "escola/funcionarios_lista.html", {"funcionarios": funcionarios})
 
 
@@ -538,10 +543,33 @@ def funcionario_mensagens_direcao(request, pk):
         messages.error(request, "Digite a sua senha primeiro para aceder às mensagens.")
         return redirect("escola:funcionario_detail", pk=pk)
 
-    mensagens = MensagemDirecao.objects.filter(funcionario=funcionario)
-    mensagens.filter(lida=False).update(lida=True)
+    MensagemDirecao.objects.filter(funcionario=funcionario, lida=False).update(lida=True)
+
+    conversa = []
+    for c in Contributo.objects.filter(funcionario=funcionario):
+        conversa.append({
+            "tipo": "funcionario",
+            "texto": c.mensagem,
+            "anexo": c.anexo,
+            "quando": c.criado_em,
+        })
+        if c.resposta or c.resposta_anexo:
+            conversa.append({
+                "tipo": "direcao",
+                "texto": c.resposta,
+                "anexo": c.resposta_anexo,
+                "quando": c.respondido_em or c.criado_em,
+            })
+    for m in MensagemDirecao.objects.filter(funcionario=funcionario):
+        conversa.append({
+            "tipo": "direcao",
+            "texto": m.mensagem,
+            "anexo": m.anexo,
+            "quando": m.criado_em,
+        })
+    conversa.sort(key=lambda e: e["quando"])
 
     return render(request, "escola/funcionario_mensagens_direcao.html", {
         "funcionario": funcionario,
-        "mensagens": mensagens,
+        "conversa": conversa,
     })

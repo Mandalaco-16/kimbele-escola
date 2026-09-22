@@ -5,20 +5,22 @@
 <section class="secao secao--estreita">
   <a href="{% url 'escola:funcionario_detail' funcionario.pk %}" class="link-voltar">&larr; Voltar</a>
 
-  <h2>Mensagens da Direção para {{ funcionario.nome }}</h2>
+  <h2>Conversa com a Direção</h2>
 
-  {% if mensagens %}
-    {% for m in mensagens %}
-      <div class="cartao-recurso" style="margin-bottom: 1rem;">
-        <p class="cartao-recurso__mensagem">{{ m.mensagem }}</p>
-        {% if m.anexo %}
-          <p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>
-        {% endif %}
-        <p style="font-size: 0.85rem; opacity: 0.7;">{{ m.criado_em|date:"d/m/Y H:i" }}</p>
+  {% if conversa %}
+    {% for m in conversa %}
+      <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background: #eef5ee;{% endif %}">
+        <p class="conversa__data">
+          {% if m.tipo == 'funcionario' %}📩 {{ funcionario.nome }}{% else %}↩️ Direção{% endif %}
+          — {{ m.quando|date:"d/m/Y H:i" }}
+        </p>
+        {% if m.texto %}<p class="conversa__texto">{{ m.texto|linebreaksbr }}</p>{% endif %}
+        {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
       </div>
+      <hr class="risca">
     {% endfor %}
   {% else %}
-    <p class="secao__intro" style="text-align: center;">Ainda não há mensagens da Direção.</p>
+    <p class="secao__intro" style="text-align: center;">Ainda não há mensagens trocadas.</p>
   {% endif %}
 </section>
 {% endblock %}
