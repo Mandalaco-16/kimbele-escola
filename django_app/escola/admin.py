@@ -89,17 +89,4 @@ class DesenvolvidorSiteAdmin(admin.ModelAdmin):
 
 
 
-# --- Sinal de sugestões/mensagens não lidas no menu do admin ---
-_get_app_list_original = AdminSite.get_app_list
 
-def _get_app_list_com_sinal(self, request, app_label=None):
-    app_list = _get_app_list_original(self, request, app_label)
-    nao_lidos = Contributo.objects.filter(lido=False).count()
-    if nao_lidos:
-        for app in app_list:
-            for model in app["models"]:
-                if model["object_name"] == "Contributo":
-                    model["name"] = f'🔴 {model["name"]} ({nao_lidos} nova{"s" if nao_lidos != 1 else ""})'
-    return app_list
-
-AdminSite.get_app_list = _get_app_list_com_sinal

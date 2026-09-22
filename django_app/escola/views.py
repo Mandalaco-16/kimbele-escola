@@ -68,7 +68,11 @@ def logout_view(request):
 @never_cache
 def painel_sms(request):
     funcionarios = Funcionario.objects.filter(ativo=True)
-    return render(request, "escola/painel_sms.html", {"funcionarios": funcionarios})
+    nao_lidos = Contributo.objects.filter(lido=False).count()
+    return render(request, "escola/painel_sms.html", {
+        "funcionarios": funcionarios,
+        "nao_lidos": nao_lidos,
+    })
 
 
 def museu_escola(request):

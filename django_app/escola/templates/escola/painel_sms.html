@@ -6,20 +6,31 @@
     <span class="eyebrow">Apenas administrador</span>
     <a href="{% url 'escola:logout' %}" class="eyebrow">Sair da conta</a>
   </div>
-  <p style="margin-top: 1rem; text-align: center;"><a href="/django-admin/escola/contributo/" target="_blank" style="font-weight: 700;">📋 Ver sugestões e ideias dos funcionários</a></p>
+  <p style="margin-top: 1rem; text-align: center;">
+    <a href="/django-admin/escola/contributo/" target="_blank" style="font-weight: 700;">
+      📋 Ver sugestões e ideias dos funcionários{% if nao_lidos %} 🔴 ({{ nao_lidos }} nova{{ nao_lidos|pluralize }}){% endif %}
+    </a>
+  </p>
 
   <h3 style="text-align: center; margin-top: 2rem;">Enviar mensagem a um funcionário</h3>
   <p class="secao__intro" style="text-align: center;">
     Selecione um funcionário para lhe enviar uma mensagem e/ou anexar uma foto ou documento.
   </p>
-  <ul style="list-style: none; padding: 0;">
-    {% for f in funcionarios %}
-      <li style="margin-bottom: 0.5rem; text-align: center;">
-        <a href="{% url 'escola:funcionario_enviar_mensagem_direcao' f.pk %}" class="botao botao--secundario">
-          {{ f.nome }} — {{ f.cargo }}
-        </a>
-      </li>
+
+  <div class="lista-horizontal">
+    {% for f in funcionarios|dictsort:'nome' %}
+      <a href="{% url 'escola:funcionario_enviar_mensagem_direcao' f.pk %}" class="cartao-funcionario">
+        {% if f.foto %}
+          <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
+        {% else %}
+          <div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ f.nome|first }}</div>
+        {% endif %}
+        <span class="cartao-funcionario__nome">{{ f.nome }}</span>
+        <span class="cartao-funcionario__label">Função</span><span class="cartao-funcionario__cargo">{{ f.cargo }}</span>
+      </a>
+    {% empty %}
+      <p>Ainda não há funcionários cadastrados.</p>
     {% endfor %}
-  </ul>
+  </div>
 </section>
 {% endblock %}
