@@ -20,12 +20,14 @@
   <div class="lista-horizontal">
     {% for f in funcionarios|dictsort:'nome' %}
       <a href="{% url 'escola:funcionario_enviar_mensagem_direcao' f.pk %}" class="cartao-funcionario">
-        {% if f.tem_contributo_nao_lido %}<span class="cartao-funcionario__sinal"></span>{% endif %}
-        {% if f.foto %}
-          <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
-        {% else %}
-          <div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ f.nome|first }}</div>
-        {% endif %}
+        <div class="cartao-funcionario__foto-wrap">
+          {% if f.foto %}
+            <img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
+          {% else %}
+            <div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ f.nome|first }}</div>
+          {% endif %}
+          {% if f.tem_contributo_nao_lido %}<span class="cartao-funcionario__sinal"></span>{% endif %}
+        </div>
         <span class="cartao-funcionario__nome">{{ f.nome }}</span>
         <span class="cartao-funcionario__label">Função</span><span class="cartao-funcionario__cargo">{{ f.cargo }}</span>
       </a>

@@ -663,10 +663,15 @@ main {
     position: relative;
 }
 
+.cartao-funcionario__foto-wrap {
+    position: relative;
+    display: inline-block;
+}
+
 .cartao-funcionario__sinal {
     position: absolute;
-    top: 8px;
-    right: 8px;
+    top: -5px;
+    right: -5px;
     width: 14px;
     height: 14px;
     border-radius: 50%;
@@ -674,6 +679,16 @@ main {
     border: 2px solid #ffffff;
     box-shadow: 0 0 0 2px rgba(192, 57, 43, 0.35);
     animation: pulsar-sinal 1.6s ease-in-out infinite;
+}
+
+.cartao-funcionario__sinal::after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 6px;
+    border-width: 6px 5px 0 5px;
+    border-style: solid;
+    border-color: #c0392b transparent transparent transparent;
 }
 
 @keyframes pulsar-sinal {
