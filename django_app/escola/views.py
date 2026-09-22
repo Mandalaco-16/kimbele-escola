@@ -352,14 +352,57 @@ def inicio_view(request):
 
 def funcionario_historico(request, pk):
     funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro para aceder à conversa.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    if request.method == "POST":
+        form = MensagemFuncionarioForm(request.POST, request.FILES)
+        if form.is_valid():
+            Contributo.objects.create(
+                nome=form.cleaned_data["nome"],
+                mensagem=form.cleaned_data["mensagem"],
+                anexo=form.cleaned_data["anexo"],
+                funcionario=funcionario,
+            )
+            messages.success(request, "Mensagem enviada à direção da escola.")
+            return redirect("escola:funcionario_historico", pk=pk)
+    else:
+        form = MensagemFuncionarioForm()
+
     Contributo.objects.filter(
         funcionario=funcionario, resposta_vista=False
     ).exclude(resposta="").update(resposta_vista=True)
-    contributos = Contributo.objects.filter(funcionario=funcionario).order_by("criado_em")
+    MensagemDirecao.objects.filter(funcionario=funcionario, lida=False).update(lida=True)
+
+    conversa = []
+    for c in Contributo.objects.filter(funcionario=funcionario):
+        conversa.append({
+            "tipo": "funcionario",
+            "texto": c.mensagem,
+            "anexo": c.anexo,
+            "quando": c.criado_em,
+        })
+        if c.resposta or c.resposta_anexo:
+            conversa.append({
+                "tipo": "direcao",
+                "texto": c.resposta,
+                "anexo": c.resposta_anexo,
+                "quando": c.respondido_em or c.criado_em,
+            })
+    for m in MensagemDirecao.objects.filter(funcionario=funcionario):
+        conversa.append({
+            "tipo": "direcao",
+            "texto": m.mensagem,
+            "anexo": m.anexo,
+            "quando": m.criado_em,
+        })
+    conversa.sort(key=lambda e: e["quando"])
+
     return render(
         request,
         "escola/funcionario_historico.html",
-        {"f": funcionario, "contributos": contributos},
+        {"f": funcionario, "conversa": conversa, "form": form},
     )
 
 

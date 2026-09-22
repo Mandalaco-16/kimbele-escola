@@ -38,32 +38,9 @@
     <hr class="risca">
 
     {% if desbloqueado %}
-      <p><a href="{% url 'escola:funcionario_mensagens_direcao' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">📩 Mensagens da Direção{% if tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
-      <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">📜 Histórico da Conversa{% if tem_resposta_nao_vista %}<span class="botao__sinal"></span>{% endif %}</a></p>
+      <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Fala com a Direção{% if tem_resposta_nao_vista or tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Colegas{% if mensagens_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_alterar_senha' pk=f.pk %}" class="botao botao--secundario">🔒 Alterar senha</a></p>
-
-      <hr class="risca">
-
-      <div class="formulario--sugestao">
-        <h3>Enviar ideia ou informação à direção</h3>
-        <p>Escreva aqui uma sugestão, ideia ou informação para a direção da escola.</p>
-        <form method="post" class="formulario" enctype="multipart/form-data">
-          {% csrf_token %}
-          <input type="hidden" name="acao" value="enviar_mensagem">
-          <input type="hidden" name="senha_confirmada" value="{{ senha_confirmada }}">
-          {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
-          {% for field in form %}
-            <div class="formulario__campo">
-              {{ field.label_tag }}
-              {{ field }}
-              {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
-              {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
-            </div>
-          {% endfor %}
-          <button type="submit" class="botao botao--primario">Enviar</button>
-        </form>
-      </div>
     {% else %}
       <div class="formulario--senha">
         <h3>Senha</h3>

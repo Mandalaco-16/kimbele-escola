@@ -1,12 +1,11 @@
 {% extends "escola/base.html" %}
-{% block titulo %}Histórico da Conversa - {{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
+{% block titulo %}Fala com a Direção - {{ f.nome }} - {{ NOME_ESCOLA }}{% endblock %}
 
 {% block conteudo %}
 <section class="secao secao--ficha">
   <a href="{% url 'escola:funcionario_detail' pk=f.pk %}" class="link-voltar">&larr; Voltar ao perfil de {{ f.nome }}</a>
 
-  <h2>Histórico da Conversa</h2>
-  <p class="secao__intro">Mensagens trocadas entre {{ f.nome }} e a Direção da escola.</p>
+  <h2>Conversa com a Direção</h2>
 
   <p>
     <a href="{% url 'escola:funcionario_historico_pdf' pk=f.pk %}" class="botao botao--secundario">
@@ -16,28 +15,35 @@
 
   <hr class="risca">
 
-  {% if not contributos %}
-    <p>Ainda não há mensagens trocadas.</p>
-  {% else %}
-    {% for c in contributos %}
-      <div class="conversa__mensagem">
-        <p class="conversa__data">📩 Enviado em {{ c.criado_em|date:"d/m/Y H:i" }}</p>
-        <p class="conversa__texto">{{ c.mensagem|linebreaksbr }}</p>
-
-          {% if c.anexo %}<p><a href="{{ c.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo enviado</a></p>{% endif %}
-
-        {% if c.resposta %}
-          <div class="conversa__resposta">
-            <p class="conversa__data">↩️ Resposta da Direção em {{ c.respondido_em|date:"d/m/Y H:i" }}</p>
-            <p class="conversa__texto">{{ c.resposta|linebreaksbr }}</p>
-            {% if c.resposta_anexo %}<p><a href="{{ c.resposta_anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo da Direção</a></p>{% endif %}
-          </div>
-        {% else %}
-          <p class="conversa__pendente">⏳ Ainda sem resposta da Direção.</p>
-        {% endif %}
+  {% if conversa %}
+    {% for m in conversa %}
+      <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background: #eef5ee;{% endif %}">
+        <p class="conversa__data">
+          {% if m.tipo == 'funcionario' %}📩 {{ f.nome }}{% else %}↩️ Direção{% endif %}
+          — {{ m.quando|date:"d/m/Y H:i" }}
+        </p>
+        {% if m.texto %}<p class="conversa__texto">{{ m.texto|linebreaksbr }}</p>{% endif %}
+        {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
       </div>
       <hr class="risca">
     {% endfor %}
+  {% else %}
+    <p>Ainda não há mensagens trocadas.</p>
   {% endif %}
+
+  <h3 style="text-align: center; margin-top: 2rem;">Enviar nova mensagem</h3>
+  <form method="post" enctype="multipart/form-data" class="formulario">
+    {% csrf_token %}
+    {% for erro in form.non_field_errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+    {% for field in form %}
+      <div class="formulario__campo">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+        {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="botao botao--primario">Enviar</button>
+  </form>
 </section>
 {% endblock %}
