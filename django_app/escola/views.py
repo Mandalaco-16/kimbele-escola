@@ -495,13 +495,40 @@ def funcionario_enviar_mensagem_direcao(request, pk):
                 anexo=form.cleaned_data["anexo"],
             )
             messages.success(request, f"Mensagem enviada para {funcionario.nome} com sucesso!")
-            return redirect("escola:painel_sms")
+            return redirect("escola:funcionario_enviar_mensagem_direcao", pk=pk)
     else:
         form = MensagemDirecaoForm()
+
+    Contributo.objects.filter(funcionario=funcionario, lido=False).update(lido=True)
+
+    conversa = []
+    for c in Contributo.objects.filter(funcionario=funcionario):
+        conversa.append({
+            "tipo": "funcionario",
+            "texto": c.mensagem,
+            "anexo": c.anexo,
+            "quando": c.criado_em,
+        })
+        if c.resposta or c.resposta_anexo:
+            conversa.append({
+                "tipo": "direcao",
+                "texto": c.resposta,
+                "anexo": c.resposta_anexo,
+                "quando": c.respondido_em or c.criado_em,
+            })
+    for m in MensagemDirecao.objects.filter(funcionario=funcionario):
+        conversa.append({
+            "tipo": "direcao",
+            "texto": m.mensagem,
+            "anexo": m.anexo,
+            "quando": m.criado_em,
+        })
+    conversa.sort(key=lambda e: e["quando"])
 
     return render(request, "escola/funcionario_enviar_mensagem_direcao.html", {
         "funcionario": funcionario,
         "form": form,
+        "conversa": conversa,
     })
 
 

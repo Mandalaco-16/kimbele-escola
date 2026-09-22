@@ -5,8 +5,25 @@
 <section class="secao secao--estreita">
   <a href="{% url 'escola:painel_sms' %}" class="link-voltar">&larr; Voltar</a>
 
-  <h2>Enviar mensagem para {{ funcionario.nome }}</h2>
+  <h2>Conversa com {{ funcionario.nome }}</h2>
 
+  {% if conversa %}
+    {% for m in conversa %}
+      <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background: #eef5ee;{% endif %}">
+        <p class="conversa__data">
+          {% if m.tipo == 'funcionario' %}📩 {{ funcionario.nome }}{% else %}↩️ Direção{% endif %}
+          — {{ m.quando|date:"d/m/Y H:i" }}
+        </p>
+        {% if m.texto %}<p class="conversa__texto">{{ m.texto|linebreaksbr }}</p>{% endif %}
+        {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
+      </div>
+      <hr class="risca">
+    {% endfor %}
+  {% else %}
+    <p class="secao__intro" style="text-align: center;">Ainda não há mensagens trocadas com {{ funcionario.nome }}.</p>
+  {% endif %}
+
+  <h3 style="text-align: center; margin-top: 2rem;">Enviar nova mensagem</h3>
   <form method="post" enctype="multipart/form-data" class="formulario">
     {% csrf_token %}
     {% for field in form %}
