@@ -67,11 +67,14 @@ def logout_view(request):
 @login_required
 @never_cache
 def painel_sms(request):
-    funcionarios = Funcionario.objects.filter(ativo=True)
-    nao_lidos = Contributo.objects.filter(lido=False).count()
+    tem_contributo_nao_lido = Contributo.objects.filter(
+        funcionario=OuterRef("pk"), lido=False
+    )
+    funcionarios = Funcionario.objects.filter(ativo=True).annotate(
+        tem_contributo_nao_lido=Exists(tem_contributo_nao_lido)
+    )
     return render(request, "escola/painel_sms.html", {
         "funcionarios": funcionarios,
-        "nao_lidos": nao_lidos,
     })
 
 
