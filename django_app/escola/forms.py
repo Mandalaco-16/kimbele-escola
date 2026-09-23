@@ -22,6 +22,12 @@ class LoginAdminForm(AuthenticationForm):
         "inactive": "Esta conta está inactiva.",
     }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["username"].widget = forms.PasswordInput(
+            attrs={"autocomplete": "username"}
+        )
+
 
 class SenhaFuncionarioForm(forms.Form):
     senha = forms.CharField(
