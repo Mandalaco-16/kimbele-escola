@@ -131,12 +131,7 @@ def lazer(request):
 
 
 def funcionarios_lista(request):
-    tem_msg_direcao_nao_lida = MensagemDirecao.objects.filter(
-        funcionario=OuterRef("pk"), lida=False
-    )
-    funcionarios = Funcionario.objects.filter(ativo=True).annotate(
-        tem_msg_direcao_nao_lida=Exists(tem_msg_direcao_nao_lida)
-    )
+    funcionarios = Funcionario.objects.filter(ativo=True)
     return render(request, "escola/funcionarios_lista.html", {"funcionarios": funcionarios})
 
 
