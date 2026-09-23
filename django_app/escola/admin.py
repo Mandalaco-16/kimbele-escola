@@ -40,13 +40,17 @@ class ImagemGaleriaAdmin(admin.ModelAdmin):
 
 @admin.register(Contributo)
 class ContributoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "funcionario", "criado_em", "lido", "tem_resposta")
-    list_display_links = ("nome", "funcionario")
+    list_display = ("nome", "criado_em", "lido", "tem_resposta")
+    list_display_links = ("nome",)
     list_filter = ("lido",)
     list_editable = ("lido",)
     search_fields = ("nome", "mensagem", "resposta")
-    readonly_fields = ("nome", "funcionario", "mensagem", "anexo", "criado_em")
-    fields = ("nome", "funcionario", "mensagem", "anexo", "criado_em", "lido", "resposta", "resposta_anexo")
+    readonly_fields = ("nome", "mensagem", "anexo", "criado_em")
+    fields = ("nome", "mensagem", "anexo", "criado_em", "lido", "resposta", "resposta_anexo")
+
+    def get_queryset(self, request):
+        qs = super().get_queryset(request)
+        return qs.filter(funcionario__isnull=True)
 
     def tem_resposta(self, obj):
         return bool(obj.resposta)
