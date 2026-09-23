@@ -611,3 +611,10 @@ def funcionario_mensagens_direcao(request, pk):
         "funcionario": funcionario,
         "conversa": conversa,
     })
+
+
+@login_required
+@never_cache
+def contributos_gerais(request):
+    contributos = Contributo.objects.filter(funcionario__isnull=True).order_by("-criado_em")
+    return render(request, "escola/contributos_gerais.html", {"contributos": contributos})
