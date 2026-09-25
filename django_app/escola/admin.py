@@ -38,32 +38,6 @@ class ImagemGaleriaAdmin(admin.ModelAdmin):
     search_fields = ("titulo",)
 
 
-@admin.register(Contributo)
-class ContributoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "criado_em", "lido", "tem_resposta")
-    list_display_links = ("nome",)
-    list_filter = ("lido",)
-    list_editable = ("lido",)
-    search_fields = ("nome", "mensagem", "resposta")
-    readonly_fields = ("nome", "mensagem", "anexo", "criado_em")
-    fields = ("nome", "mensagem", "anexo", "criado_em", "lido", "resposta", "resposta_anexo")
-
-    def get_queryset(self, request):
-        qs = super().get_queryset(request)
-        return qs.filter(funcionario__isnull=True)
-
-    def tem_resposta(self, obj):
-        return bool(obj.resposta)
-    tem_resposta.boolean = True
-    tem_resposta.short_description = "Respondido"
-
-    def save_model(self, request, obj, form, change):
-        if obj.resposta and not obj.respondido_em:
-            from django.utils import timezone
-            obj.respondido_em = timezone.now()
-        super().save_model(request, obj, form, change)
-
-
 @admin.register(MensagemInterna)
 class MensagemInternaAdmin(admin.ModelAdmin):
     list_display = ("remetente", "destinatario", "criado_em")
