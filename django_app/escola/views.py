@@ -316,6 +316,25 @@ def funcionario_conversa_pdf(request, pk, destino_pk):
     return response
 
 
+def contributo_view(request):
+    if request.method == "POST":
+        form = ContributoForm(request.POST)
+        if form.is_valid():
+            Contributo.objects.create(
+                nome=form.cleaned_data["nome"],
+                mensagem=form.cleaned_data["mensagem"],
+            )
+            messages.success(
+                request,
+                "Obrigado! A sua mensagem foi enviada com sucesso à direção da escola.",
+            )
+            return redirect("escola:contributo")
+    else:
+        form = ContributoForm()
+
+    return render(request, "escola/contributo.html", {"form": form})
+
+
 def desenvolvidor_view(request):
     dev = DesenvolvidorSite.objects.first()
     contexto = {"dev": dev}
@@ -593,3 +612,9 @@ def funcionario_mensagens_direcao(request, pk):
         "conversa": conversa,
     })
 
+
+@login_required
+@never_cache
+def contributos_gerais(request):
+    contributos = Contributo.objects.filter(funcionario__isnull=True).order_by("-criado_em")
+    return render(request, "escola/contributos_gerais.html", {"contributos": contributos})

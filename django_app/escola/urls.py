@@ -20,10 +20,12 @@ urlpatterns = [
     path("funcionarios/<int:pk>/alterar-senha/", views.funcionario_alterar_senha, name="funcionario_alterar_senha"),
     path("funcionarios/<int:pk>/enviar-mensagem-direcao/", views.funcionario_enviar_mensagem_direcao, name="funcionario_enviar_mensagem_direcao"),
     path("funcionarios/<int:pk>/mensagens-direcao/", views.funcionario_mensagens_direcao, name="funcionario_mensagens_direcao"),
+    path("painel/mensagens-anonimas/", views.contributos_gerais, name="contributos_gerais"),
     path("regulamento/", views.documentos_lista, name="documentos_lista"),
     path("vitrine/", views.vitrine, name="vitrine"),
     path("desenvolvidor/", views.desenvolvidor_view, name="desenvolvidor"),
     path("horarios/", views.horarios, name="horarios"),
     path("lazer/", views.lazer, name="lazer"),
+    path("contributo/", views.contributo_view, name="contributo"),
     path("museu-da-escola/", views.museu_escola, name="museu_escola"),
 ]
