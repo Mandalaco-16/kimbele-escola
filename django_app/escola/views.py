@@ -618,3 +618,28 @@ def funcionario_mensagens_direcao(request, pk):
 def contributos_gerais(request):
     contributos = Contributo.objects.filter(funcionario__isnull=True).order_by("-criado_em")
     return render(request, "escola/contributos_gerais.html", {"contributos": contributos})
+
+
+@login_required
+@never_cache
+def backup_download(request):
+    from django.core import management
+    from django.http import HttpResponse
+    from django.utils import timezone
+    import io
+
+    buffer = io.StringIO()
+    management.call_command(
+        "dumpdata",
+        "escola",
+        indent=2,
+        stdout=buffer,
+    )
+    conteudo = buffer.getvalue()
+
+    data = timezone.now().strftime("%Y%m%d_%H%M")
+    nome_ficheiro = f"backup_kimbele_escola_{data}.json"
+
+    response = HttpResponse(conteudo, content_type="application/json")
+    response["Content-Disposition"] = f'attachment; filename="{nome_ficheiro}"'
+    return response
