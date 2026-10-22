@@ -11,9 +11,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm, MensagemDirecaoForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm, MensagemDirecaoForm, MensagemAlunoForm
 from .models import (
     MensagemDirecao,
+    Aluno,
+    MensagemDirecaoAluno,
     Contributo,
     Documento,
     Funcionario,
@@ -317,22 +319,41 @@ def funcionario_conversa_pdf(request, pk, destino_pk):
 
 
 def contributo_view(request):
-    if request.method == "POST":
-        form = ContributoForm(request.POST)
-        if form.is_valid():
-            Contributo.objects.create(
-                nome=form.cleaned_data["nome"],
-                mensagem=form.cleaned_data["mensagem"],
-            )
-            messages.success(
-                request,
-                "Obrigado! A sua mensagem foi enviada com sucesso à direção da escola.",
-            )
-            return redirect("escola:contributo")
-    else:
-        form = ContributoForm()
+    aluno = None
+    erro_matricula = False
+    form = MensagemAlunoForm()
 
-    return render(request, "escola/contributo.html", {"form": form})
+    if request.method == "POST":
+        acao = request.POST.get("acao")
+
+        if acao == "pesquisar":
+            matricula = request.POST.get("matricula", "").strip()
+            try:
+                aluno = Aluno.objects.get(matricula=matricula, ativo=True)
+            except Aluno.DoesNotExist:
+                erro_matricula = True
+
+        elif acao == "enviar":
+            aluno_id = request.POST.get("aluno_id")
+            aluno = get_object_or_404(Aluno, pk=aluno_id, ativo=True)
+            form = MensagemAlunoForm(request.POST, request.FILES)
+            if form.is_valid():
+                Contributo.objects.create(
+                    aluno=aluno,
+                    mensagem=form.cleaned_data["mensagem"],
+                    anexo=form.cleaned_data["anexo"],
+                )
+                messages.success(
+                    request,
+                    "Obrigado! A sua mensagem foi enviada com sucesso à direção da escola.",
+                )
+                return redirect("escola:contributo")
+
+    return render(request, "escola/contributo.html", {
+        "aluno": aluno,
+        "erro_matricula": erro_matricula,
+        "form": form,
+    })
 
 
 def desenvolvidor_view(request):
@@ -616,8 +637,60 @@ def funcionario_mensagens_direcao(request, pk):
 @login_required
 @never_cache
 def contributos_gerais(request):
-    contributos = Contributo.objects.filter(funcionario__isnull=True).order_by("-criado_em")
-    return render(request, "escola/contributos_gerais.html", {"contributos": contributos})
+    ids_alunos = Contributo.objects.filter(aluno__isnull=False).values_list("aluno", flat=True).distinct()
+    alunos = Aluno.objects.filter(pk__in=ids_alunos).order_by("nome")
+    return render(request, "escola/contributos_gerais.html", {"alunos": alunos})
+
+
+@login_required
+@never_cache
+def aluno_conversa(request, pk):
+    aluno = get_object_or_404(Aluno, pk=pk)
+
+    if request.method == "POST":
+        form = MensagemDirecaoForm(request.POST, request.FILES)
+        if form.is_valid():
+            MensagemDirecaoAluno.objects.create(
+                aluno=aluno,
+                mensagem=form.cleaned_data["mensagem"],
+                anexo=form.cleaned_data["anexo"],
+            )
+            messages.success(request, f"Resposta enviada para {aluno.nome}.")
+            return redirect("escola:aluno_conversa", pk=pk)
+    else:
+        form = MensagemDirecaoForm()
+
+    Contributo.objects.filter(aluno=aluno, lido=False).update(lido=True)
+
+    conversa = []
+    for c in Contributo.objects.filter(aluno=aluno):
+        conversa.append({
+            "tipo": "aluno",
+            "texto": c.mensagem,
+            "anexo": c.anexo,
+            "quando": c.criado_em,
+        })
+        if c.resposta or c.resposta_anexo:
+            conversa.append({
+                "tipo": "direcao",
+                "texto": c.resposta,
+                "anexo": c.resposta_anexo,
+                "quando": c.respondido_em or c.criado_em,
+            })
+    for m in MensagemDirecaoAluno.objects.filter(aluno=aluno):
+        conversa.append({
+            "tipo": "direcao",
+            "texto": m.mensagem,
+            "anexo": m.anexo,
+            "quando": m.criado_em,
+        })
+    conversa.sort(key=lambda e: e["quando"])
+
+    return render(request, "escola/aluno_conversa.html", {
+        "aluno": aluno,
+        "form": form,
+        "conversa": conversa,
+    })
 
 
 @login_required

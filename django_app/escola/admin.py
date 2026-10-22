@@ -6,6 +6,7 @@ from .models import (
     ImagemGaleria,
     MensagemInterna,
     MensagemDirecao,
+    Aluno,
     DesenvolvidorSite,
 )
 
@@ -93,3 +94,10 @@ class DesenvolvidorSiteAdmin(admin.ModelAdmin):
 
 
 
+
+
+@admin.register(Aluno)
+class AlunoAdmin(admin.ModelAdmin):
+    list_display = ("nome", "matricula", "ativo")
+    list_filter = ("ativo",)
+    search_fields = ("nome", "matricula")

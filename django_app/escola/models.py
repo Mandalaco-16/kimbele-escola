@@ -108,6 +108,10 @@ class Contributo(models.Model):
         "Funcionario", verbose_name="Enviado a partir do perfil de",
         null=True, blank=True, on_delete=models.SET_NULL, related_name="contributos"
     )
+    aluno = models.ForeignKey(
+        "Aluno", verbose_name="Enviado para o aluno",
+        null=True, blank=True, on_delete=models.SET_NULL, related_name="contributos"
+    )
     resposta = models.TextField("Resposta do administrador", blank=True)
     resposta_anexo = models.FileField(
         "Foto ou documento da resposta",
@@ -190,3 +194,40 @@ class MensagemDirecao(models.Model):
 
     def __str__(self):
         return f"Direção -> {self.funcionario.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
+
+
+class Aluno(models.Model):
+    nome = models.CharField("Nome completo", max_length=200)
+    matricula = models.CharField("Número de matrícula", max_length=50, unique=True)
+    ativo = models.BooleanField("Ativo", default=True)
+
+    class Meta:
+        verbose_name = "Aluno"
+        verbose_name_plural = "Alunos"
+        ordering = ["nome"]
+
+    def __str__(self):
+        return f"{self.nome} ({self.matricula})"
+
+
+class MensagemDirecaoAluno(models.Model):
+    aluno = models.ForeignKey(
+        Aluno, verbose_name="Para", on_delete=models.CASCADE, related_name="mensagens_direcao"
+    )
+    mensagem = models.TextField("Mensagem", blank=True)
+    anexo = models.FileField(
+        "Foto ou documento (PDF)",
+        upload_to="mensagens_direcao_aluno/%Y/%m/",
+        blank=True,
+        null=True,
+        help_text="Opcional. Aceita fotos ou ficheiros PDF.",
+    )
+    criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Mensagem da Direção ao Aluno"
+        verbose_name_plural = "Mensagens da Direção aos Alunos"
+        ordering = ["-criado_em"]
+
+    def __str__(self):
+        return f"Direção -> {self.aluno.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
