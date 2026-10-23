@@ -347,12 +347,38 @@ def contributo_view(request):
                     request,
                     "Obrigado! A sua mensagem foi enviada com sucesso à direção da escola.",
                 )
-                return redirect("escola:contributo")
+                form = MensagemAlunoForm()
+
+    conversa = []
+    if aluno:
+        for c in Contributo.objects.filter(aluno=aluno):
+            conversa.append({
+                "tipo": "aluno",
+                "texto": c.mensagem,
+                "anexo": c.anexo,
+                "quando": c.criado_em,
+            })
+            if c.resposta or c.resposta_anexo:
+                conversa.append({
+                    "tipo": "direcao",
+                    "texto": c.resposta,
+                    "anexo": c.resposta_anexo,
+                    "quando": c.respondido_em or c.criado_em,
+                })
+        for m in MensagemDirecaoAluno.objects.filter(aluno=aluno):
+            conversa.append({
+                "tipo": "direcao",
+                "texto": m.mensagem,
+                "anexo": m.anexo,
+                "quando": m.criado_em,
+            })
+        conversa.sort(key=lambda e: e["quando"])
 
     return render(request, "escola/contributo.html", {
         "aluno": aluno,
         "erro_matricula": erro_matricula,
         "form": form,
+        "conversa": conversa,
     })
 
 
