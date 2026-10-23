@@ -98,6 +98,10 @@ class DesenvolvidorSiteAdmin(admin.ModelAdmin):
 
 @admin.register(Aluno)
 class AlunoAdmin(admin.ModelAdmin):
-    list_display = ("nome", "matricula", "ativo")
-    list_filter = ("ativo",)
-    search_fields = ("nome", "matricula")
+    list_display = ("nome", "matricula", "turma", "classe", "professor", "ativo")
+    list_filter = ("ativo", "turma", "classe")
+    search_fields = ("nome", "matricula", "professor")
+    fieldsets = (
+        ("Identificação", {"fields": ("nome", "matricula", "ativo")}),
+        ("Ensino", {"fields": ("turma", "classe", "sala", "periodo", "entrada", "saida", "professor")}),
+    )

@@ -199,11 +199,18 @@ class MensagemDirecao(models.Model):
 class Aluno(models.Model):
     nome = models.CharField("Nome completo", max_length=200)
     matricula = models.CharField("Número de matrícula", max_length=50, unique=True)
+    turma = models.CharField("Turma", max_length=100, blank=True)
+    classe = models.CharField("Classe", max_length=100, blank=True)
+    sala = models.CharField("Sala", max_length=100, blank=True)
+    periodo = models.CharField("Período", max_length=100, blank=True)
+    entrada = models.CharField("Entrada", max_length=20, blank=True)
+    saida = models.CharField("Saída", max_length=20, blank=True)
+    professor = models.CharField("Nome do professor/a", max_length=200, blank=True)
     ativo = models.BooleanField("Ativo", default=True)
 
     class Meta:
         verbose_name = "Aluno"
-        verbose_name_plural = "Alunos"
+        verbose_name_plural = "Matricular Alunos"
         ordering = ["nome"]
 
     def __str__(self):
