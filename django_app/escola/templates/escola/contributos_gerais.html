@@ -15,6 +15,11 @@
           <a href="{% url 'escola:aluno_conversa' aluno.pk %}" class="botao botao--secundario">
             {{ aluno.nome }}
           </a>
+          <p style="font-size: 0.85rem; opacity: 0.8;">
+            {% if aluno.turma %}Turma: {{ aluno.turma }} | {% endif %}
+            {% if aluno.classe %}Classe: {{ aluno.classe }} | {% endif %}
+            {% if aluno.professor %}Professor/a: {{ aluno.professor }}{% endif %}
+          </p>
         </li>
       {% endfor %}
     </ul>
