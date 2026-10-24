@@ -5,21 +5,22 @@
 <section class="secao secao--estreita">
   <a href="{% url 'escola:painel_sms' %}" class="link-voltar">&larr; Voltar</a>
 
-  <h2>Mensagens enviadas por "Fala com a Direção"</h2>
-  <p class="secao__intro">Toque no nome do aluno para ver as mensagens enviadas e responder.</p>
+  <p style="font-weight: 700; font-size: 16px; text-align: center;">
+    Toque no nome do aluno para ver mensagens enviadas e respondidas
+  </p>
 
   {% if alunos %}
-    <ul style="list-style: none; padding: 0;">
+    <ol style="padding-left: 1.5rem;">
       {% for aluno in alunos %}
-        <li style="margin-bottom: 0.5rem; text-align: center;">
+        <li style="margin-bottom: 0.5rem; font-size: 14px;">
           <a href="{% url 'escola:aluno_conversa' aluno.pk %}" class="botao botao--secundario">
             {{ aluno.nome }}
           </a>
         </li>
       {% endfor %}
-    </ul>
+    </ol>
   {% else %}
-    <p>Ainda não há mensagens de alunos.</p>
+    <p>Ainda não há alunos cadastrados.</p>
   {% endif %}
 </section>
 {% endblock %}
