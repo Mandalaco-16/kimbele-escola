@@ -8,6 +8,9 @@
     {% csrf_token %}
     <button type="submit" style="color: #c0392b; background: none; border: none; text-decoration: underline;">🗑️ Apagar toda a conversa</button>
   </form>
+  <p style="text-align: right;">
+    <a href="{% url 'escola:aluno_conversa_pdf' aluno.pk %}">⬇️ Baixar conversa em PDF</a>
+  </p>
 
   <h2>Conversa sobre {{ aluno.nome }}</h2>
   <div class="ficha-funcionario__contactos">
@@ -36,12 +39,6 @@
   {% else %}
     <p>Ainda não há mensagens.</p>
   {% endif %}
-
-  <p style="text-align: center;">
-    <a href="{% url 'escola:aluno_conversa_pdf' aluno.pk %}" class="botao botao--secundario">
-      ⬇️ Baixar conversa em PDF
-    </a>
-  </p>
 
   <h3 style="text-align: center; margin-top: 2rem;">Responder</h3>
   <form method="post" enctype="multipart/form-data" class="formulario">
