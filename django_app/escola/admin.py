@@ -105,3 +105,15 @@ class AlunoAdmin(admin.ModelAdmin):
         ("Identificação", {"fields": ("nome", "matricula", "ativo")}),
         ("Ensino", {"fields": ("turma", "classe", "sala", "periodo", "entrada", "saida", "professor")}),
     )
+
+    def has_view_permission(self, request, obj=None):
+        return False
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def response_add(self, request, obj, post_url_continue=None):
+        from django.contrib import messages as dj_messages
+        from django.shortcuts import redirect
+        dj_messages.success(request, "Aluno matriculado com sucesso.")
+        return redirect("admin:escola_aluno_add")

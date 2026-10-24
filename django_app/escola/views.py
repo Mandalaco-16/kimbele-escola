@@ -333,6 +333,22 @@ def contributo_view(request):
             except Aluno.DoesNotExist:
                 erro_matricula = True
 
+        elif acao == "baixar_pdf":
+            aluno_id = request.POST.get("aluno_id")
+            aluno = get_object_or_404(Aluno, pk=aluno_id, ativo=True)
+            conversa_pdf = []
+            for c in Contributo.objects.filter(aluno=aluno):
+                conversa_pdf.append({"tipo": "aluno", "texto": c.mensagem, "anexo": c.anexo, "quando": c.criado_em})
+                if c.resposta or c.resposta_anexo:
+                    conversa_pdf.append({"tipo": "direcao", "texto": c.resposta, "anexo": c.resposta_anexo, "quando": c.respondido_em or c.criado_em})
+            for m in MensagemDirecaoAluno.objects.filter(aluno=aluno):
+                conversa_pdf.append({"tipo": "direcao", "texto": m.mensagem, "anexo": m.anexo, "quando": m.criado_em})
+            conversa_pdf.sort(key=lambda e: e["quando"])
+            nome_ficheiro = f"conversa_{aluno.nome.replace(' ', '_')}.pdf"
+            return _gerar_pdf_conversa(
+                f"Conversa sobre {aluno.nome}", "Fala com a Direção da Escola", conversa_pdf, nome_ficheiro
+            )
+
         elif acao == "enviar":
             aluno_id = request.POST.get("aluno_id")
             aluno = get_object_or_404(Aluno, pk=aluno_id, ativo=True)
@@ -742,3 +758,83 @@ def backup_download(request):
     response = HttpResponse(conteudo, content_type="application/json")
     response["Content-Disposition"] = f'attachment; filename="{nome_ficheiro}"'
     return response
+
+
+@login_required
+@never_cache
+def aluno_conversa_apagar(request, pk):
+    aluno = get_object_or_404(Aluno, pk=pk)
+    if request.method == "POST":
+        Contributo.objects.filter(aluno=aluno).delete()
+        MensagemDirecaoAluno.objects.filter(aluno=aluno).delete()
+        messages.success(request, f"Conversa de {aluno.nome} apagada com sucesso.")
+    return redirect("escola:contributos_gerais")
+
+
+def _gerar_pdf_conversa(titulo, subtitulo, conversa, nome_ficheiro):
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    import textwrap
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="{nome_ficheiro}"'
+
+    largura, altura = A4
+    margem = 2 * cm
+    y = altura - margem
+    p = canvas.Canvas(response, pagesize=A4)
+
+    def nova_pagina():
+        nonlocal y
+        p.showPage()
+        y = altura - margem
+
+    def escrever_linha(texto, tamanho=11, negrito=False, espaco=14):
+        nonlocal y
+        if y < margem:
+            nova_pagina()
+        p.setFont("Helvetica-Bold" if negrito else "Helvetica", tamanho)
+        p.drawString(margem, y, texto)
+        y -= espaco
+
+    escrever_linha(titulo, tamanho=14, negrito=True, espaco=22)
+    escrever_linha(subtitulo, tamanho=10, espaco=20)
+
+    if not conversa:
+        escrever_linha("Ainda não há mensagens trocadas.")
+    else:
+        for m in conversa:
+            quem = "Enviado" if m["tipo"] == "aluno" else "Resposta da Direção"
+            escrever_linha(f"{quem} - {m['quando']:%d/%m/%Y %H:%M}", tamanho=10, negrito=True)
+            if m["texto"]:
+                for linha in textwrap.wrap(m["texto"], width=95):
+                    escrever_linha(linha)
+            if m["anexo"]:
+                escrever_linha("(Tem anexo - ver no site)")
+            y -= 8
+
+    p.showPage()
+    p.save()
+    return response
+
+
+@login_required
+@never_cache
+def aluno_conversa_pdf(request, pk):
+    aluno = get_object_or_404(Aluno, pk=pk)
+
+    conversa = []
+    for c in Contributo.objects.filter(aluno=aluno):
+        conversa.append({"tipo": "aluno", "texto": c.mensagem, "anexo": c.anexo, "quando": c.criado_em})
+        if c.resposta or c.resposta_anexo:
+            conversa.append({"tipo": "direcao", "texto": c.resposta, "anexo": c.resposta_anexo, "quando": c.respondido_em or c.criado_em})
+    for m in MensagemDirecaoAluno.objects.filter(aluno=aluno):
+        conversa.append({"tipo": "direcao", "texto": m.mensagem, "anexo": m.anexo, "quando": m.criado_em})
+    conversa.sort(key=lambda e: e["quando"])
+
+    nome_ficheiro = f"conversa_{aluno.nome.replace(' ', '_')}.pdf"
+    return _gerar_pdf_conversa(
+        f"Conversa sobre {aluno.nome}", "Fala com a Direção da Escola", conversa, nome_ficheiro
+    )

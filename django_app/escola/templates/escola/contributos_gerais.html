@@ -15,6 +15,10 @@
           <a href="{% url 'escola:aluno_conversa' aluno.pk %}" class="botao botao--secundario">
             {{ aluno.nome }}
           </a>
+          <form method="post" action="{% url 'escola:aluno_conversa_apagar' aluno.pk %}" style="display: inline;" onsubmit="return confirm('Apagar toda a conversa com {{ aluno.nome }}? Esta ação não pode ser desfeita.');">
+            {% csrf_token %}
+            <button type="submit" style="color: #c0392b; background: none; border: none; text-decoration: underline; font-size: 0.85rem;">🗑️ Apagar conversa</button>
+          </form>
         </li>
       {% endfor %}
     </ul>

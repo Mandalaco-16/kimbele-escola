@@ -31,6 +31,13 @@
       {% endfor %}
     {% endif %}
 
+    <form method="post" style="text-align: center;">
+      {% csrf_token %}
+      <input type="hidden" name="acao" value="baixar_pdf">
+      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
+      <button type="submit" class="botao botao--secundario">⬇️ Baixar conversa em PDF</button>
+    </form>
+
     <h3 style="text-align: center; margin-top: 1.5rem;">Enviar nova mensagem</h3>
     <form method="post" enctype="multipart/form-data" class="formulario">
       {% csrf_token %}
