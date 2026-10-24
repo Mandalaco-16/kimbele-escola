@@ -679,8 +679,7 @@ def funcionario_mensagens_direcao(request, pk):
 @login_required
 @never_cache
 def contributos_gerais(request):
-    ids_alunos = Contributo.objects.filter(aluno__isnull=False).values_list("aluno", flat=True).distinct()
-    alunos = Aluno.objects.filter(pk__in=ids_alunos).order_by("nome")
+    alunos = Aluno.objects.filter(ativo=True).order_by("nome")
     return render(request, "escola/contributos_gerais.html", {"alunos": alunos})
 
 
