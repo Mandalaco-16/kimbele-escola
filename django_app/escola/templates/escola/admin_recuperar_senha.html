@@ -6,19 +6,45 @@
 
   {% if link_whatsapp %}
     <p style="text-align: center;">
-      Uma nova senha foi gerada com sucesso. Toque no botão abaixo para a receber por WhatsApp:
+      Pronto! Toque no botão abaixo para receber por WhatsApp:
     </p>
     <p style="text-align: center;">
       <a href="{{ link_whatsapp }}" target="_blank" rel="noopener" class="botao botao--primario">
-        📲 Enviar nova senha por WhatsApp
+        📲 Enviar por WhatsApp
       </a>
     </p>
-  {% else %}
+  {% elif not opcao %}
+    <p>Escolha a opção que precisa redefinir:</p>
+    <p style="text-align: center;">
+      <a href="?opcao=1" class="botao botao--secundario">1 - Acesso Reservado à Direção</a>
+    </p>
+    <p style="text-align: center;">
+      <a href="?opcao=2" class="botao botao--secundario">2 - Utilizador</a>
+    </p>
+    <p style="text-align: center;">
+      <a href="?opcao=3" class="botao botao--secundario">3 - Senha</a>
+    </p>
+  {% elif opcao == "1" %}
+    <p>Vamos gerar uma nova senha de Acesso Reservado à Direção.</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="opcao" value="1">
+      <button type="submit" class="botao botao--primario">Gerar nova senha</button>
+    </form>
+  {% elif opcao == "2" %}
+    <p>Vamos enviar o nome de utilizador cadastrado.</p>
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="opcao" value="2">
+      <button type="submit" class="botao botao--primario">Enviar utilizador</button>
+    </form>
+  {% elif opcao == "3" %}
     {% if erro_username %}
       <p class="formulario__erro">Utilizador não encontrado.</p>
     {% endif %}
     <form method="post" class="formulario">
       {% csrf_token %}
+      <input type="hidden" name="opcao" value="3">
       {% for field in form %}
         <div class="formulario__campo">
           {{ field.label_tag }}

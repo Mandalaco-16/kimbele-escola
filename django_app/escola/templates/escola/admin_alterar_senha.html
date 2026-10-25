@@ -1,0 +1,28 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Alterar senha - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--formulario">
+  <h2>Alterar senha do administrador</h2>
+
+  <form method="post" class="formulario">
+    {% csrf_token %}
+
+    <h3>3 - Alterar Senha de login</h3>
+    {% for field in form_senha %}
+      <div class="formulario__campo">
+        {{ field.label_tag }}
+        {{ field }}
+        {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+
+    <h3 style="margin-top: 1.5rem;">1 - Alterar Senha do Acesso Reservado à Direção</h3>
+    <div class="formulario__campo">
+      <label>Nova senha do portão (deixe em branco para não alterar)</label>
+      <input type="text" name="nova_senha_portao" placeholder="Senha atual: {{ senha_portao_atual }}">
+    </div>
+
+    <button type="submit" class="botao botao--primario">Guardar alterações</button>
+  </form>
+</section>
+{% endblock %}

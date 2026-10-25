@@ -844,12 +844,31 @@ def admin_recuperar_senha(request):
     from urllib.parse import quote
     import random, string
 
+    opcao = request.GET.get("opcao") or request.POST.get("opcao")
     link_whatsapp = None
     erro_username = False
+    form = None
 
-    if request.method == "POST":
-        form = RecuperarSenhaAdminForm(request.POST)
-        if form.is_valid():
+    if opcao == "1":
+        if request.method == "POST":
+            from .models import ConfiguracaoAcesso
+            config, _ = ConfiguracaoAcesso.objects.get_or_create(pk=1)
+            senha_nova = "".join(random.choices(string.digits, k=8))
+            config.senha_portao = senha_nova
+            config.save()
+            texto = f"Nova senha do Acesso Reservado a Direcao: {senha_nova}"
+            link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
+
+    elif opcao == "2":
+        if request.method == "POST":
+            user = User.objects.filter(is_staff=True).order_by("id").first()
+            if user:
+                texto = f"O seu nome de utilizador do admin e: {user.username}"
+                link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
+
+    elif opcao == "3":
+        form = RecuperarSenhaAdminForm(request.POST or None)
+        if request.method == "POST" and form.is_valid():
             username = form.cleaned_data["username"].strip()
             try:
                 user = User.objects.get(username=username, is_staff=True)
@@ -860,11 +879,46 @@ def admin_recuperar_senha(request):
                 link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
             except User.DoesNotExist:
                 erro_username = True
-    else:
-        form = RecuperarSenhaAdminForm()
 
     return render(request, "escola/admin_recuperar_senha.html", {
+        "opcao": opcao,
         "form": form,
         "link_whatsapp": link_whatsapp,
         "erro_username": erro_username,
+    })
+
+
+@login_required
+@never_cache
+def admin_alterar_senha(request):
+    from django.contrib.auth.forms import PasswordChangeForm
+    from django.contrib.auth import update_session_auth_hash
+    from .models import ConfiguracaoAcesso
+
+    config, _ = ConfiguracaoAcesso.objects.get_or_create(pk=1)
+
+    if request.method == "POST":
+        form_senha = PasswordChangeForm(request.user, request.POST)
+        nova_senha_portao = request.POST.get("nova_senha_portao", "").strip()
+        alterou_algo = False
+
+        if form_senha.is_valid():
+            user = form_senha.save()
+            update_session_auth_hash(request, user)
+            alterou_algo = True
+
+        if nova_senha_portao:
+            config.senha_portao = nova_senha_portao
+            config.save()
+            alterou_algo = True
+
+        if alterou_algo:
+            messages.success(request, "Senha(s) alterada(s) com sucesso.")
+            return redirect("escola:painel_sms")
+    else:
+        form_senha = PasswordChangeForm(request.user)
+
+    return render(request, "escola/admin_alterar_senha.html", {
+        "form_senha": form_senha,
+        "senha_portao_atual": config.senha_portao,
     })

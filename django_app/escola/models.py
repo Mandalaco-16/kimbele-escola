@@ -238,3 +238,14 @@ class MensagemDirecaoAluno(models.Model):
 
     def __str__(self):
         return f"Direção -> {self.aluno.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
+
+
+class ConfiguracaoAcesso(models.Model):
+    senha_portao = models.CharField("Senha do Acesso Reservado à Direção", max_length=50, default="927889999")
+
+    class Meta:
+        verbose_name = "Configuração de Acesso"
+        verbose_name_plural = "Configuração de Acesso"
+
+    def __str__(self):
+        return "Configuração de Acesso"

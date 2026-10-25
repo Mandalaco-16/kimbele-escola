@@ -27,6 +27,8 @@ class LoginAdminForm(AuthenticationForm):
         self.fields["username"].widget = forms.PasswordInput(
             attrs={"autocomplete": "username"}
         )
+        self.fields["username"].label = "2 - Utilizador"
+        self.fields["password"].label = "3 - Senha"
 
 
 class SenhaFuncionarioForm(forms.Form):
@@ -102,8 +104,10 @@ class PortaoDirecaoForm(forms.Form):
     )
 
     def clean_senha(self):
+        from .models import ConfiguracaoAcesso
         senha = self.cleaned_data["senha"].strip()
-        if senha != "927889999":
+        config, _ = ConfiguracaoAcesso.objects.get_or_create(pk=1)
+        if senha != config.senha_portao:
             raise forms.ValidationError("Senha incorrecta. Tente novamente.")
         return senha
 
