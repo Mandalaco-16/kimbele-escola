@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.views.decorators.cache import never_cache
 from django.utils import timezone
 
-from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm, MensagemDirecaoForm, MensagemAlunoForm
+from .forms import ContributoForm, LoginAdminForm, MensagemFuncionarioForm, MensagemInternaForm, PortaoDirecaoForm, SenhaFuncionarioForm, RecuperarSenhaForm, AlterarSenhaForm, MensagemDirecaoForm, MensagemAlunoForm, RecuperarSenhaAdminForm
 from .models import (
     MensagemDirecao,
     Aluno,
@@ -837,3 +837,34 @@ def aluno_conversa_pdf(request, pk):
     return _gerar_pdf_conversa(
         f"Conversa sobre {aluno.nome}", "Fala com a Direção da Escola", conversa, nome_ficheiro
     )
+
+
+def admin_recuperar_senha(request):
+    from django.contrib.auth.models import User
+    from urllib.parse import quote
+    import random, string
+
+    link_whatsapp = None
+    erro_username = False
+
+    if request.method == "POST":
+        form = RecuperarSenhaAdminForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data["username"].strip()
+            try:
+                user = User.objects.get(username=username, is_staff=True)
+                senha_nova = "".join(random.choices(string.digits, k=8))
+                user.set_password(senha_nova)
+                user.save()
+                texto = f"Ola {user.username}, a sua nova senha de acesso ao admin e: {senha_nova}"
+                link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
+            except User.DoesNotExist:
+                erro_username = True
+    else:
+        form = RecuperarSenhaAdminForm()
+
+    return render(request, "escola/admin_recuperar_senha.html", {
+        "form": form,
+        "link_whatsapp": link_whatsapp,
+        "erro_username": erro_username,
+    })

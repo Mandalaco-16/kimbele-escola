@@ -187,3 +187,11 @@ class MensagemAlunoForm(forms.Form):
                 "Escreva uma mensagem ou anexe uma foto/documento antes de enviar."
             )
         return dados
+
+
+class RecuperarSenhaAdminForm(forms.Form):
+    username = forms.CharField(
+        label="Utilizador",
+        max_length=150,
+        widget=forms.TextInput(),
+    )
