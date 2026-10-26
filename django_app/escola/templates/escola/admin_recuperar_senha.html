@@ -24,19 +24,19 @@
     <p style="text-align: center;">
       <a href="?opcao=3" class="botao botao--secundario">3 - Senha</a>
     </p>
-  {% elif opcao == "1" %}
-    <p>Vamos gerar uma nova senha de Acesso Reservado à Direção.</p>
-    <form method="post">
+  {% elif not telefone_confirmado %}
+    {% if erro_telefone %}
+      <p class="formulario__erro">Número de telefone incorreto.</p>
+    {% endif %}
+    <p>Confirme o número de telefone da Direção para continuar.</p>
+    <form method="post" class="formulario">
       {% csrf_token %}
-      <input type="hidden" name="opcao" value="1">
-      <button type="submit" class="botao botao--primario">Gerar nova senha</button>
-    </form>
-  {% elif opcao == "2" %}
-    <p>Vamos enviar o nome de utilizador cadastrado.</p>
-    <form method="post">
-      {% csrf_token %}
-      <input type="hidden" name="opcao" value="2">
-      <button type="submit" class="botao botao--primario">Enviar utilizador</button>
+      <input type="hidden" name="opcao" value="{{ opcao }}">
+      <div class="formulario__campo">
+        <label>Número de telefone</label>
+        <input type="text" name="telefone">
+      </div>
+      <button type="submit" class="botao botao--primario">Confirmar</button>
     </form>
   {% elif opcao == "3" %}
     {% if erro_username %}
@@ -45,6 +45,7 @@
     <form method="post" class="formulario">
       {% csrf_token %}
       <input type="hidden" name="opcao" value="3">
+      <input type="hidden" name="telefone" value="927889999">
       {% for field in form %}
         <div class="formulario__campo">
           {{ field.label_tag }}

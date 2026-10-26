@@ -847,28 +847,36 @@ def admin_recuperar_senha(request):
     opcao = request.GET.get("opcao") or request.POST.get("opcao")
     link_whatsapp = None
     erro_username = False
+    erro_telefone = False
+    telefone_confirmado = False
     form = None
+    NUMERO_DIRECAO = "927889999"
 
-    if opcao == "1":
-        if request.method == "POST":
-            from .models import ConfiguracaoAcesso
-            config, _ = ConfiguracaoAcesso.objects.get_or_create(pk=1)
-            senha_nova = "".join(random.choices(string.digits, k=8))
-            config.senha_portao = senha_nova
-            config.save()
-            texto = f"Nova senha do Acesso Reservado a Direcao: {senha_nova}"
+    if opcao in ("1", "2", "3") and request.method == "POST":
+        telefone = "".join(ch for ch in request.POST.get("telefone", "") if ch.isdigit())
+        if telefone.endswith(NUMERO_DIRECAO) or telefone == NUMERO_DIRECAO:
+            telefone_confirmado = True
+        else:
+            erro_telefone = True
+
+    if opcao == "1" and telefone_confirmado:
+        from .models import ConfiguracaoAcesso
+        config, _ = ConfiguracaoAcesso.objects.get_or_create(pk=1)
+        senha_nova = "".join(random.choices(string.digits, k=8))
+        config.senha_portao = senha_nova
+        config.save()
+        texto = f"Nova senha do Acesso Reservado a Direcao: {senha_nova}"
+        link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
+
+    elif opcao == "2" and telefone_confirmado:
+        user = User.objects.filter(is_staff=True).order_by("id").first()
+        if user:
+            texto = f"O seu nome de utilizador do admin e: {user.username}"
             link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
-
-    elif opcao == "2":
-        if request.method == "POST":
-            user = User.objects.filter(is_staff=True).order_by("id").first()
-            if user:
-                texto = f"O seu nome de utilizador do admin e: {user.username}"
-                link_whatsapp = f"https://wa.me/244927889999?text={quote(texto)}"
 
     elif opcao == "3":
         form = RecuperarSenhaAdminForm(request.POST or None)
-        if request.method == "POST" and form.is_valid():
+        if telefone_confirmado and request.method == "POST" and form.is_valid():
             username = form.cleaned_data["username"].strip()
             try:
                 user = User.objects.get(username=username, is_staff=True)
@@ -885,6 +893,8 @@ def admin_recuperar_senha(request):
         "form": form,
         "link_whatsapp": link_whatsapp,
         "erro_username": erro_username,
+        "erro_telefone": erro_telefone,
+        "telefone_confirmado": telefone_confirmado,
     })
 
 
