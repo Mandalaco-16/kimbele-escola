@@ -197,6 +197,7 @@ def funcionario_detail(request, pk):
         "form": form,
         "senha_confirmada": senha_confirmada,
         "mensagens_nao_lidas": mensagens_nao_lidas,
+        "encarregado_nao_lidas": MensagemEncarregado.objects.filter(professor=funcionario, do_professor=False, lida=False).exists(),
         "tem_resposta_nao_vista": tem_resposta_nao_vista,
         "tem_mensagem_direcao_nao_lida": tem_mensagem_direcao_nao_lida,
     })
@@ -1044,4 +1045,61 @@ def encarregado_direcao_pdf(request):
     nome = f"conversa_{aluno.nome.replace(' ', '_')}.pdf"
     return _gerar_pdf_conversa(
         f"Conversa sobre {aluno.nome}", "Fala com a Direção da Escola", _conversa_direcao(aluno), nome
+    )
+
+
+from .models import MensagemEncarregado
+
+
+def funcionario_encarregados(request, pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro.")
+        return redirect("escola:funcionario_detail", pk=pk)
+    nao_lida = MensagemEncarregado.objects.filter(
+        aluno=OuterRef("pk"), professor=funcionario, do_professor=False, lida=False
+    )
+    alunos = Aluno.objects.filter(
+        mensagens_encarregado__professor=funcionario
+    ).distinct().annotate(tem_notificacao=Exists(nao_lida)).order_by("nome")
+    return render(request, "escola/funcionario_encarregados.html", {"f": funcionario, "alunos": alunos})
+
+
+def funcionario_encarregado_conversa(request, pk, aluno_pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    aluno = get_object_or_404(Aluno, pk=aluno_pk)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro.")
+        return redirect("escola:funcionario_detail", pk=pk)
+    form = MensagemInternaForm()
+    if request.method == "POST":
+        form = MensagemInternaForm(request.POST, request.FILES)
+        if form.is_valid():
+            MensagemEncarregado.objects.create(
+                aluno=aluno, professor=funcionario, do_professor=True,
+                mensagem=form.cleaned_data["mensagem"], anexo=form.cleaned_data["anexo"],
+            )
+            return redirect("escola:funcionario_encarregado_conversa", pk=pk, aluno_pk=aluno_pk)
+    MensagemEncarregado.objects.filter(
+        aluno=aluno, professor=funcionario, do_professor=False, lida=False
+    ).update(lida=True)
+    conversa = MensagemEncarregado.objects.filter(aluno=aluno, professor=funcionario)
+    return render(request, "escola/funcionario_encarregado_conversa.html", {
+        "f": funcionario, "aluno": aluno, "conversa": conversa, "form": form,
+    })
+
+
+def funcionario_encarregado_pdf(request, pk, aluno_pk):
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    aluno = get_object_or_404(Aluno, pk=aluno_pk)
+    if not _exige_desbloqueio(request, funcionario):
+        return redirect("escola:funcionario_detail", pk=pk)
+    itens = [
+        {"tipo": "direcao" if m.do_professor else "aluno",
+         "texto": m.mensagem, "anexo": m.anexo, "quando": m.criado_em}
+        for m in MensagemEncarregado.objects.filter(aluno=aluno, professor=funcionario)
+    ]
+    nome = f"conversa_{aluno.nome.replace(' ', '_')}_{funcionario.nome.replace(' ', '_')}.pdf"
+    return _gerar_pdf_conversa(
+        f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {funcionario.nome}", itens, nome
     )
