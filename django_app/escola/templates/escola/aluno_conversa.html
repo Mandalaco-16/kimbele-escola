@@ -12,17 +12,9 @@
     <a href="{% url 'escola:aluno_conversa_pdf' aluno.pk %}">⬇️ Baixar conversa em PDF</a>
   </p>
 
-  <h2>Conversa sobre {{ aluno.nome }}</h2>
-  <div class="ficha-funcionario__contactos">
-    {% if aluno.turma %}<p><strong>Turma:</strong> {{ aluno.turma }}</p>{% endif %}
-    {% if aluno.classe %}<p><strong>Classe:</strong> {{ aluno.classe }}</p>{% endif %}
-    {% if aluno.sala %}<p><strong>Sala:</strong> {{ aluno.sala }}</p>{% endif %}
-    {% if aluno.periodo %}<p><strong>Período:</strong> {{ aluno.periodo }}</p>{% endif %}
-    {% if aluno.entrada %}<p><strong>Entrada:</strong> {{ aluno.entrada }}</p>{% endif %}
-    {% if aluno.saida %}<p><strong>Saída:</strong> {{ aluno.saida }}</p>{% endif %}
-    {% if aluno.professor %}<p><strong>Professor/a:</strong> {{ aluno.professor }}</p>{% endif %}
-  </div>
-  <hr class="risca">
+  {% include "escola/_cartao_aluno.html" %}
+  <hr style="border:0;border-top:4px solid #c0392b;margin:10px 0 6px">
+  <h3 style="text-align:center;margin:4px 0 10px">CONVERSAS</h3>
 
   {% if conversa %}
     {% for m in conversa %}
