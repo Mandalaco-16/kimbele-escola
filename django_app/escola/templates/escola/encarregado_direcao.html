@@ -1,0 +1,35 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Conversar com a Direção - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">CONVERSAR COM A DIREÇÃO DA ESCOLA</h3>
+  <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
+  <p style="text-align:right;margin:8px 0">
+    <a href="{% url 'escola:encarregado_direcao_pdf' %}" style="color:#0645ad;text-decoration:underline;font-size:14px">⬇️ Baixar conversa em PDF</a>
+  </p>
+  <hr class="risca">
+  {% for m in conversa %}
+    <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background:#eef5ee;{% endif %}">
+      <p class="conversa__data">{% if m.tipo == 'aluno' %}📩 Enviado{% else %}↩️ Direção{% endif %} — {{ m.quando|date:"d/m/Y H:i" }}</p>
+      {% if m.texto %}<p class="conversa__texto">{{ m.texto|linebreaksbr }}</p>{% endif %}
+      {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
+    </div>
+    <hr class="risca">
+  {% empty %}
+    <p>Ainda não há mensagens.</p>
+  {% endfor %}
+  <form method="post" enctype="multipart/form-data" class="formulario">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="formulario__campo">
+        {{ field.label_tag }}
+        {{ field }}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+        {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <button type="submit" class="botao botao--primario">Enviar</button>
+  </form>
+</section>
+{% endblock %}

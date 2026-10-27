@@ -1001,3 +1001,47 @@ def encarregado_conversa_pdf(request, func_pk):
     return _gerar_pdf_conversa(
         f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {professor.nome}", itens, nome
     )
+
+
+def _conversa_direcao(aluno):
+    conversa = []
+    for c in Contributo.objects.filter(aluno=aluno):
+        conversa.append({"tipo": "aluno", "texto": c.mensagem, "anexo": c.anexo, "quando": c.criado_em})
+        if c.resposta or c.resposta_anexo:
+            conversa.append({"tipo": "direcao", "texto": c.resposta, "anexo": c.resposta_anexo, "quando": c.respondido_em or c.criado_em})
+    for m in MensagemDirecaoAluno.objects.filter(aluno=aluno):
+        conversa.append({"tipo": "direcao", "texto": m.mensagem, "anexo": m.anexo, "quando": m.criado_em})
+    conversa.sort(key=lambda e: e["quando"])
+    return conversa
+
+
+@never_cache
+def encarregado_direcao(request):
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro o número de matrícula do aluno.")
+        return redirect("/contributo/")
+    form = MensagemAlunoForm()
+    if request.method == "POST":
+        form = MensagemAlunoForm(request.POST, request.FILES)
+        if form.is_valid():
+            Contributo.objects.create(
+                aluno=aluno,
+                mensagem=form.cleaned_data["mensagem"],
+                anexo=form.cleaned_data["anexo"],
+            )
+            return redirect("escola:encarregado_direcao")
+    return render(request, "escola/encarregado_direcao.html", {
+        "aluno": aluno, "conversa": _conversa_direcao(aluno), "form": form,
+    })
+
+
+@never_cache
+def encarregado_direcao_pdf(request):
+    aluno = _aluno_publico(request)
+    if not aluno:
+        return redirect("/contributo/")
+    nome = f"conversa_{aluno.nome.replace(' ', '_')}.pdf"
+    return _gerar_pdf_conversa(
+        f"Conversa sobre {aluno.nome}", "Fala com a Direção da Escola", _conversa_direcao(aluno), nome
+    )

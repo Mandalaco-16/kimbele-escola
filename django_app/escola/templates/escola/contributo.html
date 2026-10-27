@@ -24,35 +24,7 @@
       {% endfor %}
     {% endif %}
 
-    <details style="margin-top:10px">
-      <summary style="cursor:pointer;display:flex;gap:6px;text-align:left;font-weight:700;font-size:16px;list-style:none"><span style="width:1.4em;flex-shrink:0">1-</span><span style="color:#0645ad;text-decoration:underline">CONVERSAR COM A DIREÇÃO DA ESCOLA</span></summary>
-      <div style="margin-top:10px">
-        <form method="post" style="text-align:center;margin:0 0 10px">
-      {% csrf_token %}
-      <input type="hidden" name="acao" value="baixar_pdf">
-      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
-      <button type="submit" style="background:none;border:none;padding:0;color:#0645ad;text-decoration:underline;cursor:pointer;font-size:14px">⬇️ Baixar conversa em PDF</button>
-    </form>
-        <style>
-    .formulario--msg label{font-size:20px;font-weight:bold}
-    .formulario--msg button[type=submit]{font-size:20px;padding:10px 28px}
-    </style>
-    <form method="post" enctype="multipart/form-data" class="formulario formulario--msg">
-      {% csrf_token %}
-      <input type="hidden" name="acao" value="enviar">
-      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
-      {% for field in form %}
-        <div class="formulario__campo">
-          {{ field.label_tag }}
-          {{ field }}
-          {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
-          {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
-        </div>
-      {% endfor %}
-      <button type="submit" class="botao botao--primario">Enviar</button>
-    </form>
-      </div>
-    </details>
+    <p style="display:flex;gap:6px;margin:10px 0 0;font-weight:700;font-size:16px"><span style="width:1.4em;flex-shrink:0">1-</span><a href="{% url 'escola:encarregado_direcao' %}">CONVERSAR COM A DIREÇÃO DA ESCOLA</a></p>
     <p style="display:flex;gap:6px;margin:12px 0 0;font-weight:700;font-size:16px"><span style="width:1.4em;flex-shrink:0">2-</span><a href="{% url 'escola:encarregado_professores' %}">CONVERSAR COM O PROFESSOR/A</a></p>
   {% else %}
     {% if erro_matricula %}
