@@ -6,7 +6,14 @@
 
   {% if aluno %}
     {% include "escola/_cartao_aluno.html" %}
-    <hr class="risca">
+    <hr style="border:0;border-top:4px solid #c0392b;margin:10px 0 6px">
+    <h3 style="text-align:center;margin:4px 0">CONVERSAS</h3>
+    <form method="post" style="text-align:right;margin:0 0 10px">
+      {% csrf_token %}
+      <input type="hidden" name="acao" value="baixar_pdf">
+      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
+      <button type="submit" style="background:none;border:none;padding:0;color:#0645ad;text-decoration:underline;cursor:pointer;font-size:14px">⬇️ Baixar conversa em PDF</button>
+    </form>
 
     {% if conversa %}
       {% for m in conversa %}
@@ -21,13 +28,6 @@
         <hr class="risca">
       {% endfor %}
     {% endif %}
-
-    <form method="post" style="text-align: center;">
-      {% csrf_token %}
-      <input type="hidden" name="acao" value="baixar_pdf">
-      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
-      <button type="submit" class="botao botao--secundario">⬇️ Baixar conversa em PDF</button>
-    </form>
 
     <h3 style="text-align: center; margin-top: 1.5rem;">Enviar nova mensagem</h3>
     <form method="post" enctype="multipart/form-data" class="formulario">
