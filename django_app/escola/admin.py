@@ -102,8 +102,19 @@ class AlunoAdmin(admin.ModelAdmin):
     list_filter = ("ativo", "turma", "classe")
     search_fields = ("nome", "matricula", "professor")
     fieldsets = (
-        ("Identificação", {"fields": ("nome", "matricula", "ativo")}),
-        ("Ensino", {"fields": ("turma", "classe", "sala", "periodo", "entrada", "saida", "professor")}),
+        (None, {"fields": (
+            ("foto",),
+            ("cartao_numero", "cartao_ano"),
+            ("nome",),
+            ("filho_de", "mae"),
+            ("nascimento", "anos"),
+            ("natural_de", "municipio", "provincia"),
+            ("classe", "turma", "sala", "periodo"),
+            ("entrada", "saida"),
+            ("matricula", "emitido_em"),
+            ("professor",),
+            ("ativo",),
+        )}),
     )
 
 

@@ -206,6 +206,17 @@ class Aluno(models.Model):
     entrada = models.CharField("Entrada", max_length=20, blank=True)
     saida = models.CharField("Saída", max_length=20, blank=True)
     professor = models.CharField("Nome do professor/a", max_length=200, blank=True)
+    cartao_numero = models.CharField("Cartão de Estudante n°", max_length=30, blank=True)
+    cartao_ano = models.CharField("Ano (20__)", max_length=4, blank=True)
+    filho_de = models.CharField("Filho de", max_length=150, blank=True)
+    mae = models.CharField("e de", max_length=150, blank=True)
+    nascimento = models.DateField("Nascido aos", null=True, blank=True)
+    anos = models.PositiveSmallIntegerField("Anos", null=True, blank=True)
+    natural_de = models.CharField("Natural de", max_length=100, blank=True)
+    municipio = models.CharField("Município de", max_length=100, blank=True)
+    provincia = models.CharField("Província de", max_length=100, blank=True)
+    emitido_em = models.DateField("Emitido aos", null=True, blank=True)
+    foto = models.FileField("Foto do aluno", upload_to="alunos_fotos/", blank=True, null=True)
     ativo = models.BooleanField("Ativo", default=True)
 
     class Meta:
