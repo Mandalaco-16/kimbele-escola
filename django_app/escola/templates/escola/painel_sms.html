@@ -32,11 +32,11 @@
 
   <hr style="border: none; border-top: 5px solid #c0392b; margin: 2.5rem 0;">
 
-  <div style="text-align:center;line-height:2.6">
-    <p style="margin:0"><a href="/django-admin/" target="_blank" style="font-weight:700;font-size:18px">1 - SECTOR DO ADMINISTRADOR DO DJANGO</a></p>
-    <p style="margin:0"><a href="{% url 'escola:contributos_gerais' %}" style="font-weight:700;font-size:18px">2 - SECTOR DOS ALUNOS MATRICULADOS</a></p>
-    <p style="margin:0"><a href="{% url 'escola:backup_download' %}" style="font-weight:700;font-size:18px">3 - SECTOR DE BAIXAR BACKUP DOS DADOS</a></p>
-    <p style="margin:0"><a href="{% url 'escola:admin_alterar_senha' %}" style="font-weight:700;font-size:18px">4 - SECTOR DE ALTERAR A SENHA</a></p>
+  <div style="text-align:left;line-height:2.4;max-width:100%">
+    <p style="margin:0;display:flex;gap:6px"><span style="width:1.4em;font-weight:700;font-size:16px;flex-shrink:0">1-</span><a href="/django-admin/" target="_blank" style="font-weight:700;font-size:16px">SECTOR DO ADMINISTRADOR DO DJANGO</a></p>
+    <p style="margin:0;display:flex;gap:6px"><span style="width:1.4em;font-weight:700;font-size:16px;flex-shrink:0">2-</span><a href="{% url 'escola:contributos_gerais' %}" style="font-weight:700;font-size:16px">SECTOR DOS ALUNOS MATRICULADOS</a></p>
+    <p style="margin:0;display:flex;gap:6px"><span style="width:1.4em;font-weight:700;font-size:16px;flex-shrink:0">3-</span><a href="{% url 'escola:backup_download' %}" style="font-weight:700;font-size:16px">SECTOR DE BAIXAR BACKUP DOS DADOS</a></p>
+    <p style="margin:0;display:flex;gap:6px"><span style="width:1.4em;font-weight:700;font-size:16px;flex-shrink:0">4-</span><a href="{% url 'escola:admin_alterar_senha' %}" style="font-weight:700;font-size:16px">SECTOR DE ALTERAR A SENHA</a></p>
   </div>
 </section>
 {% endblock %}
