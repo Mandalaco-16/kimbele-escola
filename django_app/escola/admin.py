@@ -118,3 +118,13 @@ class AlunoAdmin(admin.ModelAdmin):
     )
 
 
+
+
+
+from .models import MensagemEncarregado
+
+
+@admin.register(MensagemEncarregado)
+class MensagemEncarregadoAdmin(admin.ModelAdmin):
+    list_display = ("aluno", "professor", "do_professor", "criado_em")
+    list_filter = ("professor",)

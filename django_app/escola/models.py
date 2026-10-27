@@ -260,3 +260,30 @@ class ConfiguracaoAcesso(models.Model):
 
     def __str__(self):
         return "Configuração de Acesso"
+
+
+class MensagemEncarregado(models.Model):
+    aluno = models.ForeignKey(
+        Aluno, verbose_name="Aluno", on_delete=models.CASCADE, related_name="mensagens_encarregado"
+    )
+    professor = models.ForeignKey(
+        Funcionario, verbose_name="Professor/a", on_delete=models.CASCADE, related_name="mensagens_encarregados"
+    )
+    do_professor = models.BooleanField("Enviada pelo professor/a", default=False)
+    mensagem = models.TextField("Mensagem", blank=True)
+    anexo = models.FileField(
+        "Foto ou documento (PDF)",
+        upload_to="mensagens_encarregado/%Y/%m/",
+        blank=True,
+        null=True,
+    )
+    criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
+    lida = models.BooleanField("Lida", default=False)
+
+    class Meta:
+        verbose_name = "Conversa Encarregado-Professor"
+        verbose_name_plural = "Conversas Encarregado-Professor"
+        ordering = ["criado_em"]
+
+    def __str__(self):
+        return f"{self.aluno.nome} / {self.professor.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
