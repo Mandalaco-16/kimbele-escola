@@ -11,6 +11,7 @@
         <div class="cartao-funcionario__foto-wrap">
           {% if f.foto %}<img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
           {% else %}<div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ f.nome|first }}</div>{% endif %}
+          {% if f.tem_notificacao %}<span class="cartao-funcionario__sinal"></span>{% endif %}
         </div>
         <span class="cartao-funcionario__nome">{{ f.nome }}</span>
         <span class="cartao-funcionario__cargo">{{ f.cargo }}</span>

@@ -949,7 +949,12 @@ def encarregado_professores(request):
     if not aluno:
         messages.error(request, "Insira primeiro o número de matrícula do aluno.")
         return redirect("/contributo/")
-    professores = Funcionario.objects.filter(ativo=True).order_by("nome")
+    resposta_nova = MensagemEncarregado.objects.filter(
+        aluno=aluno, professor=OuterRef("pk"), do_professor=True, lida=False
+    )
+    professores = Funcionario.objects.filter(ativo=True).annotate(
+        tem_notificacao=Exists(resposta_nova)
+    ).order_by("nome")
     return render(request, "escola/encarregado_professores.html", {
         "aluno": aluno, "professores": professores,
     })
