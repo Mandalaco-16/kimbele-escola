@@ -1,0 +1,22 @@
+<div style="max-width:100%;margin:0 auto 14px;border:4px double #333;padding:8px;background:#fff;color:#000;font-size:12px;line-height:2;box-sizing:border-box">
+  <div style="display:flex;align-items:flex-start;gap:8px">
+    <div style="flex:1;text-align:center;line-height:1.35">
+      <img src="/static/escola/insignia.png" alt="" style="height:42px;margin-bottom:3px" onerror="this.style.display='none'"><br>
+      <b>República de Angola</b><br>
+      Área Municipal de Educação de Kimbele<br>
+      <b>Escola Primária n° 013 da Missão Católica de Kimbele</b>
+    </div>
+    <div style="width:72px;height:92px;border:2px solid #333;flex-shrink:0;overflow:hidden;display:flex;align-items:center;justify-content:center">
+      {% if aluno.foto %}<img src="{{ aluno.foto.url }}" alt="Foto" style="width:100%;height:100%;object-fit:cover">{% endif %}
+    </div>
+  </div>
+  <div style="margin-top:6px"><b>Cartão de Estudante n°</b> <u>&nbsp;{{ aluno.cartao_numero }}&nbsp;</u> / 20<u>&nbsp;{{ aluno.cartao_ano }}&nbsp;</u></div>
+  <div><b>Nome:</b> <u>{{ aluno.nome }}</u> <b>Filho de</b> <u>&nbsp;{{ aluno.filho_de }}&nbsp;</u></div>
+  <div><b>e de</b> <u>&nbsp;{{ aluno.mae }}&nbsp;</u></div>
+  <div><b>Nascido aos</b> <u>&nbsp;{% if aluno.nascimento %}{{ aluno.nascimento|date:"d/m/Y" }}{% endif %}&nbsp;</u> <b>Anos</b> <u>&nbsp;{{ aluno.anos|default_if_none:"" }}&nbsp;</u> <b>Natural de</b> <u>&nbsp;{{ aluno.natural_de }}&nbsp;</u></div>
+  <div><b>Município de</b> <u>&nbsp;{{ aluno.municipio }}&nbsp;</u> <b>Província de</b> <u>&nbsp;{{ aluno.provincia }}&nbsp;</u></div>
+  <div><b>Classe</b> <u>&nbsp;{{ aluno.classe }}&nbsp;</u> <b>Turma</b> <u>&nbsp;{{ aluno.turma }}&nbsp;</u> <b>Sala</b> <u>&nbsp;{{ aluno.sala }}&nbsp;</u> <b>Período</b> <u>&nbsp;{{ aluno.periodo }}&nbsp;</u></div>
+  <div><b>Entrada</b> <u>&nbsp;{{ aluno.entrada }}&nbsp;</u> <b>Saída</b> <u>&nbsp;{{ aluno.saida }}&nbsp;</u> <b>N° de Matrícula</b> <u>&nbsp;{{ aluno.matricula }}&nbsp;</u></div>
+  <div><b>Emitido aos</b> <u>&nbsp;{% if aluno.emitido_em %}{{ aluno.emitido_em|date:"d/m/Y" }}{% endif %}&nbsp;</u></div>
+  <div><b>Professor/a</b> <u>&nbsp;{{ aluno.professor }}&nbsp;</u></div>
+</div>

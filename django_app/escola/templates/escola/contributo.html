@@ -5,16 +5,7 @@
 <section class="secao secao--formulario">
 
   {% if aluno %}
-    <h2>Aluno: {{ aluno.nome }}</h2>
-    <div class="ficha-funcionario__contactos">
-      {% if aluno.turma %}<p><strong>Turma:</strong> {{ aluno.turma }}</p>{% endif %}
-      {% if aluno.classe %}<p><strong>Classe:</strong> {{ aluno.classe }}</p>{% endif %}
-      {% if aluno.sala %}<p><strong>Sala:</strong> {{ aluno.sala }}</p>{% endif %}
-      {% if aluno.periodo %}<p><strong>Período:</strong> {{ aluno.periodo }}</p>{% endif %}
-      {% if aluno.entrada %}<p><strong>Entrada:</strong> {{ aluno.entrada }}</p>{% endif %}
-      {% if aluno.saida %}<p><strong>Saída:</strong> {{ aluno.saida }}</p>{% endif %}
-      {% if aluno.professor %}<p><strong>Professor/a:</strong> {{ aluno.professor }}</p>{% endif %}
-    </div>
+    {% include "escola/_cartao_aluno.html" %}
     <hr class="risca">
 
     {% if conversa %}
