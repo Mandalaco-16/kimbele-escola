@@ -8,12 +8,7 @@
     {% include "escola/_cartao_aluno.html" %}
     <hr style="border:0;border-top:4px solid #c0392b;margin:10px 0 6px">
     <h3 style="text-align:center;margin:4px 0">CONVERSAS</h3>
-    <form method="post" style="text-align:right;margin:0 0 10px">
-      {% csrf_token %}
-      <input type="hidden" name="acao" value="baixar_pdf">
-      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
-      <button type="submit" style="background:none;border:none;padding:0;color:#0645ad;text-decoration:underline;cursor:pointer;font-size:14px">⬇️ Baixar conversa em PDF</button>
-    </form>
+    
 
     {% if conversa %}
       {% for m in conversa %}
@@ -29,7 +24,16 @@
       {% endfor %}
     {% endif %}
 
-    <style>
+    <details style="margin-top:10px">
+      <summary style="cursor:pointer;text-align:center;font-weight:700;font-size:16px;color:#0645ad;text-decoration:underline;list-style:none">CONVERSAR COM A DIREÇÃO DA ESCOLA</summary>
+      <div style="margin-top:10px">
+        <form method="post" style="text-align:center;margin:0 0 10px">
+      {% csrf_token %}
+      <input type="hidden" name="acao" value="baixar_pdf">
+      <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
+      <button type="submit" style="background:none;border:none;padding:0;color:#0645ad;text-decoration:underline;cursor:pointer;font-size:14px">⬇️ Baixar conversa em PDF</button>
+    </form>
+        <style>
     .formulario--msg label{font-size:20px;font-weight:bold}
     .formulario--msg button[type=submit]{font-size:20px;padding:10px 28px}
     </style>
@@ -47,6 +51,8 @@
       {% endfor %}
       <button type="submit" class="botao botao--primario">Enviar</button>
     </form>
+      </div>
+    </details>
   {% else %}
     {% if erro_matricula %}
       <p class="formulario__erro">Número de matrícula não encontrado, verifique e tente novamente.</p>
