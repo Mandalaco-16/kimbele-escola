@@ -29,8 +29,11 @@
       {% endfor %}
     {% endif %}
 
-    <h3 style="text-align: center; margin-top: 1.5rem;">Enviar nova mensagem</h3>
-    <form method="post" enctype="multipart/form-data" class="formulario">
+    <style>
+    .formulario--msg label{font-size:20px;font-weight:bold}
+    .formulario--msg button[type=submit]{font-size:20px;padding:10px 28px}
+    </style>
+    <form method="post" enctype="multipart/form-data" class="formulario formulario--msg">
       {% csrf_token %}
       <input type="hidden" name="acao" value="enviar">
       <input type="hidden" name="aluno_id" value="{{ aluno.pk }}">
