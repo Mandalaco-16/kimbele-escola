@@ -932,21 +932,3 @@ def admin_alterar_senha(request):
         "form_senha": form_senha,
         "senha_portao_atual": config.senha_portao,
     })
-
-
-def corrigir_usuario_temporario(request):
-    from django.contrib.auth.models import User
-    from django.http import HttpResponse
-
-    chave = request.GET.get("chave")
-    if chave != "kimbele2026corrigir":
-        return HttpResponse("Acesso negado.", status=403)
-
-    user = User.objects.filter(is_staff=True).order_by("id").first()
-    if not user:
-        return HttpResponse("Nenhum utilizador encontrado.")
-
-    antigo = user.username
-    user.username = "Edmilson"
-    user.save()
-    return HttpResponse(f"Utilizador alterado de '{antigo}' para 'Edmilson' com sucesso.")

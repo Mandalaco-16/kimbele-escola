@@ -4,7 +4,6 @@ from . import views
 app_name = "escola"
 
 urlpatterns = [
-    path("corrigir-usuario-temp/", views.corrigir_usuario_temporario, name="corrigir_usuario_temp"),
     path("", views.inicio_view, name="home"),
     path("portao-direcao/", views.portao_direcao, name="portao_direcao"),
     path("login/", views.login_view, name="login"),
