@@ -330,6 +330,7 @@ def contributo_view(request):
             matricula = request.POST.get("matricula", "").strip()
             try:
                 aluno = Aluno.objects.get(matricula=matricula, ativo=True)
+                request.session["aluno_publico_id"] = aluno.pk
             except Aluno.DoesNotExist:
                 erro_matricula = True
 
@@ -932,3 +933,71 @@ def admin_alterar_senha(request):
         "form_senha": form_senha,
         "senha_portao_atual": config.senha_portao,
     })
+
+
+def _aluno_publico(request):
+    aluno_id = request.session.get("aluno_publico_id")
+    if not aluno_id:
+        return None
+    return Aluno.objects.filter(pk=aluno_id, ativo=True).first()
+
+
+@never_cache
+def encarregado_professores(request):
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro o número de matrícula do aluno.")
+        return redirect("/contributo/")
+    professores = Funcionario.objects.filter(ativo=True).order_by("nome")
+    return render(request, "escola/encarregado_professores.html", {
+        "aluno": aluno, "professores": professores,
+    })
+
+
+@never_cache
+def encarregado_conversa(request, func_pk):
+    from .models import MensagemEncarregado
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro o número de matrícula do aluno.")
+        return redirect("/contributo/")
+    professor = get_object_or_404(Funcionario, pk=func_pk, ativo=True)
+
+    form = MensagemAlunoForm()
+    if request.method == "POST":
+        form = MensagemAlunoForm(request.POST, request.FILES)
+        if form.is_valid():
+            MensagemEncarregado.objects.create(
+                aluno=aluno,
+                professor=professor,
+                do_professor=False,
+                mensagem=form.cleaned_data["mensagem"],
+                anexo=form.cleaned_data["anexo"],
+            )
+            return redirect("escola:encarregado_conversa", func_pk=func_pk)
+
+    MensagemEncarregado.objects.filter(
+        aluno=aluno, professor=professor, do_professor=True, lida=False
+    ).update(lida=True)
+    conversa = MensagemEncarregado.objects.filter(aluno=aluno, professor=professor)
+    return render(request, "escola/encarregado_conversa.html", {
+        "aluno": aluno, "professor": professor, "conversa": conversa, "form": form,
+    })
+
+
+@never_cache
+def encarregado_conversa_pdf(request, func_pk):
+    from .models import MensagemEncarregado
+    aluno = _aluno_publico(request)
+    if not aluno:
+        return redirect("/contributo/")
+    professor = get_object_or_404(Funcionario, pk=func_pk, ativo=True)
+    itens = [
+        {"tipo": "direcao" if m.do_professor else "aluno",
+         "texto": m.mensagem, "anexo": m.anexo, "quando": m.criado_em}
+        for m in MensagemEncarregado.objects.filter(aluno=aluno, professor=professor)
+    ]
+    nome = f"conversa_{aluno.nome.replace(' ', '_')}_{professor.nome.replace(' ', '_')}.pdf"
+    return _gerar_pdf_conversa(
+        f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {professor.nome}", itens, nome
+    )

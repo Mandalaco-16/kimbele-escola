@@ -1,0 +1,23 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Conversar com o Professor/a - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">CONVERSAR COM O PROFESSOR/A</h3>
+  <p class="secao__intro" style="text-align:center">Toque no nome do professor/a de {{ aluno.nome }}.</p>
+  <div class="lista-horizontal">
+    {% for f in professores %}
+      <a href="{% url 'escola:encarregado_conversa' f.pk %}" class="cartao-funcionario">
+        <div class="cartao-funcionario__foto-wrap">
+          {% if f.foto %}<img src="{{ f.foto.url }}" alt="{{ f.nome }}" class="cartao-funcionario__foto">
+          {% else %}<div class="cartao-funcionario__foto cartao-funcionario__foto--vazia">{{ f.nome|first }}</div>{% endif %}
+        </div>
+        <span class="cartao-funcionario__nome">{{ f.nome }}</span>
+        <span class="cartao-funcionario__cargo">{{ f.cargo }}</span>
+      </a>
+    {% empty %}
+      <p>Ainda não há funcionários cadastrados.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

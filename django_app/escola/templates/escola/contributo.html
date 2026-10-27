@@ -53,6 +53,7 @@
     </form>
       </div>
     </details>
+    <p style="display:flex;gap:6px;margin:12px 0 0;font-weight:700;font-size:16px"><span style="width:1.4em;flex-shrink:0">2-</span><a href="{% url 'escola:encarregado_professores' %}">CONVERSAR COM O PROFESSOR/A</a></p>
   {% else %}
     {% if erro_matricula %}
       <p class="formulario__erro">Número de matrícula não encontrado, verifique e tente novamente.</p>
