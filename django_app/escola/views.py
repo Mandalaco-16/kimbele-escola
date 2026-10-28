@@ -1163,3 +1163,20 @@ def funcionario_presencas(request, pk):
     return render(request, "escola/funcionario_presencas.html", {
         "f": funcionario, "data": data, "linhas": linhas,
     })
+
+
+@never_cache
+def encarregado_presencas(request):
+    from .models import Presenca
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro os dados de acesso do aluno.")
+        return redirect("/contributo/")
+    registos = list(Presenca.objects.filter(aluno=aluno).order_by("-data"))
+    return render(request, "escola/encarregado_presencas.html", {
+        "aluno": aluno,
+        "registos": registos,
+        "total_p": sum(1 for r in registos if r.estado == "P"),
+        "total_f": sum(1 for r in registos if r.estado == "F"),
+        "total_j": sum(1 for r in registos if r.estado == "J"),
+    })

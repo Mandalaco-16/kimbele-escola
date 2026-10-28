@@ -1,0 +1,23 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Faltas e Presenças - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">FALTAS E PRESENÇAS</h3>
+  <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
+  <div style="display:flex;justify-content:space-around;text-align:center;margin:14px 0;font-weight:700">
+    <div>Presenças<br><span style="font-size:22px">{{ total_p }}</span></div>
+    <div style="color:#c0392b">Faltas<br><span style="font-size:22px">{{ total_f }}</span></div>
+    <div>Justificadas<br><span style="font-size:22px">{{ total_j }}</span></div>
+  </div>
+  <hr class="risca">
+  {% for r in registos %}
+    <div style="padding:6px 0;border-bottom:1px solid #bbb;{% if r.estado == 'F' %}color:#c0392b;{% endif %}">
+      <b>{{ r.data|date:"d/m/Y" }}</b> - {{ r.get_estado_display }}
+      {% if r.observacao %}<br><small>{{ r.observacao }}</small>{% endif %}
+    </div>
+  {% empty %}
+    <p style="text-align:center">Ainda não há registos.</p>
+  {% endfor %}
+</section>
+{% endblock %}
