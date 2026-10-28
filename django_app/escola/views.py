@@ -1123,3 +1123,43 @@ def funcionario_encarregado_pdf(request, pk, aluno_pk):
         f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {funcionario.nome}", itens, nome,
         rotulo_resposta="Resposta da Direção"
     )
+
+
+def funcionario_presencas(request, pk):
+    import datetime
+    from .models import Presenca
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    data_txt = request.POST.get("data") or request.GET.get("data") or ""
+    try:
+        data = datetime.date.fromisoformat(data_txt)
+    except ValueError:
+        data = timezone.localdate()
+
+    alunos = Aluno.objects.filter(
+        ativo=True, classe__iexact=funcionario.classe.strip(), turma__iexact=funcionario.turma.strip()
+    ).order_by("nome") if (funcionario.classe.strip() and funcionario.turma.strip()) else Aluno.objects.none()
+
+    if request.method == "POST" and request.POST.get("acao") == "gravar":
+        for a in alunos:
+            estado = request.POST.get(f"estado_{a.pk}")
+            if estado in ("P", "F", "J"):
+                Presenca.objects.update_or_create(
+                    aluno=a, data=data,
+                    defaults={
+                        "estado": estado,
+                        "observacao": request.POST.get(f"obs_{a.pk}", "").strip()[:200],
+                        "marcado_por": funcionario,
+                    },
+                )
+        messages.success(request, "Presenças gravadas.")
+        return redirect(f"{request.path}?data={data.isoformat()}")
+
+    existentes = {p.aluno_id: p for p in Presenca.objects.filter(data=data, aluno__in=alunos)}
+    linhas = [{"aluno": a, "p": existentes.get(a.pk)} for a in alunos]
+    return render(request, "escola/funcionario_presencas.html", {
+        "f": funcionario, "data": data, "linhas": linhas,
+    })

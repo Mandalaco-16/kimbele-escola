@@ -1,0 +1,29 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Marcar Presenças - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:funcionario_detail' f.pk %}" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">MARCAR PRESENÇAS</h3>
+  <p style="text-align:center;margin:0">Classe {{ f.classe }} - Turma {{ f.turma }}</p>
+  <form method="get" style="text-align:center;margin:10px 0">
+    <input type="date" name="data" value="{{ data|date:'Y-m-d' }}" onchange="this.form.submit()">
+  </form>
+  <form method="post">
+    {% csrf_token %}
+    <input type="hidden" name="acao" value="gravar">
+    <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
+    {% for l in linhas %}
+      <div style="border-bottom:1px solid #bbb;padding:8px 0">
+        <b>{{ forloop.counter }} - {{ l.aluno.nome }}</b><br>
+        <label><input type="radio" name="estado_{{ l.aluno.pk }}" value="P" {% if not l.p or l.p.estado == 'P' %}checked{% endif %}> Presente</label>
+        <label style="margin-left:8px"><input type="radio" name="estado_{{ l.aluno.pk }}" value="F" {% if l.p.estado == 'F' %}checked{% endif %}> Faltou</label>
+        <label style="margin-left:8px"><input type="radio" name="estado_{{ l.aluno.pk }}" value="J" {% if l.p.estado == 'J' %}checked{% endif %}> Justificada</label><br>
+        <input type="text" name="obs_{{ l.aluno.pk }}" value="{{ l.p.observacao|default:'' }}" maxlength="200" style="width:100%;box-sizing:border-box;margin-top:4px">
+      </div>
+    {% empty %}
+      <p style="text-align:center">Não há alunos com a sua classe e turma. Peça à Direção para conferir a Classe e a Turma no seu perfil e nos alunos.</p>
+    {% endfor %}
+    {% if linhas %}<button type="submit" class="botao botao--primario" style="margin-top:12px">Gravar</button>{% endif %}
+  </form>
+</section>
+{% endblock %}
