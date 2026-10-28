@@ -336,7 +336,7 @@ def contributo_view(request):
                 messages.error(request, "Demasiadas tentativas. Aguarde 15 minutos e tente de novo.")
             else:
                 alvo = Aluno.objects.filter(matricula=matricula, ativo=True).first()
-                if alvo and alvo.nascimento and "".join(c for c in nasc if c.isdigit()) == alvo.nascimento.strftime("%d%m%Y"):
+                if alvo and alvo.nascimento and "".join(c for c in nasc if c.isdigit()) in (alvo.nascimento.strftime("%d%m%Y"), alvo.nascimento.strftime("%Y%m%d")):
                     aluno = alvo
                     cache.delete(chave)
                     request.session["aluno_publico_id"] = alvo.pk
