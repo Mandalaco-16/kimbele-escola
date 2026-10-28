@@ -1049,6 +1049,8 @@ def encarregado_direcao(request):
                 anexo=form.cleaned_data["anexo"],
             )
             return redirect("escola:encarregado_direcao")
+    MensagemDirecaoAluno.objects.filter(aluno=aluno, vista_aluno=False).update(vista_aluno=True)
+    Contributo.objects.filter(aluno=aluno, resposta_vista=False).update(resposta_vista=True)
     return render(request, "escola/encarregado_direcao.html", {
         "aluno": aluno, "conversa": _conversa_direcao(aluno), "form": form,
     })

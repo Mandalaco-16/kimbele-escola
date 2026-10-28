@@ -42,3 +42,24 @@ def aviso_novo(context):
     else:
         qs = qs.filter(classe="")
     return qs.exists()
+
+
+@register.filter
+def direcao_nova(aluno):
+    from django.db.models import Q
+    from escola.models import Contributo, MensagemDirecaoAluno
+    if not aluno:
+        return False
+    if MensagemDirecaoAluno.objects.filter(aluno=aluno, vista_aluno=False).exists():
+        return True
+    return Contributo.objects.filter(aluno=aluno, resposta_vista=False).filter(
+        ~Q(resposta="") | ~Q(resposta_anexo="")
+    ).exists()
+
+
+@register.filter
+def professor_novo(aluno):
+    from escola.models import MensagemEncarregado
+    if not aluno:
+        return False
+    return MensagemEncarregado.objects.filter(aluno=aluno, do_professor=True, lida=False).exists()

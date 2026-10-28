@@ -265,6 +265,7 @@ class MensagemDirecaoAluno(models.Model):
         null=True,
         help_text="Opcional. Aceita fotos ou ficheiros PDF.",
     )
+    vista_aluno = models.BooleanField("Vista pelo aluno", default=False)
     criado_em = models.DateTimeField("Enviado em", auto_now_add=True)
 
     class Meta:
