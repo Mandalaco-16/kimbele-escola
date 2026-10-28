@@ -13,9 +13,9 @@
     <ol style="padding-left: 1.5rem;">
       {% for aluno in alunos %}
         <li style="margin-bottom: 0.5rem; font-size: 14px;">
-          <a href="{% url 'escola:aluno_conversa' aluno.pk %}" class="botao botao--secundario">
+          <a href="{% url 'escola:aluno_hub' aluno.pk %}" class="botao botao--secundario">
             {{ aluno.nome }}
-          </a>
+          </a>{% if aluno.tem_notificacao %}<span style="display:inline-block;width:12px;height:12px;border-radius:50%;background:#e00;margin-left:8px;animation:pulsar 1s infinite"></span>{% endif %}
         </li>
       {% endfor %}
     </ol>
@@ -23,4 +23,5 @@
     <p>Ainda não há alunos cadastrados.</p>
   {% endif %}
 </section>
+<style>@keyframes pulsar{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(1.4)}}</style>
 {% endblock %}

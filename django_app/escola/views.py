@@ -692,7 +692,10 @@ def funcionario_mensagens_direcao(request, pk):
 @login_required
 @never_cache
 def contributos_gerais(request):
-    alunos = Aluno.objects.filter(ativo=True).order_by("nome")
+    nao_lido = Contributo.objects.filter(aluno=OuterRef("pk"), lido=False)
+    alunos = Aluno.objects.filter(ativo=True).annotate(
+        tem_notificacao=Exists(nao_lido)
+    ).order_by("nome")
     return render(request, "escola/contributos_gerais.html", {"alunos": alunos})
 
 
