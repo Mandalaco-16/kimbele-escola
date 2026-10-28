@@ -1239,6 +1239,9 @@ def avisos_escola(request):
     else:
         qs = qs.filter(classe="")
     hoje = timezone.localdate()
+    ultimo = Aviso.objects.filter(publicado=True).order_by("-id").first()
+    if ultimo:
+        request.session["avisos_visto_id"] = ultimo.id
     return render(request, "escola/avisos.html", {
         "proximos": qs.filter(data_evento__gte=hoje).order_by("data_evento"),
         "passados": qs.filter(data_evento__lt=hoje).order_by("-data_evento")[:10],
