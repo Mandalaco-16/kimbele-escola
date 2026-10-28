@@ -29,10 +29,10 @@
         <style>
         #acesso2{width:100%;box-sizing:border-box}
         #acesso2:not(.tem)::-webkit-datetime-edit{color:transparent}
-        #acesso2::-webkit-calendar-picker-indicator{opacity:0;position:absolute;inset:0;width:100%;height:100%}
+        #acesso2::-webkit-calendar-picker-indicator{opacity:0}
       </style>
       <input type="date" id="acesso2" name="nascimento" autocomplete="off" required
-             onclick="try{this.showPicker()}catch(e){}" onfocus="try{this.showPicker()}catch(e){}"
+             onclick="try{this.showPicker()}catch(e){}"
              onchange="this.classList.toggle('tem',!!this.value)">
       </div>
       <button type="submit" class="botao botao--primario">Pesquisar</button>
