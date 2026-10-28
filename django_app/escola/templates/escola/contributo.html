@@ -16,9 +16,9 @@
     <p style="display:flex;gap:6px;margin:12px 0 0;font-weight:700;font-size:16px"><span style="width:1.4em;flex-shrink:0">2-</span><a href="{% url 'escola:encarregado_professores' %}">CONVERSAR COM O PROFESSOR/A</a></p>
   {% else %}
     {% if erro_matricula %}
-      <p class="formulario__erro">Matrícula ou data de nascimento incorretas. Verifique e tente novamente.</p>
+      <p class="formulario__erro">Dados incorretos. Verifique e tente novamente.</p>
     {% endif %}
-    <p>Insira o número da matrícula e a data de nascimento do aluno</p>
+    <p>Insira os dados de acesso</p>
     <form method="post" class="formulario">
       {% csrf_token %}
       <input type="hidden" name="acao" value="pesquisar">
@@ -26,8 +26,7 @@
         <input type="text" name="matricula" placeholder="Número de matrícula">
       </div>
       <div class="formulario__campo">
-        <label for="nascimento">Data de nascimento do aluno</label>
-        <input type="date" id="nascimento" name="nascimento" required>
+        <input type="password" name="nascimento" inputmode="numeric" autocomplete="off" required>
       </div>
       <button type="submit" class="botao botao--primario">Pesquisar</button>
     </form>
