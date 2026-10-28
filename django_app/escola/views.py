@@ -329,15 +329,26 @@ def contributo_view(request):
 
         if acao == "pesquisar":
             matricula = request.POST.get("matricula", "").strip()
-            try:
-                aluno = Aluno.objects.get(matricula=matricula, ativo=True)
-                request.session["aluno_publico_id"] = aluno.pk
-            except Aluno.DoesNotExist:
-                erro_matricula = True
+            nasc = request.POST.get("nascimento", "").strip()
+            from django.core.cache import cache
+            chave = f"tentativas_{matricula}"
+            if cache.get(chave, 0) >= 5:
+                messages.error(request, "Demasiadas tentativas. Aguarde 15 minutos e tente de novo.")
+            else:
+                alvo = Aluno.objects.filter(matricula=matricula, ativo=True).first()
+                if alvo and alvo.nascimento and nasc == alvo.nascimento.isoformat():
+                    aluno = alvo
+                    cache.delete(chave)
+                    request.session["aluno_publico_id"] = alvo.pk
+                else:
+                    cache.set(chave, cache.get(chave, 0) + 1, 900)
+                    erro_matricula = True
 
         elif acao == "baixar_pdf":
             aluno_id = request.POST.get("aluno_id")
             aluno = get_object_or_404(Aluno, pk=aluno_id, ativo=True)
+            if request.session.get("aluno_publico_id") != aluno.pk:
+                return redirect("/contributo/")
             conversa_pdf = []
             for c in Contributo.objects.filter(aluno=aluno):
                 conversa_pdf.append({"tipo": "aluno", "texto": c.mensagem, "anexo": c.anexo, "quando": c.criado_em})
@@ -354,6 +365,8 @@ def contributo_view(request):
         elif acao == "enviar":
             aluno_id = request.POST.get("aluno_id")
             aluno = get_object_or_404(Aluno, pk=aluno_id, ativo=True)
+            if request.session.get("aluno_publico_id") != aluno.pk:
+                return redirect("/contributo/")
             form = MensagemAlunoForm(request.POST, request.FILES)
             if form.is_valid():
                 Contributo.objects.create(
