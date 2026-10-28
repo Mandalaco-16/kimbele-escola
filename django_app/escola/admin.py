@@ -128,3 +128,14 @@ from .models import MensagemEncarregado
 class MensagemEncarregadoAdmin(admin.ModelAdmin):
     list_display = ("aluno", "professor", "do_professor", "criado_em")
     list_filter = ("professor",)
+
+
+from .models import Presenca
+
+
+@admin.register(Presenca)
+class PresencaAdmin(admin.ModelAdmin):
+    list_display = ("aluno", "data", "estado", "observacao", "marcado_por")
+    list_filter = ("estado", "data")
+    search_fields = ("aluno__nome", "aluno__matricula")
+    date_hierarchy = "data"

@@ -287,3 +287,30 @@ class MensagemEncarregado(models.Model):
 
     def __str__(self):
         return f"{self.aluno.nome} / {self.professor.nome} ({self.criado_em:%d/%m/%Y %H:%M})"
+
+
+class Presenca(models.Model):
+    ESTADOS = [
+        ("P", "Presente"),
+        ("F", "Faltou"),
+        ("J", "Falta justificada"),
+    ]
+    aluno = models.ForeignKey(
+        Aluno, verbose_name="Aluno", on_delete=models.CASCADE, related_name="presencas"
+    )
+    data = models.DateField("Data")
+    estado = models.CharField("Estado", max_length=1, choices=ESTADOS, default="P")
+    observacao = models.CharField("Observação", max_length=200, blank=True)
+    marcado_por = models.ForeignKey(
+        Funcionario, verbose_name="Marcado por", null=True, blank=True,
+        on_delete=models.SET_NULL, related_name="presencas_marcadas",
+    )
+
+    class Meta:
+        verbose_name = "Presença"
+        verbose_name_plural = "Faltas e Presenças"
+        ordering = ["-data", "aluno__nome"]
+        unique_together = [("aluno", "data")]
+
+    def __str__(self):
+        return f"{self.aluno.nome} - {self.data:%d/%m/%Y} - {self.get_estado_display()}"
