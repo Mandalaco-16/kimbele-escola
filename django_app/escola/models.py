@@ -301,6 +301,7 @@ class Presenca(models.Model):
     data = models.DateField("Data")
     estado = models.CharField("Estado", max_length=1, choices=ESTADOS, default="P")
     observacao = models.CharField("Observação", max_length=200, blank=True)
+    visto = models.BooleanField("Visto pelo encarregado", default=True)
     marcado_por = models.ForeignKey(
         Funcionario, verbose_name="Marcado por", null=True, blank=True,
         on_delete=models.SET_NULL, related_name="presencas_marcadas",

@@ -10,6 +10,9 @@
     <div style="color:#c0392b">Faltas<br><span style="font-size:22px">{{ total_f }}</span></div>
     <div>Justificadas<br><span style="font-size:22px">{{ total_j }}</span></div>
   </div>
+  <p style="text-align:right;margin:6px 0">
+    <a href="{% url 'escola:encarregado_presencas_pdf' %}" style="color:#0645ad;text-decoration:underline;font-size:14px">⬇️ Baixar Presenças, Faltas e Justificações</a>
+  </p>
   <hr class="risca">
   {% for r in registos %}
     <div style="padding:6px 0;border-bottom:1px solid #bbb;{% if r.estado == 'F' %}color:#c0392b;{% endif %}">

@@ -4,6 +4,7 @@ from . import views
 app_name = "escola"
 
 urlpatterns = [
+    path("contributo/presencas/pdf/", views.encarregado_presencas_pdf, name="encarregado_presencas_pdf"),
     path("contributo/presencas/", views.encarregado_presencas, name="encarregado_presencas"),
     path("funcionarios/<int:pk>/presencas/", views.funcionario_presencas, name="funcionario_presencas"),
     path("funcionarios/<int:pk>/encarregados/", views.funcionario_encarregados, name="funcionario_encarregados"),

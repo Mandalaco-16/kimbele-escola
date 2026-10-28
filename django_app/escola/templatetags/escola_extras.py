@@ -18,3 +18,9 @@ def tel_limpo(valor):
         return ""
     limpo = "".join(c for c in valor if c.isdigit() or c == "+")
     return limpo
+
+
+@register.filter
+def falta_nova(aluno):
+    from escola.models import Presenca
+    return Presenca.objects.filter(aluno=aluno, visto=False).exclude(estado="P").exists()

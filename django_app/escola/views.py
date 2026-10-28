@@ -1147,13 +1147,14 @@ def funcionario_presencas(request, pk):
         for a in alunos:
             estado = request.POST.get(f"estado_{a.pk}")
             if estado in ("P", "F", "J"):
+                obs = request.POST.get(f"obs_{a.pk}", "").strip()[:200]
+                ant = Presenca.objects.filter(aluno=a, data=data).first()
+                if ant and ant.estado == estado and ant.observacao == obs:
+                    continue
                 Presenca.objects.update_or_create(
                     aluno=a, data=data,
-                    defaults={
-                        "estado": estado,
-                        "observacao": request.POST.get(f"obs_{a.pk}", "").strip()[:200],
-                        "marcado_por": funcionario,
-                    },
+                    defaults={"estado": estado, "observacao": obs,
+                              "marcado_por": funcionario, "visto": estado == "P"},
                 )
         messages.success(request, "Presenças gravadas.")
         return redirect(f"{request.path}?data={data.isoformat()}")
@@ -1173,6 +1174,7 @@ def encarregado_presencas(request):
         messages.error(request, "Insira primeiro os dados de acesso do aluno.")
         return redirect("/contributo/")
     registos = list(Presenca.objects.filter(aluno=aluno).order_by("-data"))
+    Presenca.objects.filter(aluno=aluno, visto=False).update(visto=True)
     return render(request, "escola/encarregado_presencas.html", {
         "aluno": aluno,
         "registos": registos,
@@ -1180,3 +1182,48 @@ def encarregado_presencas(request):
         "total_f": sum(1 for r in registos if r.estado == "F"),
         "total_j": sum(1 for r in registos if r.estado == "J"),
     })
+
+
+@never_cache
+def encarregado_presencas_pdf(request):
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    from .models import Presenca
+    aluno = _aluno_publico(request)
+    if not aluno:
+        return redirect("/contributo/")
+    registos = list(Presenca.objects.filter(aluno=aluno).order_by("data"))
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = f'attachment; filename="presencas_{aluno.nome.replace(" ", "_")}.pdf"'
+    largura, altura = A4
+    margem = 2 * cm
+    y = altura - margem
+    p = canvas.Canvas(response, pagesize=A4)
+
+    def linha(texto, tamanho=11, negrito=False, espaco=15):
+        nonlocal y
+        if y < margem:
+            p.showPage()
+            y = altura - margem
+        p.setFont("Helvetica-Bold" if negrito else "Helvetica", tamanho)
+        p.drawString(margem, y, texto[:100])
+        y -= espaco
+
+    tp = sum(1 for r in registos if r.estado == "P")
+    tf = sum(1 for r in registos if r.estado == "F")
+    tj = sum(1 for r in registos if r.estado == "J")
+    linha("Presenças, Faltas e Justificações", 14, True, 22)
+    linha(f"Aluno: {aluno.nome}", 11, False, 18)
+    linha(f"Presenças: {tp}   Faltas: {tf}   Justificadas: {tj}", 11, True, 22)
+    if not registos:
+        linha("Ainda não há registos.")
+    for r in registos:
+        txt = f"{r.data:%d/%m/%Y} - {r.get_estado_display()}"
+        if r.observacao:
+            txt += f" ({r.observacao})"
+        linha(txt)
+    p.showPage()
+    p.save()
+    return response
