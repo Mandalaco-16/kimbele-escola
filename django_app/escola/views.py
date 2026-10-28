@@ -1228,3 +1228,21 @@ def encarregado_presencas_pdf(request):
     p.showPage()
     p.save()
     return response
+
+
+@never_cache
+def avisos_escola(request):
+    from django.db.models import Q
+    from .models import Aviso
+    aluno = _aluno_publico(request)
+    qs = Aviso.objects.filter(publicado=True)
+    if aluno and aluno.classe.strip():
+        qs = qs.filter(Q(classe="") | Q(classe__iexact=aluno.classe.strip()))
+    else:
+        qs = qs.filter(classe="")
+    hoje = timezone.localdate()
+    return render(request, "escola/avisos.html", {
+        "proximos": qs.filter(data_evento__gte=hoje).order_by("data_evento"),
+        "passados": qs.filter(data_evento__lt=hoje).order_by("-data_evento")[:10],
+        "aluno": aluno,
+    })

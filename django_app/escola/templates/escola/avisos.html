@@ -1,0 +1,25 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Avisos da Escola - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">AVISOS DA ESCOLA</h3>
+  {% for a in proximos %}
+    <div style="padding:8px 0;border-bottom:1px solid #bbb">
+      <b>{{ a.data_evento|date:"d/m/Y" }} - {{ a.titulo }}</b>
+      {% if a.classe %}<small> ({{ a.classe }}ª classe)</small>{% endif %}
+      {% if a.texto %}<br>{{ a.texto|linebreaksbr }}{% endif %}
+    </div>
+  {% empty %}
+    <p style="text-align:center">Não há avisos próximos.</p>
+  {% endfor %}
+  {% if passados %}
+    <h4 style="margin-top:18px;color:#666">Avisos anteriores</h4>
+    {% for a in passados %}
+      <div style="padding:6px 0;border-bottom:1px solid #ddd;color:#666">
+        {{ a.data_evento|date:"d/m/Y" }} - {{ a.titulo }}
+      </div>
+    {% endfor %}
+  {% endif %}
+</section>
+{% endblock %}

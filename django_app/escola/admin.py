@@ -139,3 +139,13 @@ class PresencaAdmin(admin.ModelAdmin):
     list_filter = ("estado", "data")
     search_fields = ("aluno__nome", "aluno__matricula")
     date_hierarchy = "data"
+
+
+from .models import Aviso
+
+
+@admin.register(Aviso)
+class AvisoAdmin(admin.ModelAdmin):
+    list_display = ("titulo", "data_evento", "classe", "publicado")
+    list_filter = ("publicado", "classe")
+    search_fields = ("titulo", "texto")

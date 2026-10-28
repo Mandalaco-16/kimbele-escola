@@ -315,3 +315,23 @@ class Presenca(models.Model):
 
     def __str__(self):
         return f"{self.aluno.nome} - {self.data:%d/%m/%Y} - {self.get_estado_display()}"
+
+
+class Aviso(models.Model):
+    titulo = models.CharField("Título", max_length=200)
+    texto = models.TextField("Texto", blank=True)
+    data_evento = models.DateField("Data do evento")
+    classe = models.CharField(
+        "Classe", max_length=100, blank=True,
+        help_text="Deixe em branco para todas as classes. Escreva igual à classe dos alunos (ex.: 6).",
+    )
+    publicado = models.BooleanField("Publicado", default=True)
+    criado_em = models.DateTimeField("Criado em", auto_now_add=True)
+
+    class Meta:
+        verbose_name = "Aviso"
+        verbose_name_plural = "Avisos da Escola"
+        ordering = ["data_evento"]
+
+    def __str__(self):
+        return f"{self.titulo} ({self.data_evento:%d/%m/%Y})"
