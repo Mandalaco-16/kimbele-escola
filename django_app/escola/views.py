@@ -1006,7 +1006,7 @@ def encarregado_conversa_pdf(request, func_pk):
     nome = f"conversa_{aluno.nome.replace(' ', '_')}_{professor.nome.replace(' ', '_')}.pdf"
     return _gerar_pdf_conversa(
         f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {professor.nome}", itens, nome,
-        rotulo_resposta="Resposta do Professor/a"
+        rotulo_resposta="Resposta da Direção"
     )
 
 
@@ -1108,5 +1108,5 @@ def funcionario_encarregado_pdf(request, pk, aluno_pk):
     nome = f"conversa_{aluno.nome.replace(' ', '_')}_{funcionario.nome.replace(' ', '_')}.pdf"
     return _gerar_pdf_conversa(
         f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {funcionario.nome}", itens, nome,
-        rotulo_resposta="Resposta do Professor/a"
+        rotulo_resposta="Resposta da Direção"
     )
