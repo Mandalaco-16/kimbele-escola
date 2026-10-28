@@ -1181,6 +1181,7 @@ def encarregado_presencas(request):
         "total_p": sum(1 for r in registos if r.estado == "P"),
         "total_f": sum(1 for r in registos if r.estado == "F"),
         "total_j": sum(1 for r in registos if r.estado == "J"),
+        "professores": list(dict.fromkeys(r.marcado_por.nome for r in registos if r.marcado_por)),
     })
 
 
