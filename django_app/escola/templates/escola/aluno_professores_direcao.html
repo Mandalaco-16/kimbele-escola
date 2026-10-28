@@ -1,0 +1,22 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Conversas com professores - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:aluno_hub' aluno.pk %}" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">CONVERSAS COM PROFESSORES</h3>
+  <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }} (só consulta)</p>
+  {% for g in grupos %}
+    <h4 style="margin:16px 0 6px">Professor/a: {{ g.prof.nome }}</h4>
+    {% for m in g.msgs %}
+      <div class="conversa__mensagem" style="{% if m.do_professor %}background:#eef5ee;{% endif %}">
+        <p class="conversa__data">{% if m.do_professor %}↩️ Professor/a{% else %}📩 Encarregado{% endif %} — {{ m.criado_em|date:"d/m/Y H:i" }}</p>
+        {% if m.mensagem %}<p class="conversa__texto">{{ m.mensagem|linebreaksbr }}</p>{% endif %}
+        {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
+      </div>
+      <hr class="risca">
+    {% endfor %}
+  {% empty %}
+    <p style="text-align:center">Ainda não há conversas com professores.</p>
+  {% endfor %}
+</section>
+{% endblock %}
