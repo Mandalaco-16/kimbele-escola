@@ -772,7 +772,7 @@ def aluno_conversa_apagar(request, pk):
     return redirect("escola:contributos_gerais")
 
 
-def _gerar_pdf_conversa(titulo, subtitulo, conversa, nome_ficheiro):
+def _gerar_pdf_conversa(titulo, subtitulo, conversa, nome_ficheiro, rotulo_resposta="Resposta da Direção"):
     from django.http import HttpResponse
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.units import cm
@@ -807,7 +807,7 @@ def _gerar_pdf_conversa(titulo, subtitulo, conversa, nome_ficheiro):
         escrever_linha("Ainda não há mensagens trocadas.")
     else:
         for m in conversa:
-            quem = "Enviado" if m["tipo"] == "aluno" else "Resposta da Direção"
+            quem = "Enviado" if m["tipo"] == "aluno" else rotulo_resposta
             escrever_linha(f"{quem} - {m['quando']:%d/%m/%Y %H:%M}", tamanho=10, negrito=True)
             if m["texto"]:
                 for linha in textwrap.wrap(m["texto"], width=95):
@@ -1005,7 +1005,8 @@ def encarregado_conversa_pdf(request, func_pk):
     ]
     nome = f"conversa_{aluno.nome.replace(' ', '_')}_{professor.nome.replace(' ', '_')}.pdf"
     return _gerar_pdf_conversa(
-        f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {professor.nome}", itens, nome
+        f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {professor.nome}", itens, nome,
+        rotulo_resposta="Resposta do Professor/a"
     )
 
 
@@ -1106,5 +1107,6 @@ def funcionario_encarregado_pdf(request, pk, aluno_pk):
     ]
     nome = f"conversa_{aluno.nome.replace(' ', '_')}_{funcionario.nome.replace(' ', '_')}.pdf"
     return _gerar_pdf_conversa(
-        f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {funcionario.nome}", itens, nome
+        f"Conversa sobre {aluno.nome}", f"Encarregado e Professor/a {funcionario.nome}", itens, nome,
+        rotulo_resposta="Resposta do Professor/a"
     )
