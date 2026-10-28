@@ -159,7 +159,7 @@ def funcionario_detail(request, pk):
             senha_form = SenhaFuncionarioForm(request.POST)
             if senha_form.is_valid():
                 senha_digitada = senha_form.cleaned_data["senha"].strip()
-                if funcionario.senha_pin and senha_digitada == funcionario.senha_pin:
+                if funcionario.verificar_senha(senha_digitada):
                     desbloqueado = True
                     senha_confirmada = senha_digitada
                     senha_form = SenhaFuncionarioForm()
@@ -551,8 +551,7 @@ def funcionario_recuperar_senha(request, pk):
                 or telefone_digitado == whatsapp_cadastrado
             ):
                 senha_nova = "".join(random.choices(string.digits, k=6))
-                funcionario.senha_pin = senha_nova
-                funcionario.save(update_fields=["senha_pin"])
+                funcionario.definir_senha(senha_nova)
 
                 numero_envio = whatsapp_cadastrado or telefone_cadastrado
                 texto = (
@@ -586,9 +585,8 @@ def funcionario_alterar_senha(request, pk):
         if form.is_valid():
             senha_atual = form.cleaned_data["senha_atual"].strip()
             nova_senha = form.cleaned_data["nova_senha"].strip()
-            if senha_atual == funcionario.senha_pin:
-                funcionario.senha_pin = nova_senha
-                funcionario.save(update_fields=["senha_pin"])
+            if funcionario.verificar_senha(senha_atual):
+                funcionario.definir_senha(nova_senha)
                 messages.success(request, "Senha alterada com sucesso!")
                 return redirect("escola:funcionario_detail", pk=pk)
             else:

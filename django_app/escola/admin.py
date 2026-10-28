@@ -11,8 +11,26 @@ from .models import (
 )
 
 
+from django import forms as _forms
+from django.contrib.auth.hashers import make_password as _make_password
+
+
+class FuncionarioAdminForm(_forms.ModelForm):
+    nova_senha = _forms.CharField(
+        label="Nova senha (3 a 20 caracteres)",
+        required=False, min_length=3, max_length=20,
+        widget=_forms.PasswordInput(render_value=False),
+        help_text="Deixe em branco para manter a senha atual. A senha guardada nunca é mostrada.",
+    )
+
+    class Meta:
+        model = Funcionario
+        exclude = ("senha_pin",)
+
+
 @admin.register(Funcionario)
 class FuncionarioAdmin(admin.ModelAdmin):
+    form = FuncionarioAdminForm
     list_display = ("nome", "cargo", "desde", "turma", "classe", "sala", "periodo", "ativo", "ordem")
     list_filter = ("ativo", "cargo")
     search_fields = ("nome", "cargo", "disciplinas")
@@ -21,8 +39,14 @@ class FuncionarioAdmin(admin.ModelAdmin):
         ("Identificação", {"fields": ("nome", "cargo", "desde", "foto", "ativo", "ordem")}),
         ("Ensino", {"fields": ("disciplinas", "turma", "classe", "sala", "periodo", "entrada", "saida")}),
         ("Contactos", {"fields": ("telefone", "whatsapp", "email")}),
-        ("Segurança", {"fields": ("senha_pin",)}),
+        ("Segurança", {"fields": ("nova_senha",)}),
     )
+
+    def save_model(self, request, obj, form, change):
+        nova = form.cleaned_data.get("nova_senha")
+        if nova:
+            obj.senha_pin = _make_password(nova)
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Documento)

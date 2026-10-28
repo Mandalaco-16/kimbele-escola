@@ -25,11 +25,36 @@ class Funcionario(models.Model):
 
     senha_pin = models.CharField(
         "Senha (até 20 caracteres)",
-        max_length=20,
+        max_length=128,
         blank=True,
         default="",
         help_text="Senha de até 20 caracteres que o funcionário usa para confirmar identidade antes de enviar mensagens à direção.",
     )
+
+    def _senha_em_hash(self):
+        from django.contrib.auth.hashers import identify_hasher
+        try:
+            identify_hasher(self.senha_pin)
+            return True
+        except ValueError:
+            return False
+
+    def verificar_senha(self, senha):
+        from django.contrib.auth.hashers import check_password, make_password
+        if not self.senha_pin or not senha:
+            return False
+        if self._senha_em_hash():
+            return check_password(senha, self.senha_pin)
+        if senha == self.senha_pin:
+            self.senha_pin = make_password(senha)
+            self.save(update_fields=["senha_pin"])
+            return True
+        return False
+
+    def definir_senha(self, senha):
+        from django.contrib.auth.hashers import make_password
+        self.senha_pin = make_password(senha)
+        self.save(update_fields=["senha_pin"])
 
     class Meta:
         verbose_name = "Funcionário"
