@@ -15,7 +15,7 @@
     {% endif %}
 
     <h2>{{ f.nome }}</h2>
-    <p class="ficha-funcionario__cargo">{{ f.cargo }}, desde {{ f.desde|date:"d/m/Y" }}.</p>
+    <p class="ficha-funcionario__cargo">{% if f.cargo|lower == "professor" or f.cargo|lower == "professora" or f.cargo|lower == "professor/a" %}Professor/a da Escola{% else %}{{ f.cargo }}{% endif %}, desde {{ f.desde|date:"d/m/Y" }}.</p>
 
     {% if f.disciplinas %}
       <p><strong>Disciplinas:</strong> {{ f.disciplinas }}</p>
