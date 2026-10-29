@@ -63,3 +63,11 @@ def professor_novo(aluno):
     if not aluno:
         return False
     return MensagemEncarregado.objects.filter(aluno=aluno, do_professor=True, lida=False).exists()
+
+
+@register.filter
+def nota_nova(aluno):
+    from escola.models import Nota
+    if not aluno:
+        return False
+    return Nota.objects.filter(aluno=aluno, visto=False).exists()

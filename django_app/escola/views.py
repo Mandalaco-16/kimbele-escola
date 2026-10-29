@@ -1309,3 +1309,80 @@ def funcionario_notas(request, pk):
     return render(request, "escola/funcionario_notas.html", {
         "f": funcionario, "disciplinas": disciplinas, "disc": disc, "tri": tri, "linhas": linhas,
     })
+
+
+def _dados_boletim(aluno):
+    from .models import Disciplina, Nota
+    notas = {(n.disciplina_id, n.trimestre): n.valor for n in Nota.objects.filter(aluno=aluno)}
+    linhas = []
+    for d in Disciplina.objects.all():
+        vals = [notas.get((d.pk, t)) for t in (1, 2, 3)]
+        if any(v is not None for v in vals):
+            linhas.append({"disc": d, "t": vals})
+    medias = []
+    for t in (0, 1, 2):
+        col = [l["t"][t] for l in linhas if l["t"][t] is not None]
+        medias.append(round(sum(col) / len(col), 1) if col else None)
+    return linhas, medias
+
+
+@never_cache
+def encarregado_boletim(request):
+    from .models import Nota
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro os dados de acesso do aluno.")
+        return redirect("/contributo/")
+    Nota.objects.filter(aluno=aluno, visto=False).update(visto=True)
+    linhas, medias = _dados_boletim(aluno)
+    return render(request, "escola/encarregado_boletim.html", {
+        "aluno": aluno, "linhas": linhas, "medias": medias,
+    })
+
+
+@never_cache
+def encarregado_boletim_pdf(request):
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    aluno = _aluno_publico(request)
+    if not aluno:
+        return redirect("/contributo/")
+    linhas, medias = _dados_boletim(aluno)
+    response = HttpResponse(content_type="application/pdf")
+    nome = aluno.nome.replace(" ", "_")
+    response["Content-Disposition"] = f'attachment; filename="boletim_{nome}.pdf"'
+    largura, altura = A4
+    margem = 2 * cm
+    y = altura - margem
+    p = canvas.Canvas(response, pagesize=A4)
+
+    def fmt(v):
+        return "-" if v is None else str(v)
+
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(margem, y, "Boletim de Notas")
+    y -= 22
+    p.setFont("Helvetica", 11)
+    p.drawString(margem, y, f"Aluno: {aluno.nome}")
+    y -= 26
+    p.setFont("Helvetica-Bold", 10)
+    p.drawString(margem, y, "Disciplina")
+    for i, t in enumerate(("1o Trim.", "2o Trim.", "3o Trim.")):
+        p.drawString(margem + 8 * cm + i * 3 * cm, y, t)
+    y -= 18
+    p.setFont("Helvetica", 10)
+    for l in linhas:
+        p.drawString(margem, y, l["disc"].nome[:40])
+        for i, v in enumerate(l["t"]):
+            p.drawString(margem + 8 * cm + i * 3 * cm, y, fmt(v))
+        y -= 16
+    y -= 6
+    p.setFont("Helvetica-Bold", 10)
+    p.drawString(margem, y, "Média")
+    for i, v in enumerate(medias):
+        p.drawString(margem + 8 * cm + i * 3 * cm, y, fmt(v))
+    p.showPage()
+    p.save()
+    return response
