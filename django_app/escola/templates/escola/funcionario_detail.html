@@ -38,18 +38,19 @@
     <hr class="risca">
 
     {% if desbloqueado %}
-      <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Fala com a Direção{% if tem_resposta_nao_vista or tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
-      <p><a href="{% url 'escola:documentos_lista' %}" class="botao botao--secundario">Regulamento</a></p>
-      <p><a href="{% url 'escola:horarios' %}" class="botao botao--secundario">Horário</a></p>
-      <p><a href="{% url 'escola:vitrine' %}" class="botao botao--secundario">Vitrine / Novidades</a></p>
-      <p><a href="{% url 'escola:lazer' %}" class="botao botao--secundario">Lazer e Atividades</a></p>
-      <p><a href="{% url 'escola:desenvolvidor' %}" class="botao botao--secundario">História da Escola</a></p>
-      <p><a href="{% url 'escola:museu_escola' %}" class="botao botao--secundario">Museu da Escola</a></p>
-      <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Colegas{% if mensagens_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
-      <p><a href="{% url 'escola:funcionario_encarregados' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Encarregado{% if encarregado_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
-      <p><a href="{% url 'escola:funcionario_presencas' pk=f.pk %}" class="botao botao--secundario">📋 Marcar Presenças</a></p>
-      <p><a href="{% url 'escola:funcionario_notas' pk=f.pk %}" class="botao botao--secundario">📝 Lançar Notas</a></p>
-      <p><a href="{% url 'escola:funcionario_alterar_senha' pk=f.pk %}" class="botao botao--secundario">🔒 Alterar senha</a></p>
+      <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">1- FALA COM A DIREÇÃO{% if tem_resposta_nao_vista or tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
+      <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">2- CONVERSAR COM COLEGAS{% if mensagens_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
+      <p><a href="{% url 'escola:funcionario_encarregados' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">3- CONVERSAR COM ENCARREGADO{% if encarregado_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
+      <p><a href="{% url 'escola:funcionario_presencas' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">4- MARCAR PRESENÇAS</a></p>
+      <p><a href="{% url 'escola:funcionario_notas' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">5- LANÇAR NOTAS</a></p>
+      <p><a href="{% url 'escola:funcionario_alterar_senha' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">6- ALTERAR SENHA</a></p>
+      <hr style="border:0;border-top:4px solid #c0392b;margin:18px 0 10px">
+      <p><a href="{% url 'escola:documentos_lista' %}" class="botao botao--secundario botao--com-sinal">1- REGULAMENTO</a></p>
+      <p><a href="{% url 'escola:horarios' %}" class="botao botao--secundario botao--com-sinal">2- HORÁRIO</a></p>
+      <p><a href="{% url 'escola:vitrine' %}" class="botao botao--secundario botao--com-sinal">3- VITRINE / NOVIDADES</a></p>
+      <p><a href="{% url 'escola:lazer' %}" class="botao botao--secundario botao--com-sinal">4- LAZER E ATIVIDADES</a></p>
+      <p><a href="{% url 'escola:desenvolvidor' %}" class="botao botao--secundario botao--com-sinal">5- HISTÓRIA DA ESCOLA</a></p>
+      <p><a href="{% url 'escola:museu_escola' %}" class="botao botao--secundario botao--com-sinal">6- MUSEU DA ESCOLA</a></p>
     {% else %}
       <div class="formulario--senha">
         <h3>Senha</h3>
