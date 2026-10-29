@@ -224,5 +224,21 @@ document.addEventListener('DOMContentLoaded',function(){
  sec.insertBefore(a,sec.firstChild);
 });
 </script>
+<script>/* whatsapp-direto */
+document.addEventListener('click',function(e){
+ var a=e.target.closest&&e.target.closest('a[href*="wa.me"],a[href*="api.whatsapp.com"]');
+ if(!a)return;
+ var u;try{u=new URL(a.href);}catch(x){return;}
+ var ph=(u.hostname==='wa.me'?u.pathname:(u.searchParams.get('phone')||'')).replace(/\D/g,'');
+ if(!ph)return;
+ if(/^9\d{8}$/.test(ph))ph='244'+ph;
+ var txt=u.searchParams.get('text');
+ var q=txt?encodeURIComponent(txt):'';
+ e.preventDefault();
+ var t=setTimeout(function(){location.href='https://wa.me/'+ph+(q?'?text='+q:'');},1500);
+ document.addEventListener('visibilitychange',function(){if(document.hidden)clearTimeout(t);});
+ location.href='whatsapp://send?phone='+ph+(q?'&text='+q:'');
+});
+</script>
 </body>
 </html>
