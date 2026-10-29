@@ -323,6 +323,11 @@ def contributo_view(request):
     aluno = None
     erro_matricula = False
     form = MensagemAlunoForm()
+    if request.method == "GET":
+        if request.GET.get("sair"):
+            request.session.pop("aluno_publico_id", None)  # aluno_publico_sair
+        else:
+            aluno = _aluno_publico(request)
 
     if request.method == "POST":
         acao = request.POST.get("acao")
