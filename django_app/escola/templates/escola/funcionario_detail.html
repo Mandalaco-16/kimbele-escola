@@ -39,6 +39,12 @@
 
     {% if desbloqueado %}
       <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Fala com a Direção{% if tem_resposta_nao_vista or tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
+      <p><a href="{% url 'escola:documentos_lista' %}" class="botao botao--secundario">Regulamento</a></p>
+      <p><a href="{% url 'escola:horarios' %}" class="botao botao--secundario">Horário</a></p>
+      <p><a href="{% url 'escola:vitrine' %}" class="botao botao--secundario">Vitrine / Novidades</a></p>
+      <p><a href="{% url 'escola:lazer' %}" class="botao botao--secundario">Lazer e Atividades</a></p>
+      <p><a href="{% url 'escola:desenvolvidor' %}" class="botao botao--secundario">História da Escola</a></p>
+      <p><a href="{% url 'escola:museu_escola' %}" class="botao botao--secundario">Museu da Escola</a></p>
       <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Colegas{% if mensagens_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_encarregados' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Encarregado{% if encarregado_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_presencas' pk=f.pk %}" class="botao botao--secundario">📋 Marcar Presenças</a></p>
