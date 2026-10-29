@@ -213,5 +213,16 @@ document.addEventListener('submit',function(e){
  if(b){setTimeout(function(){b.disabled=true;b.textContent='A enviar...';},0);}
 });
 </script>
+<script>/* voltar-automatico */
+document.addEventListener('DOMContentLoaded',function(){
+ if(location.pathname==='/'||document.querySelector('.link-voltar'))return;
+ var sec=document.querySelector('section.secao');
+ if(!sec)return;
+ var a=document.createElement('a');
+ a.href='/';a.className='link-voltar';a.innerHTML='&larr; Voltar';
+ a.onclick=function(e){if(history.length>1){e.preventDefault();history.back();}};
+ sec.insertBefore(a,sec.firstChild);
+});
+</script>
 </body>
 </html>
