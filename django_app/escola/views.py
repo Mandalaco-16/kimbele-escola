@@ -1434,3 +1434,16 @@ def aluno_faltas_direcao(request, pk):
         "total_f": sum(1 for r in registos if r.estado == "F"),
         "total_j": sum(1 for r in registos if r.estado == "J"),
     })
+
+
+@never_cache
+def encarregado_pagamentos(request):
+    from .models import BoletimPagamento
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro os dados de acesso do aluno.")
+        return redirect("/contributo/")
+    anos = []
+    for b in BoletimPagamento.objects.filter(aluno=aluno).order_by("-ano"):
+        anos.append({"ano": b.ano, "t": [("1.º Trimestre", b.valor_1), ("2.º Trimestre", b.valor_2), ("3.º Trimestre", b.valor_3)]})
+    return render(request, "escola/encarregado_pagamentos.html", {"aluno": aluno, "anos": anos})

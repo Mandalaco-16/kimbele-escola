@@ -1,0 +1,28 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Boletim de Pagamento - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">BOLETIM DE PAGAMENTO POR ANO</h3>
+  <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
+  {% for a in anos %}
+    <h4 style="text-align:center;margin:16px 0 6px">Ano {{ a.ano }}</h4>
+    <table style="width:100%;border-collapse:collapse;font-size:15px">
+      {% for nome, valor in a.t %}
+        <tr style="border-bottom:1px solid #bbb">
+          <td style="padding:10px 6px"><b>{{ nome }}</b></td>
+          <td style="padding:10px 6px;text-align:right">
+            {% if valor is not None %}
+              {{ valor|floatformat:"-2" }} Kz <span style="color:#1e8e3e;font-size:20px;font-weight:700">&#10004;</span>
+            {% else %}
+              <span style="color:#d00;font-size:20px;font-weight:700">&#10008;</span> <small style="color:#d00">Por pagar</small>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </table>
+  {% empty %}
+    <p style="text-align:center;margin-top:16px">Ainda não há registos de pagamento.</p>
+  {% endfor %}
+</section>
+{% endblock %}
