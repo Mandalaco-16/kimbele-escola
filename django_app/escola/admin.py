@@ -207,3 +207,6 @@ class BoletimPagamentoAdmin(admin.ModelAdmin):
 
 
 admin.site.unregister(Nota)
+
+
+admin.site.unregister(Contributo)
