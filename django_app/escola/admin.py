@@ -173,3 +173,19 @@ class AvisoAdmin(admin.ModelAdmin):
     list_display = ("titulo", "data_evento", "classe", "publicado")
     list_filter = ("publicado", "classe")
     search_fields = ("titulo", "texto")
+
+
+from .models import Disciplina, Nota
+
+
+@admin.register(Disciplina)
+class DisciplinaAdmin(admin.ModelAdmin):
+    list_display = ("nome", "ordem")
+    list_editable = ("ordem",)
+
+
+@admin.register(Nota)
+class NotaAdmin(admin.ModelAdmin):
+    list_display = ("aluno", "disciplina", "trimestre", "valor", "marcado_por")
+    list_filter = ("trimestre", "disciplina")
+    search_fields = ("aluno__nome", "aluno__matricula")
