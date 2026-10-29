@@ -204,3 +204,6 @@ class BoletimPagamentoAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.visto = False
         super().save_model(request, obj, form, change)
+
+
+admin.site.unregister(Nota)
