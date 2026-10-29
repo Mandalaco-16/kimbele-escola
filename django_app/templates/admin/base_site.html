@@ -1,20 +1,18 @@
 {% extends "admin/base.html" %}
 {% block extrahead %}{{ block.super }}
 <style>
-#voltar-admin{display:inline-block;margin:8px 15px 0;padding:5px 12px;background:#417690;color:#fff !important;border-radius:4px;font-size:13px;text-decoration:none}
+#voltar-admin{display:inline-block;margin:8px 15px 4px;padding:6px 14px;background:#417690;color:#fff !important;border-radius:4px;font-size:14px;text-decoration:none}
 </style>
-{% endblock %}
-{% block content_title %}{{ block.super }}{% endblock %}
-{% block breadcrumbs %}
-<a id="voltar-admin" href="/painel/sms/">&larr; Voltar</a>
-{{ block.super }}
 <script>
-(function(){
- var a=document.getElementById('voltar-admin');
- if(location.pathname.replace(/\/+$/,'')!=='/django-admin' && history.length>1){
-  a.href='#';
-  a.onclick=function(e){e.preventDefault();history.back();};
- }
-})();
+document.addEventListener('DOMContentLoaded',function(){
+ var c=document.getElementById('container');
+ if(!c||document.getElementById('voltar-admin'))return;
+ var a=document.createElement('a');
+ a.id='voltar-admin';a.innerHTML='&larr; Voltar';
+ var raiz=location.pathname.replace(/\/+$/,'')==='/django-admin';
+ a.href=raiz?'/painel/sms/':'#';
+ if(!raiz){a.onclick=function(e){e.preventDefault();if(history.length>1){history.back();}else{location.href='/django-admin/';}};}
+ c.insertBefore(a,c.firstChild);
+});
 </script>
 {% endblock %}
