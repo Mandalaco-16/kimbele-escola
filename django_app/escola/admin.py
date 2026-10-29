@@ -189,3 +189,14 @@ class NotaAdmin(admin.ModelAdmin):
     list_display = ("aluno", "disciplina", "trimestre", "valor", "marcado_por")
     list_filter = ("trimestre", "disciplina")
     search_fields = ("aluno__nome", "aluno__matricula")
+
+
+from .models import BoletimPagamento
+
+
+@admin.register(BoletimPagamento)
+class BoletimPagamentoAdmin(admin.ModelAdmin):
+    list_display = ("aluno", "ano", "valor_1", "valor_2", "valor_3")
+    list_filter = ("ano",)
+    search_fields = ("aluno__nome", "aluno__matricula")
+    autocomplete_fields = ("aluno",)

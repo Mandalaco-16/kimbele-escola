@@ -396,3 +396,20 @@ class Nota(models.Model):
 
     def __str__(self):
         return f"{self.aluno.nome} - {self.disciplina} - T{self.trimestre}: {self.valor}"
+
+
+class BoletimPagamento(models.Model):
+    aluno = models.ForeignKey(Aluno, verbose_name="Aluno", on_delete=models.CASCADE, related_name="pagamentos")
+    ano = models.PositiveSmallIntegerField("Ano", default=2026)
+    valor_1 = models.DecimalField("1.º Trimestre (Kz pagos)", max_digits=10, decimal_places=2, null=True, blank=True)
+    valor_2 = models.DecimalField("2.º Trimestre (Kz pagos)", max_digits=10, decimal_places=2, null=True, blank=True)
+    valor_3 = models.DecimalField("3.º Trimestre (Kz pagos)", max_digits=10, decimal_places=2, null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Boletim de Pagamento por Ano"
+        verbose_name_plural = "Boletim de Pagamento por Ano"
+        ordering = ["-ano", "aluno__nome"]
+        unique_together = [("aluno", "ano")]
+
+    def __str__(self):
+        return f"{self.aluno.nome} - {self.ano}"
