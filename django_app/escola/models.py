@@ -404,6 +404,7 @@ class BoletimPagamento(models.Model):
     valor_1 = models.DecimalField("1.º Trimestre (Kz pagos)", max_digits=10, decimal_places=2, null=True, blank=True)
     valor_2 = models.DecimalField("2.º Trimestre (Kz pagos)", max_digits=10, decimal_places=2, null=True, blank=True)
     valor_3 = models.DecimalField("3.º Trimestre (Kz pagos)", max_digits=10, decimal_places=2, null=True, blank=True)
+    visto = models.BooleanField("Visto pelo encarregado", default=True)
 
     class Meta:
         verbose_name = "Boletim de Pagamento por Ano"

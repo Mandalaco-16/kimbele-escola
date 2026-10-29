@@ -5,6 +5,7 @@
   <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
   <h3 style="text-align:center">BOLETIM DE PAGAMENTO POR ANO</h3>
   <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
+  <p style="text-align:right;margin:8px 0"><a href="{% url 'escola:encarregado_pagamentos_pdf' %}" style="color:#0645ad;text-decoration:underline;font-size:14px">⬇️ Baixar Boletim de Pagamento em PDF</a></p>
   {% for a in anos %}
     <h4 style="text-align:center;margin:16px 0 6px">Ano {{ a.ano }}</h4>
     <table style="width:100%;border-collapse:collapse;font-size:15px">

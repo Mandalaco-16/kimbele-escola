@@ -1443,7 +1443,49 @@ def encarregado_pagamentos(request):
     if not aluno:
         messages.error(request, "Insira primeiro os dados de acesso do aluno.")
         return redirect("/contributo/")
+    BoletimPagamento.objects.filter(aluno=aluno, visto=False).update(visto=True)
     anos = []
     for b in BoletimPagamento.objects.filter(aluno=aluno).order_by("-ano"):
         anos.append({"ano": b.ano, "t": [("1.º Trimestre", b.valor_1), ("2.º Trimestre", b.valor_2), ("3.º Trimestre", b.valor_3)]})
     return render(request, "escola/encarregado_pagamentos.html", {"aluno": aluno, "anos": anos})
+
+
+@never_cache
+def encarregado_pagamentos_pdf(request):
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.pdfgen import canvas
+    from .models import BoletimPagamento
+    aluno = _aluno_publico(request)
+    if not aluno:
+        return redirect("/contributo/")
+    response = HttpResponse(content_type="application/pdf")
+    nome = aluno.nome.replace(" ", "_")
+    response["Content-Disposition"] = f'attachment; filename="pagamentos_{nome}.pdf"'
+    largura, altura = A4
+    margem = 2 * cm
+    y = altura - margem
+    p = canvas.Canvas(response, pagesize=A4)
+    p.setFont("Helvetica-Bold", 14)
+    p.drawString(margem, y, "Boletim de Pagamento por Ano")
+    y -= 22
+    p.setFont("Helvetica", 11)
+    p.drawString(margem, y, f"Aluno: {aluno.nome}")
+    y -= 26
+    registos = BoletimPagamento.objects.filter(aluno=aluno).order_by("-ano")
+    if not registos:
+        p.drawString(margem, y, "Ainda nao ha registos de pagamento.")
+    for b in registos:
+        p.setFont("Helvetica-Bold", 11)
+        p.drawString(margem, y, f"Ano {b.ano}")
+        y -= 16
+        p.setFont("Helvetica", 11)
+        for rot, v in (("1o Trimestre", b.valor_1), ("2o Trimestre", b.valor_2), ("3o Trimestre", b.valor_3)):
+            txt = f"{v:.2f} Kz - Pago" if v is not None else "Por pagar"
+            p.drawString(margem + 0.5 * cm, y, f"{rot}: {txt}")
+            y -= 15
+        y -= 10
+    p.showPage()
+    p.save()
+    return response

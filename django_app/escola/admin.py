@@ -200,3 +200,7 @@ class BoletimPagamentoAdmin(admin.ModelAdmin):
     list_filter = ("ano",)
     search_fields = ("aluno__nome", "aluno__matricula")
     autocomplete_fields = ("aluno",)
+
+    def save_model(self, request, obj, form, change):
+        obj.visto = False
+        super().save_model(request, obj, form, change)

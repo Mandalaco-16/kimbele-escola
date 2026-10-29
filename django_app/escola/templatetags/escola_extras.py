@@ -71,3 +71,11 @@ def nota_nova(aluno):
     if not aluno:
         return False
     return Nota.objects.filter(aluno=aluno, visto=False).exists()
+
+
+@register.filter
+def pagamento_novo(aluno):
+    from escola.models import BoletimPagamento
+    if not aluno:
+        return False
+    return BoletimPagamento.objects.filter(aluno=aluno, visto=False).exists()
