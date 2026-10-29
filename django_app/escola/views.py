@@ -1252,3 +1252,60 @@ def avisos_escola(request):
         "passados": qs.filter(data_evento__lt=hoje).order_by("-data_evento")[:10],
         "aluno": aluno,
     })
+
+
+def funcionario_notas(request, pk):
+    from decimal import Decimal, InvalidOperation
+    from .models import Disciplina, Nota
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro.")
+        return redirect("escola:funcionario_detail", pk=pk)
+
+    disciplinas = list(Disciplina.objects.all())
+    try:
+        disc = next(d for d in disciplinas if str(d.pk) == (request.POST.get("disciplina") or request.GET.get("disciplina") or ""))
+    except StopIteration:
+        disc = disciplinas[0] if disciplinas else None
+    try:
+        tri = int(request.POST.get("trimestre") or request.GET.get("trimestre") or 1)
+    except ValueError:
+        tri = 1
+    if tri not in (1, 2, 3):
+        tri = 1
+
+    if funcionario.classe.strip() and funcionario.turma.strip():
+        alunos = Aluno.objects.filter(
+            ativo=True, classe__iexact=funcionario.classe.strip(), turma__iexact=funcionario.turma.strip()
+        ).order_by("nome")
+    else:
+        alunos = Aluno.objects.none()
+
+    if request.method == "POST" and request.POST.get("acao") == "gravar" and disc:
+        for a in alunos:
+            txt = request.POST.get(f"nota_{a.pk}", "").strip().replace(",", ".")
+            if not txt:
+                continue
+            try:
+                valor = Decimal(txt)
+            except InvalidOperation:
+                continue
+            if valor < 0 or valor > 10:
+                continue
+            ant = Nota.objects.filter(aluno=a, disciplina=disc, trimestre=tri).first()
+            if ant and ant.valor == valor:
+                continue
+            Nota.objects.update_or_create(
+                aluno=a, disciplina=disc, trimestre=tri,
+                defaults={"valor": valor, "marcado_por": funcionario, "visto": False},
+            )
+        messages.success(request, "Notas gravadas.")
+        return redirect(f"{request.path}?disciplina={disc.pk}&trimestre={tri}")
+
+    existentes = {}
+    if disc:
+        existentes = {n.aluno_id: n for n in Nota.objects.filter(disciplina=disc, trimestre=tri, aluno__in=alunos)}
+    linhas = [{"aluno": a, "n": existentes.get(a.pk)} for a in alunos]
+    return render(request, "escola/funcionario_notas.html", {
+        "f": funcionario, "disciplinas": disciplinas, "disc": disc, "tri": tri, "linhas": linhas,
+    })

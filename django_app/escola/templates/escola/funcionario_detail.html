@@ -48,6 +48,7 @@
       <p><a href="{% url 'escola:funcionario_mensagens_lista' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Colegas{% if mensagens_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_encarregados' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">💬 Conversar com Encarregado{% if encarregado_nao_lidas %}<span class="botao__sinal"></span>{% endif %}</a></p>
       <p><a href="{% url 'escola:funcionario_presencas' pk=f.pk %}" class="botao botao--secundario">📋 Marcar Presenças</a></p>
+      <p><a href="{% url 'escola:funcionario_notas' pk=f.pk %}" class="botao botao--secundario">📝 Lançar Notas</a></p>
       <p><a href="{% url 'escola:funcionario_alterar_senha' pk=f.pk %}" class="botao botao--secundario">🔒 Alterar senha</a></p>
     {% else %}
       <div class="formulario--senha">
