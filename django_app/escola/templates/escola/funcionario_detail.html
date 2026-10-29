@@ -27,7 +27,8 @@
       <p><strong>Saída:</strong> {{ f.saida }}</p>
     {% endif %}
 
-    <hr class="risca">
+    <hr style="border:0;border-top:4px solid #c0392b;margin:10px 0 10px">
+    <h3 style="text-align:center;margin:4px 0 10px">CONTACTOS</h3>
 
     <div class="ficha-funcionario__contactos">
       {% if f.telefone %}<p>📞 <a href="tel:{{ f.telefone|tel_limpo }}">{{ f.telefone }}</a></p>{% endif %}
