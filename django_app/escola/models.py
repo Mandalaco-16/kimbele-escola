@@ -363,41 +363,6 @@ class Aviso(models.Model):
         return f"{self.titulo} ({self.data_evento:%d/%m/%Y})"
 
 
-class Disciplina(models.Model):
-    nome = models.CharField("Disciplina", max_length=100, unique=True)
-    ordem = models.PositiveSmallIntegerField("Ordem", default=0)
-
-    class Meta:
-        verbose_name = "Disciplina"
-        verbose_name_plural = "Disciplinas"
-        ordering = ["ordem", "nome"]
-
-    def __str__(self):
-        return self.nome
-
-
-class Nota(models.Model):
-    TRIMESTRES = [(1, "1.º Trimestre"), (2, "2.º Trimestre"), (3, "3.º Trimestre")]
-    aluno = models.ForeignKey(Aluno, verbose_name="Aluno", on_delete=models.CASCADE, related_name="notas")
-    disciplina = models.ForeignKey(Disciplina, verbose_name="Disciplina", on_delete=models.CASCADE, related_name="notas")
-    trimestre = models.PositiveSmallIntegerField("Trimestre", choices=TRIMESTRES)
-    valor = models.DecimalField("Nota (0 a 10)", max_digits=4, decimal_places=1)
-    visto = models.BooleanField("Visto pelo encarregado", default=True)
-    marcado_por = models.ForeignKey(
-        Funcionario, verbose_name="Lançado por", null=True, blank=True,
-        on_delete=models.SET_NULL, related_name="notas_lancadas",
-    )
-
-    class Meta:
-        verbose_name = "Nota"
-        verbose_name_plural = "Notas"
-        ordering = ["aluno__nome", "trimestre", "disciplina__ordem"]
-        unique_together = [("aluno", "disciplina", "trimestre")]
-
-    def __str__(self):
-        return f"{self.aluno.nome} - {self.disciplina} - T{self.trimestre}: {self.valor}"
-
-
 class BoletimPagamento(models.Model):
     aluno = models.ForeignKey(Aluno, verbose_name="Aluno", on_delete=models.CASCADE, related_name="pagamentos")
     ano = models.PositiveSmallIntegerField("Ano", default=2026)
