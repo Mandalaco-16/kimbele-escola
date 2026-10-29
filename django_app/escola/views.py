@@ -145,7 +145,12 @@ def funcionario_detail(request, pk):
     desbloqueado = request.session.get(chave_sessao, False)
     senha_confirmada = ""
 
-    if request.method != "POST":
+    import time
+    if request.GET.get("sair"):
+        request.session.pop(chave_sessao, None)
+        request.session.pop(chave_sessao + "_ts", None)
+        desbloqueado = False
+    elif desbloqueado and time.time() - request.session.get(chave_sessao + "_ts", 0) > 1800:
         request.session.pop(chave_sessao, None)
         desbloqueado = False
 
@@ -164,6 +169,7 @@ def funcionario_detail(request, pk):
                     senha_confirmada = senha_digitada
                     senha_form = SenhaFuncionarioForm()
                     request.session[chave_sessao] = True
+                    request.session[chave_sessao + "_ts"] = time.time()
                 else:
                     messages.error(request, "Senha incorreta.")
 

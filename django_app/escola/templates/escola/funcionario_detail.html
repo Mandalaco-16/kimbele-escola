@@ -39,6 +39,7 @@
     <hr class="risca">
 
     {% if desbloqueado %}
+      <p style="text-align:right;margin:0;font-size:12px"><a href="?sair=1" style="color:#c0392b">Sair</a></p>
       <hr style="border:0;border-top:4px solid #c0392b;margin:10px 0 10px">
       <h3 style="text-align:center;margin:4px 0 10px">CONVERSAS</h3>
       <p><a href="{% url 'escola:funcionario_historico' pk=f.pk %}" class="botao botao--secundario botao--com-sinal">1- FALA COM A DIREÇÃO{% if tem_resposta_nao_vista or tem_mensagem_direcao_nao_lida %}<span class="botao__sinal"></span>{% endif %}</a></p>
