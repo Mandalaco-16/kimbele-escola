@@ -238,5 +238,18 @@ document.addEventListener('click',function(e){
  location.href='whatsapp://send?phone='+ph+(q?'&text='+q:'');
 });
 </script>
+<script>/* aba-nova */
+(function(){
+ try{
+  if(!sessionStorage.getItem('aba_ativa')){
+   sessionStorage.setItem('aba_ativa','1');
+   if(navigator.sendBeacon){navigator.sendBeacon('/sair-acesso/',new Blob([],{type:'text/plain'}));}
+  }
+ }catch(e){}
+})();
+</script>
+<script>/* recarregar-voltar */
+window.addEventListener('pageshow',function(e){if(e.persisted){location.reload();}});
+</script>
 </body>
 </html>

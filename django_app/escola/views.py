@@ -325,12 +325,13 @@ def funcionario_conversa_pdf(request, pk, destino_pk):
     return response
 
 
+@never_cache
 def contributo_view(request):
     aluno = None
     erro_matricula = False
     form = MensagemAlunoForm()
     if request.method == "GET":
-        if request.GET.get("sair"):
+        if request.GET.get("sair") or request.get_host() not in request.META.get("HTTP_REFERER", ""):
             request.session.pop("aluno_publico_id", None)  # aluno_publico_sair
         else:
             aluno = _aluno_publico(request)
