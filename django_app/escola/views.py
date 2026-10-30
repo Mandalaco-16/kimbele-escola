@@ -1265,43 +1265,6 @@ def avisos_escola(request):
     })
 
 
-@login_required
-@never_cache
-def aluno_hub(request, pk):
-    aluno = get_object_or_404(Aluno, pk=pk)
-    return render(request, "escola/aluno_hub.html", {
-        "aluno": aluno,
-        "nao_lidas": Contributo.objects.filter(aluno=aluno, lido=False).exists(),
-    })
-
-
-@login_required
-@never_cache
-def aluno_professores_direcao(request, pk):
-    from .models import MensagemEncarregado
-    aluno = get_object_or_404(Aluno, pk=pk)
-    profs = Funcionario.objects.filter(mensagens_encarregados__aluno=aluno).distinct().order_by("nome")
-    grupos = [
-        {"prof": f, "msgs": MensagemEncarregado.objects.filter(aluno=aluno, professor=f)}
-        for f in profs
-    ]
-    return render(request, "escola/aluno_professores_direcao.html", {"aluno": aluno, "grupos": grupos})
-
-
-@login_required
-@never_cache
-def aluno_faltas_direcao(request, pk):
-    from .models import Presenca
-    aluno = get_object_or_404(Aluno, pk=pk)
-    registos = list(Presenca.objects.filter(aluno=aluno).order_by("-data"))
-    return render(request, "escola/aluno_faltas_direcao.html", {
-        "aluno": aluno, "registos": registos,
-        "total_p": sum(1 for r in registos if r.estado == "P"),
-        "total_f": sum(1 for r in registos if r.estado == "F"),
-        "total_j": sum(1 for r in registos if r.estado == "J"),
-    })
-
-
 @never_cache
 def encarregado_pagamentos(request):
     from .models import BoletimPagamento
