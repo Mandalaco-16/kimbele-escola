@@ -766,3 +766,7 @@ main {
   text-align: center;
   font-size: 16px;
 }
+
+/* rodape: elementos decorativos nao bloqueiam toques */
+.rodape-novo__onda, .rodape-novo__faixa{ pointer-events:none; }
+.rodape-novo__contactos a{ position:relative; z-index:5; pointer-events:auto; padding:4px 0; }
