@@ -234,15 +234,8 @@ document.addEventListener('click',function(e){
  if(/^9\d{8}$/.test(ph))ph='244'+ph;
  var txt=u.searchParams.get('text');
  var q=txt?encodeURIComponent(txt):'';
- var web='https://wa.me/'+ph+(q?'?text='+q:'');
  e.preventDefault();
- if(/Android/i.test(navigator.userAgent)){
-  location.href='intent://send?phone='+ph+(q?'&text='+q:'')+'#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url='+encodeURIComponent(web)+';end';
- }else{
-  var t=setTimeout(function(){location.href=web;},1500);
-  document.addEventListener('visibilitychange',function(){if(document.hidden)clearTimeout(t);});
-  location.href='whatsapp://send?phone='+ph+(q?'&text='+q:'');
- }
+ location.href='whatsapp://send?phone='+ph+(q?'&text='+q:'');
 });
 </script>
 </body>
