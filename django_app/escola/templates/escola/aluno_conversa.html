@@ -1,12 +1,8 @@
 {% extends "escola/base.html" %}
-{% block titulo %}Conversa com {{ aluno.nome }} - {{ NOME_ESCOLA }}{% endblock %}
-
+{% block titulo %}{{ aluno.nome }} - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
 <section class="secao secao--estreita">
   <a href="{% url 'escola:contributos_gerais' %}" class="link-voltar">&larr; Voltar</a>
-  
-  
-
   {% include "escola/_cartao_aluno.html" %}
   <hr style="border:0;border-top:4px solid #c0392b;margin:10px 0 6px">
   <div style="display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin:4px 0 10px">
@@ -20,31 +16,23 @@
       </form>
     </div>
   </div>
-
-  {% if conversa %}
-    {% for m in conversa %}
-      <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background: #eef5ee;{% endif %}">
-        <p class="conversa__data">
-          {% if m.tipo == 'aluno' %}📩 Enviado{% else %}↩️ Direção{% endif %}
-          — {{ m.quando|date:"d/m/Y H:i" }}
-        </p>
-        {% if m.texto %}<p class="conversa__texto">{{ m.texto|linebreaksbr }}</p>{% endif %}
-        {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
-      </div>
-      <hr class="risca">
-    {% endfor %}
-  {% else %}
+  {% for m in conversa %}
+    <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background:#eef5ee;{% endif %}">
+      <p class="conversa__data">{% if m.tipo == 'aluno' %}📩 Enviado{% else %}↩️ Direção{% endif %} — {{ m.quando|date:"d/m/Y H:i" }}</p>
+      {% if m.texto %}<p class="conversa__texto">{{ m.texto|linebreaksbr }}</p>{% endif %}
+      {% if m.anexo %}<p><a href="{{ m.anexo.url }}" target="_blank" rel="noopener">📎 Ver anexo</a></p>{% endif %}
+    </div>
+    <hr class="risca">
+  {% empty %}
     <p>Ainda não há mensagens.</p>
-  {% endif %}
-
-  <h3 style="text-align: center; margin-top: 2rem;">Responder</h3>
+  {% endfor %}
   <form method="post" enctype="multipart/form-data" class="formulario">
     {% csrf_token %}
     {% for field in form %}
       <div class="formulario__campo">
         {{ field.label_tag }}
         {{ field }}
-        {% if field.help_text %}<p class="formulario__ajuda">{{ field.help_text }}</p>{% endif %}
+        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
         {% for erro in field.errors %}<p class="formulario__erro">{{ erro }}</p>{% endfor %}
       </div>
     {% endfor %}
