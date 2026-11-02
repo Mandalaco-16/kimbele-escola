@@ -85,5 +85,14 @@
     </p>
     <p style="text-align:center"><a href="{{ url_pdf }}" style="color:#0645ad;text-decoration:underline">⬇️ Baixar a pauta em PDF para imprimir</a></p>
   </form>
+<script>/* pauta-cores */
+(function(){
+ function cor(el){var n=parseFloat(String(el.value).replace(',','.'));
+  if(isNaN(n)){el.style.color='';el.style.fontWeight='';}
+  else{el.style.color=n<5?'#d00':'#0645ad';el.style.fontWeight='700';}}
+ document.querySelectorAll('.pauta td input:not(.c)').forEach(function(i){
+  cor(i);i.addEventListener('input',function(){cor(i);});});
+})();
+</script>
 </section>
 {% endblock %}

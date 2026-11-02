@@ -24,5 +24,14 @@
   {% else %}
     <p style="text-align:center;margin-top:16px">Ainda não há pauta para este aluno.</p>
   {% endif %}
+<script>/* pauta-cores */
+document.querySelectorAll('table tr').forEach(function(tr){
+ var td=tr.querySelectorAll('td');
+ for(var i=1;i<td.length;i++){
+  var n=parseFloat(td[i].textContent.replace(',','.'));
+  if(!isNaN(n)){td[i].style.color=n<5?'#d00':'#0645ad';td[i].style.fontWeight='700';}
+ }
+});
+</script>
 </section>
 {% endblock %}

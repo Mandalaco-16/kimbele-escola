@@ -1410,7 +1410,19 @@ def _pauta_pdf(pauta):
         for cod, rot, cols in PAUTA_DISC:
             for col in cols:
                 c.rect(x, y - 16, 20, 16)
-                c.drawCentredString(x + 10, y - 11, getattr(l, cod + "_" + col))
+                val = getattr(l, cod + "_" + col)
+                try:
+                    nota = float(val.replace(",", "."))
+                except ValueError:
+                    nota = None
+                if nota is None:
+                    c.setFillColorRGB(0, 0, 0)
+                elif nota < 5:
+                    c.setFillColorRGB(0.85, 0, 0)
+                else:
+                    c.setFillColorRGB(0.03, 0.27, 0.68)
+                c.drawCentredString(x + 10, y - 11, val)
+                c.setFillColorRGB(0, 0, 0)
                 x += 20
         c.rect(x, y - 16, 52, 16)
         c.setFont("Helvetica", 7)
