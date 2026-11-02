@@ -8,15 +8,15 @@
   {% if linha %}
     <p style="text-align:center;margin:2px 0">{{ linha.pauta.classe }}.ª classe, turma {{ linha.pauta.turma }}, ano lectivo 20{{ linha.pauta.ano_inicio }}/20{{ linha.pauta.ano_fim }}</p>
     <div style="text-align:center;margin:14px 0">
-      {% if linha.resultado == 'Aprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#1e8e3e;color:#fff;font-weight:700;font-size:18px">APROVADO</span>
-      {% elif linha.resultado == 'Reprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#c0392b;color:#fff;font-weight:700;font-size:18px">REPROVADO</span>
+      {% if linha.resultado == 'Aprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#1e8e3e;color:#fff;font-weight:700;font-size:18px">{% if fem %}APROVADA{% else %}APROVADO{% endif %}</span>
+      {% elif linha.resultado == 'Reprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#c0392b;color:#fff;font-weight:700;font-size:18px">{% if fem %}REPROVADA{% else %}REPROVADO{% endif %}</span>
       {% elif linha.resultado == 'Desistente' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#777;color:#fff;font-weight:700;font-size:18px">DESISTENTE</span>
       {% else %}<span style="color:#666">O resultado final ainda não foi publicado.</span>{% endif %}
     </div>
     <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px">
       <tr style="background:#2f5233;color:#fff"><th style="padding:6px;text-align:left">Disciplina</th><th>MFD</th><th>NE</th><th>MF</th></tr>
       {% for d in discs %}
-        <tr style="border-bottom:1px solid #bbb"><td style="padding:6px;text-align:left">{{ d.rot }}</td><td>{{ d.med }}</td><td>{{ d.ne }}</td><td>{{ d.nf }}</td></tr>
+        <tr style="border-bottom:1px solid #bbb"><td style="padding:6px;text-align:left;background:#d6e6f5">{{ d.rot }}</td><td style="background:#cdeccd">{{ d.med }}</td><td>{{ d.ne }}</td><td>{{ d.nf }}</td></tr>
       {% endfor %}
     </table>
     <p style="margin-top:10px"><b>Comportamento:</b> {{ linha.comportamento|default:"-" }}</p>

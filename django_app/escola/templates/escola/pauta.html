@@ -30,9 +30,9 @@
       </div>
       <div class="juri">
         <b>O CORPO DE JÚRI</b><br>
-        Presidente {% if editar_cabecalho %}<input class="h hl" name="h_presidente" value="{{ pauta.presidente }}">{% else %}<u>{{ pauta.presidente }}</u>{% endif %}<br>
-        1º Vogal {% if editar_cabecalho %}<input class="h hl" name="h_vogal1" value="{{ pauta.vogal1 }}">{% else %}<u>{{ pauta.vogal1 }}</u>{% endif %}<br>
-        2º Vogal {% if editar_cabecalho %}<input class="h hl" name="h_vogal2" value="{{ pauta.vogal2 }}">{% else %}<u>{{ pauta.vogal2 }}</u>{% endif %}
+        Presidente <input class="h hl" name="h_presidente" value="{{ pauta.presidente }}"><br>
+        1º Vogal <input class="h hl" name="h_vogal1" value="{{ pauta.vogal1 }}"><br>
+        2º Vogal <input class="h hl" name="h_vogal2" value="{{ pauta.vogal2 }}">
       </div>
       <div style="text-align:center;font-size:13px;line-height:1.9">
         <b>ESCOLA PRIMÁRIA Nº</b> {% if editar_cabecalho %}<input class="h" style="width:50px" name="h_escola_numero" value="{{ pauta.escola_numero }}">{% else %}<u>{{ pauta.escola_numero }}</u>{% endif %}
@@ -50,24 +50,24 @@
             <tr>
               <th rowspan="2" style="width:34px">N.º</th>
               <th rowspan="2" style="min-width:200px">NOME COMPLETO</th>
-              {% for d in discs %}<th colspan="{{ d.n }}">{{ d.rot }}</th>{% endfor %}
+              {% for d in discs %}<th colspan="{{ d.n }}" style="background:#cfe2f5">{{ d.rot }}</th>{% endfor %}
               <th rowspan="2" style="min-width:100px">COMPORTA-<br>MENTO</th>
               <th rowspan="2" style="min-width:110px">RESULTADO<br>FINAL</th>
             </tr>
-            <tr>{% for d in discs %}{% for c in d.cols %}<th class="v">{{ c }}</th>{% endfor %}{% endfor %}</tr>
+            <tr>{% for d in discs %}{% for c in d.cols %}<th class="v"{% if c == "MFD" %} style="background:#cdeccd"{% endif %}>{{ c }}</th>{% endfor %}{% endfor %}</tr>
           </thead>
           <tbody>
             {% for l in linhas %}
               <tr>
                 <td><b>{{ l.obj.numero }}</b></td>
                 <td style="text-align:left;white-space:nowrap">{{ l.obj.nome }}</td>
-                {% for c in l.cells %}<td><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="6" inputmode="decimal"></td>{% endfor %}
+                {% for c in l.cells %}<td{% if c.campo|slice:"-4:" == "_med" %} style="background:#cdeccd"{% endif %}><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="6" inputmode="decimal"></td>{% endfor %}
                 <td><input class="c" name="l{{ l.obj.pk }}_comportamento" value="{{ l.obj.comportamento }}" maxlength="30"></td>
                 <td>
                   <select name="l{{ l.obj.pk }}_resultado">
                     <option value=""></option>
-                    <option value="Aprovado" {% if l.obj.resultado == 'Aprovado' %}selected{% endif %}>Aprovado</option>
-                    <option value="Reprovado" {% if l.obj.resultado == 'Reprovado' %}selected{% endif %}>Reprovado</option>
+                    <option value="Aprovado" {% if l.obj.resultado == 'Aprovado' %}selected{% endif %}>{% if l.fem %}Aprovada{% else %}Aprovado{% endif %}</option>
+                    <option value="Reprovado" {% if l.obj.resultado == 'Reprovado' %}selected{% endif %}>{% if l.fem %}Reprovada{% else %}Reprovado{% endif %}</option>
                     <option value="Desistente" {% if l.obj.resultado == 'Desistente' %}selected{% endif %}>Desistente</option>
                   </select>
                 </td>

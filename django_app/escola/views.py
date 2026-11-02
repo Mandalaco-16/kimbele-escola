@@ -1373,11 +1373,18 @@ def _pauta_pdf(pauta):
         x = x0 + 164
         for cod, rot, cols in PAUTA_DISC:
             w = len(cols) * 20
-            c.rect(x, y - 16, w, 16)
+            c.setFillColorRGB(0.81, 0.89, 0.97)
+            c.rect(x, y - 16, w, 16, stroke=1, fill=1)
+            c.setFillColorRGB(0, 0, 0)
             c.drawCentredString(x + w / 2, y - 11, rot)
             for i, col in enumerate(cols):
                 cx = x + i * 20
-                c.rect(cx, y - 60, 20, 44)
+                if col == "med":
+                    c.setFillColorRGB(0.80, 0.93, 0.80)
+                else:
+                    c.setFillColorRGB(1, 1, 1)
+                c.rect(cx, y - 60, 20, 44, stroke=1, fill=1)
+                c.setFillColorRGB(0, 0, 0)
                 c.saveState()
                 c.translate(cx + 13, y - 56)
                 c.rotate(90)
@@ -1409,7 +1416,11 @@ def _pauta_pdf(pauta):
         x += 140
         for cod, rot, cols in PAUTA_DISC:
             for col in cols:
-                c.rect(x, y - 16, 20, 16)
+                if col == "med":
+                    c.setFillColorRGB(0.80, 0.93, 0.80)
+                    c.rect(x, y - 16, 20, 16, stroke=1, fill=1)
+                else:
+                    c.rect(x, y - 16, 20, 16)
                 val = getattr(l, cod + "_" + col)
                 try:
                     nota = float(val.replace(",", "."))
@@ -1428,7 +1439,7 @@ def _pauta_pdf(pauta):
         c.setFont("Helvetica", 7)
         c.drawCentredString(x + 26, y - 11, l.comportamento[:12])
         c.rect(x + 52, y - 16, 56, 16)
-        c.drawCentredString(x + 80, y - 11, l.resultado)
+        c.drawCentredString(x + 80, y - 11, _pauta_res_txt(l.resultado, l.nome))
         y -= 16
     c.showPage()
     c.save()
@@ -1489,6 +1500,7 @@ def _pauta_sincronizar(pauta):
 
 
 def _pauta_contexto(pauta, editar_cabecalho):
+    _pauta_numerar(pauta)
     linhas = []
     for l in pauta.linhas.all():
         cells = []
@@ -1496,7 +1508,7 @@ def _pauta_contexto(pauta, editar_cabecalho):
             for c in cols:
                 campo = cod + "_" + c
                 cells.append({"campo": campo, "valor": getattr(l, campo)})
-        linhas.append({"obj": l, "cells": cells})
+        linhas.append({"obj": l, "cells": cells, "fem": _pauta_genero(l.nome) == "f"})
     discs = [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in PAUTA_DISC]
     return {"pauta": pauta, "linhas": linhas, "discs": discs, "editar_cabecalho": editar_cabecalho}
 
@@ -1508,10 +1520,41 @@ def _pauta_mfd(ne, mf):
     return str(int((float(ne.replace(",", ".")) + float(mf.replace(",", "."))) / 2 + 0.5))
 
 
+PAUTA_FEM_SEM_A = {"ester", "raquel", "isabel", "beatriz", "ines", "ruth", "rute", "carmen", "mercedes", "lourdes", "dolores", "abigail", "judite", "alice", "denise", "elisabete", "joyce", "nice", "dulce", "cleide", "aline", "eunice", "janete", "ivone", "yvone", "marie", "michele", "sarah", "esther", "noemi", "miriam"}
+PAUTA_MASC_COM_A = {"luca", "joshua", "josua", "mustafa", "jonata"}
+
+
+def _pauta_genero(nome):
+    import unicodedata
+    partes = (nome or "").strip().split()
+    if not partes:
+        return "m"
+    p = unicodedata.normalize("NFD", partes[0].lower())
+    p = "".join(ch for ch in p if unicodedata.category(ch) != "Mn")
+    if p in PAUTA_FEM_SEM_A:
+        return "f"
+    if p in PAUTA_MASC_COM_A:
+        return "m"
+    return "f" if p.endswith("a") else "m"
+
+
+def _pauta_res_txt(res, nome):
+    if _pauta_genero(nome) == "f":
+        return {"Aprovado": "Aprovada", "Reprovado": "Reprovada"}.get(res, res)
+    return res
+
+
+def _pauta_numerar(pauta):
+    for i, l in enumerate(pauta.linhas.order_by("nome"), 1):
+        if l.numero != i:
+            l.numero = i
+            l.save(update_fields=["numero"])
+
+
 def _pauta_gravar(request, pauta, editar_cabecalho):
     invalidas = 0
-    if editar_cabecalho:
-        for f in ("escola_numero", "escola_nome", "sala", "periodo", "ano_inicio", "ano_fim", "presidente", "vogal1", "vogal2"):
+    if True:
+        for f in (("escola_numero", "escola_nome", "sala", "periodo", "ano_inicio", "ano_fim", "presidente", "vogal1", "vogal2") if editar_cabecalho else ("presidente", "vogal1", "vogal2")):
             if "h_" + f in request.POST:
                 setattr(pauta, f, request.POST.get("h_" + f, "").strip()[:150])
         pauta.save()
@@ -1637,4 +1680,4 @@ def encarregado_pauta(request):
         for cod, rot, cols in PAUTA_DISC:
             vals = {c: (getattr(linha, cod + "_" + c) or "-") for c in cols}
             discs.append({"rot": rot, "med": vals.get("med"), "ne": vals.get("ne"), "nf": vals.get("nf", "-")})
-    return render(request, "escola/encarregado_pauta.html", {"aluno": aluno, "linha": linha, "discs": discs})
+    return render(request, "escola/encarregado_pauta.html", {"aluno": aluno, "linha": linha, "discs": discs, "fem": _pauta_genero(aluno.nome) == "f"})
