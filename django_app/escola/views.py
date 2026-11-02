@@ -1441,6 +1441,29 @@ def _pauta_pdf(pauta):
         c.rect(x + 52, y - 16, 56, 16)
         c.drawCentredString(x + 80, y - 11, _pauta_res_txt(l.resultado, l.nome))
         y -= 16
+    try:
+        img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "carimbo.jpg"))
+        iw, ih = img.getSize()
+        w = 130.0
+        cl = 0.09
+        wf = w / (1 - cl)
+        h = wf * ih / iw
+        if y - h - 40 < 20:
+            c.showPage()
+            y = H - 40
+        xr = x0 + sum(larg) - w - 10
+        c.setFillColorRGB(0, 0, 0)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawCentredString(xr + w / 2, y - 22, "O Director")
+        top = y - 28
+        c.saveState()
+        cp = c.beginPath()
+        cp.rect(xr, top - h, w, h)
+        c.clipPath(cp, stroke=0, fill=0)
+        c.drawImage(img, xr - cl * wf, top - h, wf, h, mask=[165, 255, 165, 255, 165, 255])
+        c.restoreState()
+    except Exception:
+        pass
     c.showPage()
     c.save()
     return resp

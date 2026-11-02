@@ -13,7 +13,7 @@
   <div style="margin-top:3px"><b>Cartão de Estudante n°</b> <u>&nbsp;{{ aluno.cartao_numero }}&nbsp;</u> / 20<u>&nbsp;{{ aluno.cartao_ano }}&nbsp;</u></div>
   <div><b>Nome:</b> <u>{{ aluno.nome }}</u> <b>Filho de</b> <u>&nbsp;{{ aluno.filho_de }}&nbsp;</u></div>
   <div><b>e de</b> <u>&nbsp;{{ aluno.mae }}&nbsp;</u></div>
-  <div><b>Nascido aos</b> <u>&nbsp;{% if aluno.nascimento %}{{ aluno.nascimento|date:"d/m/Y" }}{% endif %}&nbsp;</u> <b>Anos</b> <u>&nbsp;{{ aluno.anos|default_if_none:"" }}&nbsp;</u> <b>Natural de</b> <u>&nbsp;{{ aluno.natural_de }}&nbsp;</u></div>
+  <div><b>Nascido aos</b> <u>&nbsp;{% if aluno.nascimento %}{{ aluno.nascimento|date:"d/m/Y" }}{% endif %}&nbsp;</u> <b>Anos</b> <u>&nbsp;{{ aluno.idade|default_if_none:"" }}&nbsp;</u> <b>Natural de</b> <u>&nbsp;{{ aluno.natural_de }}&nbsp;</u></div>
   <div><b>Município de</b> <u>&nbsp;{{ aluno.municipio }}&nbsp;</u> <b>Província de</b> <u>&nbsp;{{ aluno.provincia }}&nbsp;</u></div>
   <div><b>Classe</b> <u>&nbsp;{{ aluno.classe }}&nbsp;</u> <b>Turma</b> <u>&nbsp;{{ aluno.turma }}&nbsp;</u> <b>Sala</b> <u>&nbsp;{{ aluno.sala }}&nbsp;</u> <b>Período</b> <u>&nbsp;{{ aluno.periodo }}&nbsp;</u></div>
   <div><b>Entrada</b> <u>&nbsp;{{ aluno.entrada }}&nbsp;</u> <b>Saída</b> <u>&nbsp;{{ aluno.saida }}&nbsp;</u> <b>N° de Matrícula</b> <u>&nbsp;{{ aluno.matricula }}&nbsp;</u></div>

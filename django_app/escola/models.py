@@ -252,6 +252,20 @@ class Aluno(models.Model):
     def __str__(self):
         return f"{self.nome} ({self.matricula})"
 
+    @property
+    def idade(self):
+        if not self.nascimento:
+            return self.anos
+        from django.utils import timezone
+        hoje = timezone.localdate()
+        n = self.nascimento
+        return max(0, hoje.year - n.year - ((hoje.month, hoje.day) < (n.month, n.day)))
+
+    def save(self, *args, **kwargs):
+        if self.nascimento:
+            self.anos = self.idade
+        super().save(*args, **kwargs)
+
 
 class MensagemDirecaoAluno(models.Model):
     aluno = models.ForeignKey(

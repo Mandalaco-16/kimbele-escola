@@ -21,6 +21,7 @@
     </table>
     <p style="margin-top:10px"><b>Comportamento:</b> {{ linha.comportamento|default:"-" }}</p>
     <p style="font-size:12px;color:#555">MFD: média final da disciplina; NE: nota do exame; MF: média final.</p>
+    <div style="text-align:right;margin-top:14px"><div style="display:inline-block;width:150px;text-align:center;line-height:1.1"><b style="font-size:12px">O Director</b><img src="/static/escola/carimbo.jpg" alt="" style="display:block;width:150px;max-width:100%;mix-blend-mode:multiply;opacity:.9;-webkit-mask-image:linear-gradient(to right,transparent,#000 10px,#000 calc(100% - 10px),transparent),linear-gradient(to bottom,transparent,#000 10px,#000 calc(100% - 10px),transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 10px,#000 calc(100% - 10px),transparent),linear-gradient(to bottom,transparent,#000 10px,#000 calc(100% - 10px),transparent);mask-composite:intersect" onerror="this.style.display='none'"></div></div>
   {% else %}
     <p style="text-align:center;margin-top:16px">Ainda não há pauta para este aluno.</p>
   {% endif %}

@@ -13,3 +13,22 @@
   <div style="text-align:left;margin-top:6px"><b>Cartão de Estudante n° ______ / 20___</b></div>
 </div>
 {% endblock %}
+{% block extrahead %}{{ block.super }}
+<script>/* idade-auto */
+document.addEventListener('DOMContentLoaded',function(){
+ var d=document.getElementById('id_nascimento'),a=document.getElementById('id_anos');
+ if(!d||!a)return;
+ function calc(){
+  var v=d.value.trim(),m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/),y,mo,da;
+  if(m){y=+m[1];mo=+m[2];da=+m[3];}
+  else{m=v.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);if(!m)return;da=+m[1];mo=+m[2];y=+m[3];}
+  var t=new Date(),n=t.getFullYear()-y;
+  if((t.getMonth()+1)<mo||((t.getMonth()+1)===mo&&t.getDate()<da))n--;
+  if(n>=0&&n<120)a.value=n;
+ }
+ ['input','change','blur'].forEach(function(e){d.addEventListener(e,calc);});
+ setInterval(calc,1000);calc();
+ a.readOnly=true;a.style.background='#eee';
+});
+</script>
+{% endblock %}
