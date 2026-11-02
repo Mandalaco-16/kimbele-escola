@@ -1,0 +1,21 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Pautas - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:painel_sms' %}" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">PAUTAS</h3>
+  <form method="post" class="formulario">
+    {% csrf_token %}
+    <input type="hidden" name="acao" value="criar">
+    <div class="formulario__campo"><label>Classe</label><input type="text" name="classe" placeholder="6"></div>
+    <div class="formulario__campo"><label>Turma</label><input type="text" name="turma" placeholder="A"></div>
+    <button type="submit" class="botao botao--primario">Criar ou abrir a pauta</button>
+  </form>
+  <hr class="risca">
+  {% for p in pautas %}
+    <p><a href="{% url 'escola:pauta_direcao' p.pk %}" class="botao botao--secundario">{{ p }}</a></p>
+  {% empty %}
+    <p style="text-align:center">Ainda não há pautas.</p>
+  {% endfor %}
+</section>
+{% endblock %}

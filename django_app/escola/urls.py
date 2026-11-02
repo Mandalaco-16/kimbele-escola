@@ -4,6 +4,12 @@ from . import views
 app_name = "escola"
 
 urlpatterns = [
+    path("contributo/pauta/", views.encarregado_pauta, name="encarregado_pauta"),
+    path("painel/pautas/", views.pauta_lista, name="pauta_lista"),
+    path("painel/pautas/<int:pk>/", views.pauta_direcao, name="pauta_direcao"),
+    path("funcionarios/<int:pk>/pauta/", views.funcionario_pauta, name="funcionario_pauta"),
+    path("painel/pautas/<int:pk>/pdf/", views.pauta_pdf, name="pauta_pdf"),
+    path("funcionarios/<int:pk>/pauta/pdf/", views.funcionario_pauta_pdf, name="funcionario_pauta_pdf"),
     path("contributo/pagamentos/pdf/", views.encarregado_pagamentos_pdf, name="encarregado_pagamentos_pdf"),
     path("contributo/pagamentos/", views.encarregado_pagamentos, name="encarregado_pagamentos"),
     path("painel/alunos/<int:pk>/", views.aluno_conversa, name="aluno_hub"),

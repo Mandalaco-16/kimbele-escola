@@ -1319,3 +1319,274 @@ def encarregado_pagamentos_pdf(request):
     p.showPage()
     p.save()
     return response
+
+
+def _pauta_pdf(pauta):
+    import os
+    from django.conf import settings
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4, landscape
+    from reportlab.pdfgen import canvas
+    from reportlab.lib.utils import ImageReader
+    resp = HttpResponse(content_type="application/pdf")
+    resp["Content-Disposition"] = 'attachment; filename="pauta_%s%s_20%s.pdf"' % (pauta.classe, pauta.turma, pauta.ano_inicio)
+    W, H = landscape(A4)
+    c = canvas.Canvas(resp, pagesize=landscape(A4))
+    larg = [24, 150] + [22] * 21 + [52, 56]
+    x0 = (W - sum(larg)) / 2
+
+    def cabecalho():
+        try:
+            img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "insignia.png"))
+            c.drawImage(img, W / 2 - 20, H - 62, 40, 40, mask="auto")
+        except Exception:
+            pass
+        c.setFont("Helvetica-Bold", 11)
+        c.drawCentredString(W / 2, H - 72, "REPÚBLICA DE ANGOLA")
+        c.setFont("Helvetica", 9)
+        c.drawCentredString(W / 2, H - 85, "GOVERNO PROVINCIAL DO UÍGE")
+        c.drawCentredString(W / 2, H - 96, "ADMINISTRAÇÃO MUNICIPAL DE QUIMBELE")
+        c.drawCentredString(W / 2, H - 107, "DIRECÇÃO DA EDUCAÇÃO")
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(x0, H - 124, "ESCOLA PRIMÁRIA Nº %s DE %s" % (pauta.escola_numero, pauta.escola_nome))
+        c.setFont("Helvetica", 9)
+        c.drawString(x0, H - 138, "PAUTA PARA CLASSES DE EXAME - FORMAÇÃO GERAL")
+        c.drawString(x0, H - 152, "CLASSE %sª   SALA %s   TURMA %s   PERIODO %s   ANO LECTIVO 20%s / 20%s" % (pauta.classe, pauta.sala, pauta.turma, pauta.periodo, pauta.ano_inicio, pauta.ano_fim))
+        bx = W - 260
+        c.rect(bx, H - 150, 220, 88)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawCentredString(bx + 110, H - 76, "O CORPO DE JÚRI")
+        c.setFont("Helvetica", 8)
+        for i, (rot, val) in enumerate((("Presidente", pauta.presidente), ("1º Vogal", pauta.vogal1), ("2º Vogal", pauta.vogal2))):
+            yy = H - 96 - i * 18
+            c.drawString(bx + 8, yy, rot)
+            c.line(bx + 58, yy - 2, bx + 212, yy - 2)
+            c.drawString(bx + 60, yy, val[:34])
+
+    def cab_tabela(y):
+        c.setLineWidth(0.8)
+        c.setFont("Helvetica-Bold", 7)
+        c.rect(x0, y - 60, 24, 60)
+        c.drawCentredString(x0 + 12, y - 33, "N.º")
+        c.rect(x0 + 24, y - 60, 150, 60)
+        c.drawCentredString(x0 + 99, y - 33, "NOME COMPLETO")
+        x = x0 + 174
+        for cod, rot, cols in PAUTA_DISC:
+            w = len(cols) * 22
+            c.rect(x, y - 16, w, 16)
+            c.drawCentredString(x + w / 2, y - 11, rot)
+            for i, col in enumerate(cols):
+                cx = x + i * 22
+                c.rect(cx, y - 60, 22, 44)
+                c.saveState()
+                c.translate(cx + 14, y - 56)
+                c.rotate(90)
+                c.setFont("Helvetica-Bold", 7)
+                c.drawString(0, 0, PAUTA_ROT[col])
+                c.restoreState()
+            x += w
+        c.rect(x, y - 60, 52, 60)
+        c.setFont("Helvetica-Bold", 6)
+        c.drawCentredString(x + 26, y - 33, "COMPORTAMENTO")
+        c.rect(x + 52, y - 60, 56, 60)
+        c.drawCentredString(x + 80, y - 30, "RESULTADO")
+        c.drawCentredString(x + 80, y - 38, "FINAL")
+        return y - 60
+
+    cabecalho()
+    y = cab_tabela(H - 170)
+    for l in pauta.linhas.all():
+        if y - 16 < 30:
+            c.showPage()
+            y = cab_tabela(H - 30)
+        c.setFont("Helvetica", 8)
+        x = x0
+        c.rect(x, y - 16, 24, 16)
+        c.drawCentredString(x + 12, y - 11, str(l.numero))
+        x += 24
+        c.rect(x, y - 16, 150, 16)
+        c.drawString(x + 3, y - 11, l.nome[:34])
+        x += 150
+        for cod, rot, cols in PAUTA_DISC:
+            for col in cols:
+                c.rect(x, y - 16, 22, 16)
+                c.drawCentredString(x + 11, y - 11, getattr(l, cod + "_" + col))
+                x += 22
+        c.rect(x, y - 16, 52, 16)
+        c.setFont("Helvetica", 7)
+        c.drawCentredString(x + 26, y - 11, l.comportamento[:12])
+        c.rect(x + 52, y - 16, 56, 16)
+        c.drawCentredString(x + 80, y - 11, l.resultado)
+        y -= 16
+    c.showPage()
+    c.save()
+    return resp
+
+
+@login_required
+@never_cache
+def pauta_pdf(request, pk):
+    from .models import Pauta
+    return _pauta_pdf(get_object_or_404(Pauta, pk=pk))
+
+
+@never_cache
+def funcionario_pauta_pdf(request, pk):
+    from .models import Pauta
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        return redirect("escola:funcionario_detail", pk=pk)
+    ini, fim = _pauta_ano_atual()
+    pauta = get_object_or_404(
+        Pauta, classe__iexact=funcionario.classe.strip(), turma__iexact=funcionario.turma.strip(), ano_inicio=ini
+    )
+    return _pauta_pdf(pauta)
+
+
+PAUTA_DISC = [
+    ("lport", "L.PORT", ("med", "ne")), ("mat", "MAT.", ("med", "ne")), ("hist", "HIST.", ("med", "ne")),
+    ("geo", "GEO", ("med", "ne")), ("cnat", "C NAT", ("med", "ne")), ("emc", "EM.C", ("med", "ne")),
+    ("emp", "E.M.P", ("med", "ne", "nf")), ("edmus", "ED.MUS", ("med", "ne", "nf")), ("edfis", "ED.FIS", ("med", "ne", "nf")),
+]
+PAUTA_ROT = {"med": "MED", "ne": "NE", "nf": "NF"}
+
+
+def _pauta_ano_atual():
+    hoje = timezone.localdate()
+    ini = hoje.year if hoje.month >= 9 else hoje.year - 1
+    return f"{ini % 100:02d}", f"{(ini + 1) % 100:02d}"
+
+
+def _pauta_sincronizar(pauta):
+    from .models import PautaLinha
+    ja = set(pauta.linhas.exclude(aluno=None).values_list("aluno_id", flat=True))
+    proximo = (pauta.linhas.order_by("-numero").values_list("numero", flat=True).first() or 0) + 1
+    alunos = Aluno.objects.filter(
+        ativo=True, classe__iexact=pauta.classe.strip(), turma__iexact=pauta.turma.strip()
+    ).order_by("nome")
+    for a in alunos:
+        if a.pk not in ja:
+            PautaLinha.objects.create(pauta=pauta, numero=proximo, aluno=a, nome=a.nome)
+            proximo += 1
+
+
+def _pauta_contexto(pauta, editar_cabecalho):
+    linhas = []
+    for l in pauta.linhas.all():
+        cells = []
+        for cod, rot, cols in PAUTA_DISC:
+            for c in cols:
+                campo = cod + "_" + c
+                cells.append({"campo": campo, "valor": getattr(l, campo)})
+        linhas.append({"obj": l, "cells": cells})
+    discs = [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in PAUTA_DISC]
+    return {"pauta": pauta, "linhas": linhas, "discs": discs, "editar_cabecalho": editar_cabecalho}
+
+
+def _pauta_gravar(request, pauta, editar_cabecalho):
+    if editar_cabecalho:
+        for f in ("escola_numero", "escola_nome", "sala", "periodo", "ano_inicio", "ano_fim", "presidente", "vogal1", "vogal2"):
+            if "h_" + f in request.POST:
+                setattr(pauta, f, request.POST.get("h_" + f, "").strip()[:150])
+        pauta.save()
+    for l in pauta.linhas.all():
+        for cod, rot, cols in PAUTA_DISC:
+            for c in cols:
+                campo = cod + "_" + c
+                setattr(l, campo, request.POST.get("l" + str(l.pk) + "_" + campo, "").strip()[:6])
+            if "nf" in cols and not getattr(l, cod + "_nf"):
+                setattr(l, cod + "_nf", getattr(l, cod + "_ne") or getattr(l, cod + "_med"))
+        l.comportamento = request.POST.get("l" + str(l.pk) + "_comportamento", "").strip()[:30]
+        l.resultado = request.POST.get("l" + str(l.pk) + "_resultado", "").strip()[:30]
+        l.save()
+
+
+@login_required
+@never_cache
+def pauta_lista(request):
+    from .models import Pauta
+    if request.method == "POST" and request.POST.get("acao") == "criar":
+        classe = request.POST.get("classe", "").strip()
+        turma = request.POST.get("turma", "").strip()
+        ini, fim = _pauta_ano_atual()
+        if classe and turma:
+            pauta = Pauta.objects.filter(classe__iexact=classe, turma__iexact=turma, ano_inicio=ini).first()
+            if not pauta:
+                pauta = Pauta.objects.create(classe=classe, turma=turma, ano_inicio=ini, ano_fim=fim)
+            _pauta_sincronizar(pauta)
+            return redirect("escola:pauta_direcao", pk=pauta.pk)
+        messages.error(request, "Escreva a classe e a turma.")
+    return render(request, "escola/pauta_lista.html", {"pautas": Pauta.objects.all()})
+
+
+@login_required
+@never_cache
+def pauta_direcao(request, pk):
+    from .models import Pauta
+    from django.urls import reverse
+    pauta = get_object_or_404(Pauta, pk=pk)
+    if request.method == "POST":
+        if request.POST.get("acao") == "atualizar":
+            _pauta_sincronizar(pauta)
+            messages.success(request, "Lista de alunos atualizada.")
+        else:
+            _pauta_gravar(request, pauta, True)
+            messages.success(request, "Pauta gravada.")
+        return redirect("escola:pauta_direcao", pk=pk)
+    if not pauta.linhas.exists():
+        _pauta_sincronizar(pauta)
+    ctx = _pauta_contexto(pauta, True)
+    ctx["url_pdf"] = reverse("escola:pauta_pdf", args=[pk])
+    ctx["url_voltar"] = reverse("escola:pauta_lista")
+    return render(request, "escola/pauta.html", ctx)
+
+
+@never_cache
+def funcionario_pauta(request, pk):
+    from .models import Pauta
+    from django.urls import reverse
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    if not _exige_desbloqueio(request, funcionario):
+        messages.error(request, "Digite a sua senha primeiro.")
+        return redirect("escola:funcionario_detail", pk=pk)
+    classe, turma = funcionario.classe.strip(), funcionario.turma.strip()
+    if not classe or not turma:
+        messages.error(request, "A sua ficha não tem Classe e Turma. Peça à Direção para as preencher.")
+        return redirect("escola:funcionario_detail", pk=pk)
+    ini, fim = _pauta_ano_atual()
+    pauta = Pauta.objects.filter(classe__iexact=classe, turma__iexact=turma, ano_inicio=ini).first()
+    if not pauta:
+        pauta = Pauta.objects.create(
+            classe=classe, turma=turma, ano_inicio=ini, ano_fim=fim,
+            sala=funcionario.sala, periodo=funcionario.periodo,
+        )
+    if request.method == "POST":
+        if request.POST.get("acao") == "atualizar":
+            _pauta_sincronizar(pauta)
+            messages.success(request, "Lista de alunos atualizada.")
+        else:
+            _pauta_gravar(request, pauta, False)
+            messages.success(request, "Pauta gravada.")
+        return redirect("escola:funcionario_pauta", pk=pk)
+    if not pauta.linhas.exists():
+        _pauta_sincronizar(pauta)
+    ctx = _pauta_contexto(pauta, False)
+    ctx["url_pdf"] = reverse("escola:funcionario_pauta_pdf", args=[pk])
+    ctx["url_voltar"] = reverse("escola:funcionario_detail", args=[pk])
+    return render(request, "escola/pauta.html", ctx)
+
+
+@never_cache
+def encarregado_pauta(request):
+    from .models import PautaLinha
+    aluno = _aluno_publico(request)
+    if not aluno:
+        messages.error(request, "Insira primeiro os dados de acesso do aluno.")
+        return redirect("/contributo/")
+    linha = PautaLinha.objects.filter(aluno=aluno).select_related("pauta").order_by("-pauta__ano_inicio").first()
+    discs = []
+    if linha:
+        for cod, rot, cols in PAUTA_DISC:
+            vals = {c: (getattr(linha, cod + "_" + c) or "-") for c in cols}
+            discs.append({"rot": rot, "med": vals.get("med"), "ne": vals.get("ne"), "nf": vals.get("nf", "-")})
+    return render(request, "escola/encarregado_pauta.html", {"aluno": aluno, "linha": linha, "discs": discs})

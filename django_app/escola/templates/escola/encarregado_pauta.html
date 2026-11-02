@@ -1,0 +1,28 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Pauta - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">PAUTA</h3>
+  <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
+  {% if linha %}
+    <p style="text-align:center;margin:2px 0">{{ linha.pauta.classe }}.ª classe, turma {{ linha.pauta.turma }}, ano lectivo 20{{ linha.pauta.ano_inicio }}/20{{ linha.pauta.ano_fim }}</p>
+    <div style="text-align:center;margin:14px 0">
+      {% if linha.resultado == 'Aprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#1e8e3e;color:#fff;font-weight:700;font-size:18px">APROVADO</span>
+      {% elif linha.resultado == 'Reprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#c0392b;color:#fff;font-weight:700;font-size:18px">REPROVADO</span>
+      {% elif linha.resultado == 'Desistente' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#777;color:#fff;font-weight:700;font-size:18px">DESISTENTE</span>
+      {% else %}<span style="color:#666">O resultado final ainda não foi publicado.</span>{% endif %}
+    </div>
+    <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px">
+      <tr style="background:#2f5233;color:#fff"><th style="padding:6px;text-align:left">Disciplina</th><th>MED</th><th>NE</th><th>NF</th></tr>
+      {% for d in discs %}
+        <tr style="border-bottom:1px solid #bbb"><td style="padding:6px;text-align:left">{{ d.rot }}</td><td>{{ d.med }}</td><td>{{ d.ne }}</td><td>{{ d.nf }}</td></tr>
+      {% endfor %}
+    </table>
+    <p style="margin-top:10px"><b>Comportamento:</b> {{ linha.comportamento|default:"-" }}</p>
+    <p style="font-size:12px;color:#555">MED: média; NE: nota do exame; NF: nota final.</p>
+  {% else %}
+    <p style="text-align:center;margin-top:16px">Ainda não há pauta para este aluno.</p>
+  {% endif %}
+</section>
+{% endblock %}

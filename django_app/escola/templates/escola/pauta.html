@@ -1,0 +1,89 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Pauta - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<style>
+.pauta{font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;padding:10px;border:1px solid #333}
+.pauta-cab{text-align:center;line-height:1.35;font-size:13px}
+.pauta-cab b{font-size:15px}
+.pauta input.h{border:0;border-bottom:1px solid #000;background:transparent;text-align:center;width:90px;font-size:13px}
+.pauta input.hl{width:170px}
+.pauta table{border-collapse:collapse;font-size:12px;min-width:1150px}
+.pauta th,.pauta td{border:1px solid #000;padding:2px;text-align:center}
+.pauta th.v{writing-mode:vertical-rl;transform:rotate(180deg);height:46px;width:30px;font-size:11px}
+.pauta td input{width:30px;border:0;background:transparent;text-align:center;font-size:12px;padding:3px 0}
+.pauta td input.c{width:90px}
+.pauta td select{border:0;background:transparent;font-size:12px}
+.pauta .juri{border:1px solid #000;padding:6px 10px;font-size:13px;max-width:330px;margin:10px 0 10px auto}
+.pauta .juri input{width:190px}
+</style>
+<section class="secao">
+  <a href="{{ url_voltar }}" class="link-voltar">&larr; Voltar</a>
+  <form method="post">
+    {% csrf_token %}
+    <div class="pauta">
+      <div class="pauta-cab">
+        <img src="/static/escola/insignia.png" alt="" style="height:48px"><br>
+        <b>REPÚBLICA DE ANGOLA</b><br>
+        GOVERNO PROVINCIAL DO UÍGE<br>
+        ADMINISTRAÇÃO MUNICIPAL DE QUIMBELE<br>
+        DIRECÇÃO DA EDUCAÇÃO
+      </div>
+      <div class="juri">
+        <b>O CORPO DE JÚRI</b><br>
+        Presidente {% if editar_cabecalho %}<input class="h hl" name="h_presidente" value="{{ pauta.presidente }}">{% else %}<u>{{ pauta.presidente }}</u>{% endif %}<br>
+        1º Vogal {% if editar_cabecalho %}<input class="h hl" name="h_vogal1" value="{{ pauta.vogal1 }}">{% else %}<u>{{ pauta.vogal1 }}</u>{% endif %}<br>
+        2º Vogal {% if editar_cabecalho %}<input class="h hl" name="h_vogal2" value="{{ pauta.vogal2 }}">{% else %}<u>{{ pauta.vogal2 }}</u>{% endif %}
+      </div>
+      <div style="text-align:center;font-size:13px;line-height:1.9">
+        <b>ESCOLA PRIMÁRIA Nº</b> {% if editar_cabecalho %}<input class="h" style="width:50px" name="h_escola_numero" value="{{ pauta.escola_numero }}">{% else %}<u>{{ pauta.escola_numero }}</u>{% endif %}
+        <b>DE</b> {% if editar_cabecalho %}<input class="h hl" name="h_escola_nome" value="{{ pauta.escola_nome }}">{% else %}<u>{{ pauta.escola_nome }}</u>{% endif %}<br>
+        PAUTA PARA CLASSES DE EXAME - FORMAÇÃO GERAL<br>
+        CLASSE {{ pauta.classe }}ª &nbsp; SALA {% if editar_cabecalho %}<input class="h" style="width:50px" name="h_sala" value="{{ pauta.sala }}">{% else %}<u>{{ pauta.sala }}</u>{% endif %}
+        &nbsp; TURMA <u>{{ pauta.turma }}</u>
+        &nbsp; PERIODO {% if editar_cabecalho %}<input class="h" name="h_periodo" value="{{ pauta.periodo }}">{% else %}<u>{{ pauta.periodo }}</u>{% endif %}<br>
+        ANO LECTIVO 20{% if editar_cabecalho %}<input class="h" style="width:34px" name="h_ano_inicio" value="{{ pauta.ano_inicio }}">{% else %}<u>{{ pauta.ano_inicio }}</u>{% endif %}
+        / 20{% if editar_cabecalho %}<input class="h" style="width:34px" name="h_ano_fim" value="{{ pauta.ano_fim }}">{% else %}<u>{{ pauta.ano_fim }}</u>{% endif %}
+      </div>
+      <div style="overflow-x:auto;margin-top:10px">
+        <table>
+          <thead>
+            <tr>
+              <th rowspan="2" style="width:34px">N.º</th>
+              <th rowspan="2" style="min-width:200px">NOME COMPLETO</th>
+              {% for d in discs %}<th colspan="{{ d.n }}">{{ d.rot }}</th>{% endfor %}
+              <th rowspan="2" style="min-width:100px">COMPORTA-<br>MENTO</th>
+              <th rowspan="2" style="min-width:110px">RESULTADO<br>FINAL</th>
+            </tr>
+            <tr>{% for d in discs %}{% for c in d.cols %}<th class="v">{{ c }}</th>{% endfor %}{% endfor %}</tr>
+          </thead>
+          <tbody>
+            {% for l in linhas %}
+              <tr>
+                <td><b>{{ l.obj.numero }}</b></td>
+                <td style="text-align:left;white-space:nowrap">{{ l.obj.nome }}</td>
+                {% for c in l.cells %}<td><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="6" inputmode="decimal"></td>{% endfor %}
+                <td><input class="c" name="l{{ l.obj.pk }}_comportamento" value="{{ l.obj.comportamento }}" maxlength="30"></td>
+                <td>
+                  <select name="l{{ l.obj.pk }}_resultado">
+                    <option value=""></option>
+                    <option value="Aprovado" {% if l.obj.resultado == 'Aprovado' %}selected{% endif %}>Aprovado</option>
+                    <option value="Reprovado" {% if l.obj.resultado == 'Reprovado' %}selected{% endif %}>Reprovado</option>
+                    <option value="Desistente" {% if l.obj.resultado == 'Desistente' %}selected{% endif %}>Desistente</option>
+                  </select>
+                </td>
+              </tr>
+            {% empty %}
+              <tr><td colspan="25" style="padding:14px">Não há alunos com esta classe e turma.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <p style="margin-top:12px;text-align:center">
+      <button type="submit" class="botao botao--primario">Gravar a pauta</button>
+      <button type="submit" name="acao" value="atualizar" class="botao botao--secundario">Atualizar lista de alunos</button>
+    </p>
+    <p style="text-align:center"><a href="{{ url_pdf }}" style="color:#0645ad;text-decoration:underline">⬇️ Baixar a pauta em PDF para imprimir</a></p>
+  </form>
+</section>
+{% endblock %}

@@ -379,3 +379,64 @@ class BoletimPagamento(models.Model):
 
     def __str__(self):
         return f"{self.aluno.nome} - {self.ano}"
+
+
+class Pauta(models.Model):
+    escola_numero = models.CharField("Escola Primária N.º", max_length=10, blank=True, default="013")
+    escola_nome = models.CharField("de", max_length=120, blank=True, default="Missão Católica de Kimbele")
+    classe = models.CharField("Classe", max_length=50)
+    sala = models.CharField("Sala", max_length=50, blank=True)
+    turma = models.CharField("Turma", max_length=50)
+    periodo = models.CharField("Período", max_length=50, blank=True)
+    ano_inicio = models.CharField("Ano lectivo 20", max_length=4)
+    ano_fim = models.CharField("/ 20", max_length=4, blank=True)
+    presidente = models.CharField("Presidente", max_length=150, blank=True)
+    vogal1 = models.CharField("1.º Vogal", max_length=150, blank=True)
+    vogal2 = models.CharField("2.º Vogal", max_length=150, blank=True)
+
+    class Meta:
+        verbose_name = "Pauta"
+        verbose_name_plural = "Pautas"
+        ordering = ["-ano_inicio", "classe", "turma"]
+        unique_together = [("classe", "turma", "ano_inicio")]
+
+    def __str__(self):
+        return f"Pauta {self.classe}.ª classe, turma {self.turma} - 20{self.ano_inicio}"
+
+
+class PautaLinha(models.Model):
+    pauta = models.ForeignKey(Pauta, on_delete=models.CASCADE, related_name="linhas")
+    numero = models.PositiveSmallIntegerField("N.º", default=0)
+    aluno = models.ForeignKey(Aluno, null=True, blank=True, on_delete=models.SET_NULL, related_name="pauta_linhas")
+    nome = models.CharField("Nome completo", max_length=200, blank=True)
+    lport_med = models.CharField("lport med", max_length=6, blank=True)
+    lport_ne = models.CharField("lport ne", max_length=6, blank=True)
+    mat_med = models.CharField("mat med", max_length=6, blank=True)
+    mat_ne = models.CharField("mat ne", max_length=6, blank=True)
+    hist_med = models.CharField("hist med", max_length=6, blank=True)
+    hist_ne = models.CharField("hist ne", max_length=6, blank=True)
+    geo_med = models.CharField("geo med", max_length=6, blank=True)
+    geo_ne = models.CharField("geo ne", max_length=6, blank=True)
+    cnat_med = models.CharField("cnat med", max_length=6, blank=True)
+    cnat_ne = models.CharField("cnat ne", max_length=6, blank=True)
+    emc_med = models.CharField("emc med", max_length=6, blank=True)
+    emc_ne = models.CharField("emc ne", max_length=6, blank=True)
+    emp_med = models.CharField("emp med", max_length=6, blank=True)
+    emp_ne = models.CharField("emp ne", max_length=6, blank=True)
+    emp_nf = models.CharField("emp nf", max_length=6, blank=True)
+    edmus_med = models.CharField("edmus med", max_length=6, blank=True)
+    edmus_ne = models.CharField("edmus ne", max_length=6, blank=True)
+    edmus_nf = models.CharField("edmus nf", max_length=6, blank=True)
+    edfis_med = models.CharField("edfis med", max_length=6, blank=True)
+    edfis_ne = models.CharField("edfis ne", max_length=6, blank=True)
+    edfis_nf = models.CharField("edfis nf", max_length=6, blank=True)
+    comportamento = models.CharField("Comportamento", max_length=30, blank=True)
+    resultado = models.CharField("Resultado final", max_length=30, blank=True)
+
+    class Meta:
+        ordering = ["numero"]
+        verbose_name = "Linha da pauta"
+        verbose_name_plural = "Linhas da pauta"
+
+    def __str__(self):
+        return f"{self.numero} - {self.nome}"

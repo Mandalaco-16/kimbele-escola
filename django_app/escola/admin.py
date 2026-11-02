@@ -193,3 +193,18 @@ class BoletimPagamentoAdmin(admin.ModelAdmin):
 
 
 admin.site.unregister(Contributo)
+
+
+from .models import Pauta, PautaLinha
+
+
+class PautaLinhaInline(admin.TabularInline):
+    model = PautaLinha
+    extra = 0
+    fields = ("numero", "nome", "comportamento", "resultado")
+
+
+@admin.register(Pauta)
+class PautaAdmin(admin.ModelAdmin):
+    list_display = ("__str__", "sala", "periodo")
+    inlines = [PautaLinhaInline]
