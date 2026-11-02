@@ -1502,6 +1502,7 @@ def _pauta_contexto(pauta, editar_cabecalho):
 
 
 def _pauta_gravar(request, pauta, editar_cabecalho):
+    invalidas = 0
     if editar_cabecalho:
         for f in ("escola_numero", "escola_nome", "sala", "periodo", "ano_inicio", "ano_fim", "presidente", "vogal1", "vogal2"):
             if "h_" + f in request.POST:
@@ -1511,12 +1512,24 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
         for cod, rot, cols in PAUTA_DISC:
             for c in cols:
                 campo = cod + "_" + c
-                setattr(l, campo, request.POST.get("l" + str(l.pk) + "_" + campo, "").strip()[:6])
+                raw = request.POST.get("l" + str(l.pk) + "_" + campo, "").strip()[:6]
+                ok = raw == ""
+                if raw:
+                    try:
+                        ok = 0 <= float(raw.replace(",", ".")) <= 10
+                    except ValueError:
+                        ok = False
+                if ok:
+                    setattr(l, campo, raw)
+                else:
+                    invalidas += 1
             if "nf" in cols and not getattr(l, cod + "_nf"):
                 setattr(l, cod + "_nf", getattr(l, cod + "_ne") or getattr(l, cod + "_med"))
         l.comportamento = request.POST.get("l" + str(l.pk) + "_comportamento", "").strip()[:30]
         l.resultado = request.POST.get("l" + str(l.pk) + "_resultado", "").strip()[:30]
         l.save()
+    if invalidas:
+        messages.warning(request, "Algumas notas não foram gravadas: só são aceites valores de 0 a 10.")
 
 
 @login_required

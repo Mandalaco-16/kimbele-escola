@@ -88,8 +88,8 @@
 <script>/* pauta-cores */
 (function(){
  function cor(el){var n=parseFloat(String(el.value).replace(',','.'));
-  if(isNaN(n)){el.style.color='';el.style.fontWeight='';}
-  else{el.style.color=n<5?'#d00':'#0645ad';el.style.fontWeight='700';}}
+  if(isNaN(n)){el.style.color='';el.style.fontWeight='';el.style.background='';}
+  else{el.style.color=n<5?'#d00':'#0645ad';el.style.fontWeight='700';el.style.background=(n<0||n>10)?'#ffd6d6':'';}}
  document.querySelectorAll('.pauta td input:not(.c)').forEach(function(i){
   cor(i);i.addEventListener('input',function(){cor(i);});});
 })();
