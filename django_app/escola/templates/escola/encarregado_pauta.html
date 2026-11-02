@@ -14,13 +14,13 @@
       {% else %}<span style="color:#666">O resultado final ainda não foi publicado.</span>{% endif %}
     </div>
     <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px">
-      <tr style="background:#2f5233;color:#fff"><th style="padding:6px;text-align:left">Disciplina</th><th>MED</th><th>NE</th><th>NF</th></tr>
+      <tr style="background:#2f5233;color:#fff"><th style="padding:6px;text-align:left">Disciplina</th><th>MFD</th><th>NE</th><th>MF</th></tr>
       {% for d in discs %}
         <tr style="border-bottom:1px solid #bbb"><td style="padding:6px;text-align:left">{{ d.rot }}</td><td>{{ d.med }}</td><td>{{ d.ne }}</td><td>{{ d.nf }}</td></tr>
       {% endfor %}
     </table>
     <p style="margin-top:10px"><b>Comportamento:</b> {{ linha.comportamento|default:"-" }}</p>
-    <p style="font-size:12px;color:#555">MED: média; NE: nota do exame; NF: nota final.</p>
+    <p style="font-size:12px;color:#555">MFD: média final da disciplina; NE: nota do exame; MF: média final.</p>
   {% else %}
     <p style="text-align:center;margin-top:16px">Ainda não há pauta para este aluno.</p>
   {% endif %}

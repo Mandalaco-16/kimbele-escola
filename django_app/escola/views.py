@@ -1332,7 +1332,7 @@ def _pauta_pdf(pauta):
     resp["Content-Disposition"] = 'attachment; filename="pauta_%s%s_20%s.pdf"' % (pauta.classe, pauta.turma, pauta.ano_inicio)
     W, H = landscape(A4)
     c = canvas.Canvas(resp, pagesize=landscape(A4))
-    larg = [24, 150] + [22] * 21 + [52, 56]
+    larg = [24, 140] + [20] * 27 + [52, 56]
     x0 = (W - sum(larg)) / 2
 
     def cabecalho():
@@ -1368,18 +1368,18 @@ def _pauta_pdf(pauta):
         c.setFont("Helvetica-Bold", 7)
         c.rect(x0, y - 60, 24, 60)
         c.drawCentredString(x0 + 12, y - 33, "N.º")
-        c.rect(x0 + 24, y - 60, 150, 60)
-        c.drawCentredString(x0 + 99, y - 33, "NOME COMPLETO")
-        x = x0 + 174
+        c.rect(x0 + 24, y - 60, 140, 60)
+        c.drawCentredString(x0 + 94, y - 33, "NOME COMPLETO")
+        x = x0 + 164
         for cod, rot, cols in PAUTA_DISC:
-            w = len(cols) * 22
+            w = len(cols) * 20
             c.rect(x, y - 16, w, 16)
             c.drawCentredString(x + w / 2, y - 11, rot)
             for i, col in enumerate(cols):
-                cx = x + i * 22
-                c.rect(cx, y - 60, 22, 44)
+                cx = x + i * 20
+                c.rect(cx, y - 60, 20, 44)
                 c.saveState()
-                c.translate(cx + 14, y - 56)
+                c.translate(cx + 13, y - 56)
                 c.rotate(90)
                 c.setFont("Helvetica-Bold", 7)
                 c.drawString(0, 0, PAUTA_ROT[col])
@@ -1404,14 +1404,14 @@ def _pauta_pdf(pauta):
         c.rect(x, y - 16, 24, 16)
         c.drawCentredString(x + 12, y - 11, str(l.numero))
         x += 24
-        c.rect(x, y - 16, 150, 16)
-        c.drawString(x + 3, y - 11, l.nome[:34])
-        x += 150
+        c.rect(x, y - 16, 140, 16)
+        c.drawString(x + 3, y - 11, l.nome[:30])
+        x += 140
         for cod, rot, cols in PAUTA_DISC:
             for col in cols:
-                c.rect(x, y - 16, 22, 16)
-                c.drawCentredString(x + 11, y - 11, getattr(l, cod + "_" + col))
-                x += 22
+                c.rect(x, y - 16, 20, 16)
+                c.drawCentredString(x + 10, y - 11, getattr(l, cod + "_" + col))
+                x += 20
         c.rect(x, y - 16, 52, 16)
         c.setFont("Helvetica", 7)
         c.drawCentredString(x + 26, y - 11, l.comportamento[:12])
@@ -1444,11 +1444,17 @@ def funcionario_pauta_pdf(request, pk):
 
 
 PAUTA_DISC = [
-    ("lport", "L.PORT", ("med", "ne")), ("mat", "MAT.", ("med", "ne")), ("hist", "HIST.", ("med", "ne")),
-    ("geo", "GEO", ("med", "ne")), ("cnat", "C NAT", ("med", "ne")), ("emc", "EM.C", ("med", "ne")),
-    ("emp", "E.M.P", ("med", "ne", "nf")), ("edmus", "ED.MUS", ("med", "ne", "nf")), ("edfis", "ED.FIS", ("med", "ne", "nf")),
+    ("lport", "L.PORT", ("med", "ne", "nf")),
+    ("mat", "MAT.", ("med", "ne", "nf")),
+    ("hist", "HIST.", ("med", "ne", "nf")),
+    ("geo", "GEO", ("med", "ne", "nf")),
+    ("cnat", "C NAT", ("med", "ne", "nf")),
+    ("emc", "EM.C", ("med", "ne", "nf")),
+    ("emp", "E.M.P", ("med", "ne", "nf")),
+    ("edmus", "ED.MUS", ("med", "ne", "nf")),
+    ("edfis", "ED.FIS", ("med", "ne", "nf")),
 ]
-PAUTA_ROT = {"med": "MED", "ne": "NE", "nf": "NF"}
+PAUTA_ROT = {"med": "MFD", "ne": "NE", "nf": "MF"}
 
 
 def _pauta_ano_atual():
