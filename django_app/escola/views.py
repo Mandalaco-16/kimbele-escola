@@ -1501,6 +1501,13 @@ def _pauta_contexto(pauta, editar_cabecalho):
     return {"pauta": pauta, "linhas": linhas, "discs": discs, "editar_cabecalho": editar_cabecalho}
 
 
+PAUTA_MAX_NEGATIVAS = 0
+
+
+def _pauta_mfd(ne, mf):
+    return str(int((float(ne.replace(",", ".")) + float(mf.replace(",", "."))) / 2 + 0.5))
+
+
 def _pauta_gravar(request, pauta, editar_cabecalho):
     invalidas = 0
     if editar_cabecalho:
@@ -1523,10 +1530,20 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
                     setattr(l, campo, raw)
                 else:
                     invalidas += 1
-            if "nf" in cols and not getattr(l, cod + "_nf"):
-                setattr(l, cod + "_nf", getattr(l, cod + "_ne") or getattr(l, cod + "_med"))
+            ne_v = getattr(l, cod + "_ne")
+            mf_v = getattr(l, cod + "_nf")
+            if ne_v and mf_v:
+                setattr(l, cod + "_med", _pauta_mfd(ne_v, mf_v))
         l.comportamento = request.POST.get("l" + str(l.pk) + "_comportamento", "").strip()[:30]
         l.resultado = request.POST.get("l" + str(l.pk) + "_resultado", "").strip()[:30]
+        meds = []
+        for cod, rot, cols in PAUTA_DISC:
+            try:
+                meds.append(float(getattr(l, cod + "_med").replace(",", ".")))
+            except ValueError:
+                pass
+        if len(meds) == len(PAUTA_DISC) and l.resultado != "Desistente":
+            l.resultado = "Reprovado" if sum(1 for m in meds if m < 5) > PAUTA_MAX_NEGATIVAS else "Aprovado"
         l.save()
     if invalidas:
         messages.warning(request, "Algumas notas não foram gravadas: só são aceites valores de 0 a 10.")
