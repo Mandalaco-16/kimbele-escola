@@ -14,6 +14,17 @@
 
   <hr class="risca">
 
+  {% if faltas %}
+    <div style="background:#fff3f0;border:1px solid #e8b4a8;border-radius:8px;padding:8px 12px;margin-bottom:10px">
+      <b style="color:#c0392b">As suas faltas registadas pela Direção</b>
+      {% for r in faltas %}
+        <div style="padding:4px 0;border-bottom:1px solid #f0d0c8;{% if r.estado == 'F' %}color:#c0392b;{% endif %}">
+          <b>{{ r.data|date:"d/m/Y" }}</b> - {{ r.get_estado_display }}{% if r.observacao %}<br><small>{{ r.observacao }}</small>{% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
   {% if conversa %}
     {% for m in conversa %}
       <div class="conversa__mensagem" style="{% if m.tipo == 'direcao' %}background: #eef5ee;{% endif %}">

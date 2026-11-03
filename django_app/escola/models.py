@@ -460,3 +460,21 @@ class PautaLinha(models.Model):
 
     def __str__(self):
         return f"{self.numero} - {self.nome}"
+
+
+class PresencaFuncionario(models.Model):
+    ESTADOS = [("P", "Presente"), ("F", "Faltou"), ("J", "Falta justificada")]
+    funcionario = models.ForeignKey(Funcionario, on_delete=models.CASCADE, related_name="presencas_proprias")
+    data = models.DateField("Data")
+    estado = models.CharField("Estado", max_length=1, choices=ESTADOS, default="P")
+    observacao = models.CharField("Observação", max_length=200, blank=True)
+    visto = models.BooleanField("Visto pelo funcionário", default=True)
+
+    class Meta:
+        verbose_name = "Presença de funcionário"
+        verbose_name_plural = "Presenças de funcionários"
+        ordering = ["-data"]
+        unique_together = [("funcionario", "data")]
+
+    def __str__(self):
+        return f"{self.funcionario.nome} - {self.data:%d/%m/%Y} - {self.get_estado_display()}"

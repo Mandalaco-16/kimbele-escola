@@ -205,8 +205,13 @@ def funcionario_detail(request, pk):
         "mensagens_nao_lidas": mensagens_nao_lidas,
         "encarregado_nao_lidas": MensagemEncarregado.objects.filter(professor=funcionario, do_professor=False, lida=False).exists(),
         "tem_resposta_nao_vista": tem_resposta_nao_vista,
-        "tem_mensagem_direcao_nao_lida": tem_mensagem_direcao_nao_lida,
+        "tem_mensagem_direcao_nao_lida": tem_mensagem_direcao_nao_lida or _falta_nova_funcionario(funcionario),
     })
+
+
+def _falta_nova_funcionario(funcionario):
+    from .models import PresencaFuncionario
+    return PresencaFuncionario.objects.filter(funcionario=funcionario, visto=False).exclude(estado="P").exists()
 
 
 def _exige_desbloqueio(request, funcionario):
@@ -484,10 +489,14 @@ def funcionario_historico(request, pk):
         })
     conversa.sort(key=lambda e: e["quando"])
 
+    from .models import PresencaFuncionario
+    faltas = list(PresencaFuncionario.objects.filter(funcionario=funcionario).exclude(estado="P")[:15])
+    PresencaFuncionario.objects.filter(funcionario=funcionario, visto=False).update(visto=True)
+
     return render(
         request,
         "escola/funcionario_historico.html",
-        {"f": funcionario, "conversa": conversa, "form": form},
+        {"f": funcionario, "conversa": conversa, "form": form, "faltas": faltas},
     )
 
 
@@ -1706,3 +1715,35 @@ def encarregado_pauta(request):
             vals = {c: (getattr(linha, cod + "_" + c) or "-") for c in cols}
             discs.append({"rot": rot, "med": vals.get("med"), "ne": vals.get("ne"), "nf": vals.get("nf", "-")})
     return render(request, "escola/encarregado_pauta.html", {"aluno": aluno, "linha": linha, "discs": discs, "fem": _pauta_genero(aluno.nome) == "f"})
+
+
+@login_required
+@never_cache
+def funcionario_faltas_direcao(request, pk):
+    import datetime
+    from .models import PresencaFuncionario
+    funcionario = get_object_or_404(Funcionario, pk=pk, ativo=True)
+    data_txt = request.POST.get("data") or request.GET.get("data") or ""
+    try:
+        data = datetime.date.fromisoformat(data_txt)
+    except ValueError:
+        data = timezone.localdate()
+    if request.method == "POST":
+        estado = request.POST.get("estado")
+        obs = request.POST.get("obs", "").strip()[:200]
+        if estado in ("P", "F", "J"):
+            ant = PresencaFuncionario.objects.filter(funcionario=funcionario, data=data).first()
+            if not (ant and ant.estado == estado and ant.observacao == obs):
+                PresencaFuncionario.objects.update_or_create(
+                    funcionario=funcionario, data=data,
+                    defaults={"estado": estado, "observacao": obs, "visto": estado == "P"},
+                )
+            messages.success(request, "Registo gravado.")
+        return redirect(f"{request.path}?data={data.isoformat()}")
+    atual = PresencaFuncionario.objects.filter(funcionario=funcionario, data=data).first()
+    registos = list(PresencaFuncionario.objects.filter(funcionario=funcionario)[:30])
+    return render(request, "escola/funcionario_faltas_direcao.html", {
+        "funcionario": funcionario, "data": data, "atual": atual, "registos": registos,
+        "total_f": sum(1 for r in registos if r.estado == "F"),
+        "total_j": sum(1 for r in registos if r.estado == "J"),
+    })

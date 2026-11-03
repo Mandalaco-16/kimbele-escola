@@ -208,3 +208,12 @@ class PautaLinhaInline(admin.TabularInline):
 class PautaAdmin(admin.ModelAdmin):
     list_display = ("__str__", "sala", "periodo")
     inlines = [PautaLinhaInline]
+
+
+from .models import PresencaFuncionario
+
+
+@admin.register(PresencaFuncionario)
+class PresencaFuncionarioAdmin(admin.ModelAdmin):
+    list_display = ("funcionario", "data", "estado", "observacao")
+    list_filter = ("estado", "data")

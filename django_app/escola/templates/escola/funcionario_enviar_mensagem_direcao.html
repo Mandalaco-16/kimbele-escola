@@ -6,6 +6,7 @@
   <a href="{% url 'escola:painel_sms' %}" class="link-voltar">&larr; Voltar</a>
 
   <h2>Conversa com {{ funcionario.nome }}</h2>
+  <p style="text-align:center"><a href="{% url 'escola:funcionario_faltas_direcao' funcionario.pk %}" class="botao botao--secundario">📋 Registar faltas e presenças</a></p>
 
   {% if conversa %}
     {% for m in conversa %}

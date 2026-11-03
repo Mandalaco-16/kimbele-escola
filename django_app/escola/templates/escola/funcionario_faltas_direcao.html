@@ -1,0 +1,33 @@
+{% extends "escola/base.html" %}
+{% block titulo %}Faltas de {{ funcionario.nome }} - {{ NOME_ESCOLA }}{% endblock %}
+{% block conteudo %}
+<section class="secao secao--estreita">
+  <a href="{% url 'escola:funcionario_enviar_mensagem_direcao' funcionario.pk %}" class="link-voltar">&larr; Voltar</a>
+  <h3 style="text-align:center">FALTAS E PRESENÇAS</h3>
+  <p style="text-align:center;margin:0"><b>{{ funcionario.nome }}</b></p>
+  <form method="get" style="text-align:center;margin:10px 0">
+    <input type="date" name="data" value="{{ data|date:'Y-m-d' }}" onchange="this.form.submit()">
+  </form>
+  <form method="post" style="border-bottom:1px solid #bbb;padding:8px 0">
+    {% csrf_token %}
+    <input type="hidden" name="data" value="{{ data|date:'Y-m-d' }}">
+    <label><input type="radio" name="estado" value="P" {% if not atual or atual.estado == 'P' %}checked{% endif %}> Presente</label>
+    <label style="margin-left:8px"><input type="radio" name="estado" value="F" {% if atual.estado == 'F' %}checked{% endif %}> Faltou</label>
+    <label style="margin-left:8px"><input type="radio" name="estado" value="J" {% if atual.estado == 'J' %}checked{% endif %}> Justificada</label><br>
+    <input type="text" name="obs" value="{{ atual.observacao|default:'' }}" maxlength="200" placeholder="Observação ou justificação" style="width:100%;box-sizing:border-box;margin-top:4px">
+    <button type="submit" class="botao botao--primario" style="margin-top:12px">Gravar</button>
+  </form>
+  <div style="display:flex;justify-content:space-around;text-align:center;margin:14px 0;font-weight:700">
+    <div style="color:#c0392b">Faltas<br><span style="font-size:22px">{{ total_f }}</span></div>
+    <div>Justificadas<br><span style="font-size:22px">{{ total_j }}</span></div>
+  </div>
+  {% for r in registos %}
+    <div style="padding:6px 0;border-bottom:1px solid #bbb;{% if r.estado == 'F' %}color:#c0392b;{% endif %}">
+      <b>{{ r.data|date:"d/m/Y" }}</b> - {{ r.get_estado_display }}
+      {% if r.observacao %}<br><small>{{ r.observacao }}</small>{% endif %}
+    </div>
+  {% empty %}
+    <p style="text-align:center">Ainda não há registos.</p>
+  {% endfor %}
+</section>
+{% endblock %}
