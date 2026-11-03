@@ -4,11 +4,11 @@
 <section class="secao secao--estreita">
   <a href="{% url 'escola:funcionario_detail' f.pk %}" class="link-voltar">&larr; Voltar</a>
   <h3 style="text-align:center">CONVERSAR COM ENCARREGADO</h3>
-  <p class="secao__intro" style="text-align:center">Toque no aluno para ver a conversa e responder.</p>
+  <p class="secao__intro" style="text-align:center">Alunos da sua turma. Toque no aluno para escrever ao encarregado ou ver a conversa.</p>
   {% for a in alunos %}
     <p style="margin:10px 0"><a href="{% url 'escola:funcionario_encarregado_conversa' f.pk a.pk %}" class="botao botao--secundario botao--com-sinal">{{ forloop.counter }} - {{ a.nome }}{% if a.tem_notificacao %}<span class="botao__sinal"></span>{% endif %}</a></p>
   {% empty %}
-    <p style="text-align:center">Ainda não há mensagens de encarregados.</p>
+    <p style="text-align:center">Não há alunos na sua classe e turma. Peça à Direção para conferir a Classe e a Turma no seu perfil e nos alunos.</p>
   {% endfor %}
 </section>
 {% endblock %}

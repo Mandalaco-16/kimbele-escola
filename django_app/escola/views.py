@@ -1093,9 +1093,11 @@ def funcionario_encarregados(request, pk):
     nao_lida = MensagemEncarregado.objects.filter(
         aluno=OuterRef("pk"), professor=funcionario, do_professor=False, lida=False
     )
-    alunos = Aluno.objects.filter(
-        mensagens_encarregado__professor=funcionario
-    ).distinct().annotate(tem_notificacao=Exists(nao_lida)).order_by("nome")
+    from django.db.models import Q
+    filtro = Q(mensagens_encarregado__professor=funcionario)
+    if funcionario.classe.strip() and funcionario.turma.strip():
+        filtro = filtro | Q(ativo=True, classe__iexact=funcionario.classe.strip(), turma__iexact=funcionario.turma.strip())
+    alunos = Aluno.objects.filter(filtro).distinct().annotate(tem_notificacao=Exists(nao_lida)).order_by("nome")
     return render(request, "escola/funcionario_encarregados.html", {"f": funcionario, "alunos": alunos})
 
 
