@@ -1747,3 +1747,128 @@ def funcionario_faltas_direcao(request, pk):
         "total_f": sum(1 for r in registos if r.estado == "F"),
         "total_j": sum(1 for r in registos if r.estado == "J"),
     })
+
+
+def _cor_nota(c, val):
+    try:
+        n = float(val.replace(",", "."))
+    except ValueError:
+        c.setFillColorRGB(0, 0, 0)
+        return
+    if n < 5:
+        c.setFillColorRGB(0.85, 0, 0)
+    else:
+        c.setFillColorRGB(0.03, 0.27, 0.68)
+
+
+@never_cache
+def encarregado_pauta_pdf(request):
+    import os
+    from django.conf import settings
+    from django.http import HttpResponse
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import cm
+    from reportlab.lib.utils import ImageReader
+    from reportlab.pdfgen import canvas
+    from .models import PautaLinha
+    aluno = _aluno_publico(request)
+    if not aluno:
+        return redirect("/contributo/")
+    l = PautaLinha.objects.filter(aluno=aluno).select_related("pauta").order_by("-pauta__ano_inicio").first()
+    if not l:
+        return redirect("escola:encarregado_pauta")
+    pa = l.pauta
+    resp = HttpResponse(content_type="application/pdf")
+    nome = aluno.nome.replace(" ", "_")
+    resp["Content-Disposition"] = 'attachment; filename="pauta_%s.pdf"' % nome
+    W, H = A4
+    c = canvas.Canvas(resp, pagesize=A4)
+    y = H - 1.5 * cm
+    try:
+        img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "insignia.png"))
+        c.drawImage(img, W / 2 - 20, y - 40, 40, 40, mask="auto")
+    except Exception:
+        pass
+    y -= 54
+    c.setFont("Helvetica-Bold", 11)
+    c.drawCentredString(W / 2, y, "REPÚBLICA DE ANGOLA")
+    c.setFont("Helvetica", 9)
+    for linha in ("GOVERNO PROVINCIAL DO UÍGE", "ADMINISTRAÇÃO MUNICIPAL DE QUIMBELE", "DIRECÇÃO DA EDUCAÇÃO"):
+        y -= 12
+        c.drawCentredString(W / 2, y, linha)
+    y -= 22
+    c.setFont("Helvetica-Bold", 10)
+    c.drawCentredString(W / 2, y, "ESCOLA PRIMÁRIA Nº %s DE %s" % (pa.escola_numero, pa.escola_nome.upper()))
+    y -= 14
+    c.setFont("Helvetica", 9)
+    c.drawCentredString(W / 2, y, "PAUTA PARA CLASSES DE EXAME - FORMAÇÃO GERAL")
+    y -= 13
+    c.drawCentredString(W / 2, y, "CLASSE %sª   SALA %s   TURMA %s   ANO LECTIVO 20%s / 20%s" % (pa.classe, pa.sala, pa.turma, pa.ano_inicio, pa.ano_fim))
+    y -= 26
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(2 * cm, y, "Aluno: %s" % aluno.nome)
+    y -= 22
+    larg = [6.4 * cm, 3.2 * cm, 3.2 * cm, 3.2 * cm]
+    x0 = 2 * cm
+    c.setFont("Helvetica-Bold", 9)
+    x = x0
+    for txt, w in zip(("DISCIPLINA", "MFD", "NE", "MF"), larg):
+        c.setFillColorRGB(0.81, 0.89, 0.97)
+        c.rect(x, y - 16, w, 18, stroke=1, fill=1)
+        c.setFillColorRGB(0, 0, 0)
+        c.drawCentredString(x + w / 2, y - 11, txt)
+        x += w
+    y -= 16
+    for cod, rot, cols in PAUTA_DISC:
+        x = x0
+        c.setFillColorRGB(0.81, 0.89, 0.97)
+        c.rect(x, y - 18, larg[0], 18, stroke=1, fill=1)
+        c.setFillColorRGB(0, 0, 0)
+        c.setFont("Helvetica", 9)
+        c.drawString(x + 4, y - 12, rot)
+        x += larg[0]
+        for col, w in zip(("med", "ne", "nf"), larg[1:]):
+            val = getattr(l, cod + "_" + col) or "-"
+            if col == "med":
+                c.setFillColorRGB(0.80, 0.93, 0.80)
+                c.rect(x, y - 18, w, 18, stroke=1, fill=1)
+            else:
+                c.rect(x, y - 18, w, 18)
+            _cor_nota(c, val)
+            c.setFont("Helvetica-Bold", 9)
+            c.drawCentredString(x + w / 2, y - 12, val)
+            c.setFillColorRGB(0, 0, 0)
+            x += w
+        y -= 18
+    y -= 22
+    c.setFont("Helvetica", 10)
+    c.drawString(2 * cm, y, "Comportamento: %s" % (l.comportamento or "-"))
+    y -= 20
+    c.setFont("Helvetica-Bold", 12)
+    c.drawString(2 * cm, y, "Resultado final: %s" % (_pauta_res_txt(l.resultado, aluno.nome) or "ainda não publicado"))
+    c.setFont("Helvetica", 8)
+    y -= 18
+    c.drawString(2 * cm, y, "MFD: média final da disciplina; NE: nota do exame; MF: média final.")
+    try:
+        img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "carimbo.jpg"))
+        iw, ih = img.getSize()
+        w = 130.0
+        cl = 0.09
+        wf = w / (1 - cl)
+        h = wf * ih / iw
+        xr = W - 2 * cm - w
+        top = y - 24
+        c.setFillColorRGB(0, 0, 0)
+        c.setFont("Helvetica-Bold", 9)
+        c.drawCentredString(xr + w / 2, top + 8, "O Director")
+        c.saveState()
+        cp = c.beginPath()
+        cp.rect(xr, top - h, w, h)
+        c.clipPath(cp, stroke=0, fill=0)
+        c.drawImage(img, xr - cl * wf, top - h, wf, h, mask=[165, 255, 165, 255, 165, 255])
+        c.restoreState()
+    except Exception:
+        pass
+    c.showPage()
+    c.save()
+    return resp

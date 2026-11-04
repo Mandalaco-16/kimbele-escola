@@ -7,6 +7,7 @@
   <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
   {% if linha %}
     <p style="text-align:center;margin:2px 0">{{ linha.pauta.classe }}.ª classe, turma {{ linha.pauta.turma }}, ano lectivo 20{{ linha.pauta.ano_inicio }}/20{{ linha.pauta.ano_fim }}</p>
+    <p style="text-align:right;margin:8px 0"><a href="{% url 'escola:encarregado_pauta_pdf' %}" style="color:#0645ad;text-decoration:underline;font-size:14px">⬇️ Baixar a pauta em PDF</a></p>
     <div style="text-align:center;margin:14px 0">
       {% if linha.resultado == 'Aprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#1e8e3e;color:#fff;font-weight:700;font-size:18px">{% if fem %}APROVADA{% else %}APROVADO{% endif %}</span>
       {% elif linha.resultado == 'Reprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#c0392b;color:#fff;font-weight:700;font-size:18px">{% if fem %}REPROVADA{% else %}REPROVADO{% endif %}</span>
