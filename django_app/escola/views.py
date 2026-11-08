@@ -1709,6 +1709,8 @@ def encarregado_pauta(request):
         messages.error(request, "Insira primeiro os dados de acesso do aluno.")
         return redirect("/contributo/")
     linha = PautaLinha.objects.filter(aluno=aluno).select_related("pauta").order_by("-pauta__ano_inicio").first()
+    if linha:
+        request.session["pauta_vista_%s" % linha.pk] = linha.resultado
     discs = []
     if linha:
         for cod, rot, cols in PAUTA_DISC:

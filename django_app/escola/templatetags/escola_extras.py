@@ -71,3 +71,51 @@ def pagamento_novo(aluno):
     if not aluno:
         return False
     return BoletimPagamento.objects.filter(aluno=aluno, visto=False).exists()
+
+
+@register.simple_tag(takes_context=True)
+def pauta_nova(context):
+    from escola.models import PautaLinha
+    request = context.get("request")
+    aluno = context.get("aluno")
+    if request is None or not aluno:
+        return False
+    l = PautaLinha.objects.filter(aluno=aluno).order_by("-pauta__ano_inicio").first()
+    if not l or not l.resultado:
+        return False
+    return request.session.get("pauta_vista_%s" % l.pk) != l.resultado
+
+
+@register.simple_tag
+def alunos_com_mensagem():
+    from escola.models import Contributo
+    return Contributo.objects.filter(aluno__isnull=False, lido=False).exists()
+
+
+@register.simple_tag(takes_context=True)
+def novidade_escola(context, chave):
+    import time
+    import unicodedata
+    from datetime import datetime
+    from django.utils import timezone
+    request = context.get("request")
+    if request is None:
+        return False
+    k = "visto_" + chave
+    visto = request.session.get(k)
+    if visto is None:
+        request.session[k] = time.time()
+        return False
+    try:
+        desde = datetime.fromtimestamp(visto, tz=timezone.get_current_timezone())
+        from escola.models import Documento, ImagemGaleria, DesenvolvidorSite
+        if chave == "historia":
+            return DesenvolvidorSite.objects.filter(atualizado_em__gt=desde).exists()
+        def norm(t):
+            return "".join(ch for ch in unicodedata.normalize("NFD", str(t).lower()) if unicodedata.category(ch) != "Mn")
+        vd = [v for v, r in Documento.Categoria.choices if chave in norm(v) or chave in norm(r)]
+        vi = [v for v, r in ImagemGaleria.Categoria.choices if chave in norm(v) or chave in norm(r)]
+        return (Documento.objects.filter(categoria__in=vd, ativo=True, publicado_em__gt=desde).exists()
+                or ImagemGaleria.objects.filter(categoria__in=vi, ativo=True, publicado_em__gt=desde).exists())
+    except Exception:
+        return False

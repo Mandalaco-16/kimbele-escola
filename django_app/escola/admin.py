@@ -217,3 +217,15 @@ from .models import PresencaFuncionario
 class PresencaFuncionarioAdmin(admin.ModelAdmin):
     list_display = ("funcionario", "data", "estado", "observacao")
     list_filter = ("estado", "data")
+
+
+def _salvar_presenca(self, request, obj, form, change):
+    obj.visto = obj.estado == "P"
+    admin.ModelAdmin.save_model(self, request, obj, form, change)
+
+
+PresencaAdmin.save_model = _salvar_presenca
+try:
+    PresencaFuncionarioAdmin.save_model = _salvar_presenca
+except NameError:
+    pass
