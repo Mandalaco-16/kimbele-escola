@@ -100,7 +100,7 @@
  function num(v){var n=parseFloat(String(v).replace(',','.'));return isNaN(n)?null:n;}
  document.querySelectorAll('.pauta tbody tr').forEach(function(tr){
   var ins=tr.querySelectorAll('td input:not(.c)'),sel=tr.querySelector('select');
-  if(ins.length<27)return;
+  var ND=Math.floor(ins.length/3);if(ND<1)return;
   var busy=false;
   ins.forEach(function(el){el.addEventListener('input',function(){
    if(busy||!/^-{2,}$/.test(el.value.trim()))return;
@@ -112,10 +112,10 @@
   function resultado(){
    if(!sel||sel.value==='Desistente')return;
    var neg=0;
-   for(var k=0;k<9;k++){var m=num(ins[3*k].value);if(m===null)return;if(m<5)neg++;}
+   for(var k=0;k<ND;k++){var m=num(ins[3*k].value);if(m===null)return;if(m<5)neg++;}
    sel.value=neg>0?'Reprovado':'Aprovado';
   }
-  for(var k=0;k<9;k++){(function(k){
+  for(var k=0;k<ND;k++){(function(k){
    [ins[3*k+1],ins[3*k+2]].forEach(function(el){el.addEventListener('input',function(){
     var ne=num(ins[3*k+1].value),mf=num(ins[3*k+2].value);
     if(ne!==null&&mf!==null&&ne>=0&&ne<=10&&mf>=0&&mf<=10){

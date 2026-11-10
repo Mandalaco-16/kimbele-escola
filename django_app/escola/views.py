@@ -1343,7 +1343,8 @@ def _pauta_pdf(pauta):
     resp["Content-Disposition"] = 'attachment; filename="pauta_%s%s_20%s.pdf"' % (pauta.classe, pauta.turma, pauta.ano_inicio)
     W, H = landscape(A4)
     c = canvas.Canvas(resp, pagesize=landscape(A4))
-    larg = [24, 140] + [20] * 27 + [52, 56]
+    ds = _pauta_discs(pauta)
+    larg = [24, 140] + [20] * (3 * len(ds)) + [52, 56]
     x0 = (W - sum(larg)) / 2
 
     def cabecalho():
@@ -1382,7 +1383,7 @@ def _pauta_pdf(pauta):
         c.rect(x0 + 24, y - 60, 140, 60)
         c.drawCentredString(x0 + 94, y - 33, "NOME COMPLETO")
         x = x0 + 164
-        for cod, rot, cols in PAUTA_DISC:
+        for cod, rot, cols in ds:
             w = len(cols) * 20
             c.setFillColorRGB(0.81, 0.89, 0.97)
             c.rect(x, y - 16, w, 16, stroke=1, fill=1)
@@ -1425,7 +1426,7 @@ def _pauta_pdf(pauta):
         c.rect(x, y - 16, 140, 16)
         c.drawString(x + 3, y - 11, l.nome[:30])
         x += 140
-        for cod, rot, cols in PAUTA_DISC:
+        for cod, rot, cols in ds:
             for col in cols:
                 if col == "med":
                     c.setFillColorRGB(0.80, 0.93, 0.80)
@@ -1533,17 +1534,29 @@ def _pauta_sincronizar(pauta):
             proximo += 1
 
 
+def _pauta_discs(pauta):
+    import re
+    import unicodedata
+    c = getattr(pauta, "classe", pauta)
+    t = unicodedata.normalize("NFD", str(c or "").lower())
+    t = "".join(ch for ch in t if unicodedata.category(ch) != "Mn")
+    nums = re.findall(r"\d+", t)
+    if "pre" in t or (nums and nums[0] in ("1", "4")):
+        return [d for d in PAUTA_DISC if d[0] not in ("geo", "emc", "hist")]
+    return PAUTA_DISC
+
+
 def _pauta_contexto(pauta, editar_cabecalho):
     _pauta_numerar(pauta)
     linhas = []
     for l in pauta.linhas.all():
         cells = []
-        for cod, rot, cols in PAUTA_DISC:
+        for cod, rot, cols in _pauta_discs(pauta):
             for c in cols:
                 campo = cod + "_" + c
                 cells.append({"campo": campo, "valor": getattr(l, campo)})
         linhas.append({"obj": l, "cells": cells, "fem": _pauta_genero(l.nome) == "f"})
-    discs = [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in PAUTA_DISC]
+    discs = [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in _pauta_discs(pauta)]
     return {"pauta": pauta, "linhas": linhas, "discs": discs, "editar_cabecalho": editar_cabecalho}
 
 
@@ -1593,7 +1606,7 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
                 setattr(pauta, f, request.POST.get("h_" + f, "").strip()[:150])
         pauta.save()
     for l in pauta.linhas.all():
-        for cod, rot, cols in PAUTA_DISC:
+        for cod, rot, cols in _pauta_discs(pauta):
             for c in cols:
                 campo = cod + "_" + c
                 raw = request.POST.get("l" + str(l.pk) + "_" + campo, "").strip()[:6]
@@ -1616,18 +1629,18 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
                     pass
         l.comportamento = request.POST.get("l" + str(l.pk) + "_comportamento", "").strip()[:30]
         l.resultado = request.POST.get("l" + str(l.pk) + "_resultado", "").strip()[:30]
-        if any(set(getattr(l, cod + "_" + c) or "x") == {"-"} for cod, rot, cols in PAUTA_DISC for c in cols):
-            for cod, rot, cols in PAUTA_DISC:
+        if any(set(getattr(l, cod + "_" + c) or "x") == {"-"} for cod, rot, cols in _pauta_discs(pauta) for c in cols):
+            for cod, rot, cols in _pauta_discs(pauta):
                 for c in cols:
                     setattr(l, cod + "_" + c, "-----")
             l.resultado = "Desistente"
         meds = []
-        for cod, rot, cols in PAUTA_DISC:
+        for cod, rot, cols in _pauta_discs(pauta):
             try:
                 meds.append(float(getattr(l, cod + "_med").replace(",", ".")))
             except ValueError:
                 pass
-        if len(meds) == len(PAUTA_DISC) and l.resultado != "Desistente":
+        if len(meds) == len(_pauta_discs(pauta)) and l.resultado != "Desistente":
             l.resultado = "Reprovado" if sum(1 for m in meds if m < 5) > PAUTA_MAX_NEGATIVAS else "Aprovado"
         l.save()
     if invalidas:
@@ -1721,7 +1734,7 @@ def encarregado_pauta(request):
         request.session["pauta_vista_%s" % linha.pk] = linha.resultado
     discs = []
     if linha:
-        for cod, rot, cols in PAUTA_DISC:
+        for cod, rot, cols in _pauta_discs(linha.pauta):
             vals = {c: (getattr(linha, cod + "_" + c) or "-") for c in cols}
             discs.append({"rot": rot, "med": vals.get("med"), "ne": vals.get("ne"), "nf": vals.get("nf", "-")})
     return render(request, "escola/encarregado_pauta.html", {"aluno": aluno, "linha": linha, "discs": discs, "fem": _pauta_genero(aluno.nome) == "f"})
@@ -1829,7 +1842,7 @@ def encarregado_pauta_pdf(request):
         c.drawCentredString(x + w / 2, y - 11, txt)
         x += w
     y -= 16
-    for cod, rot, cols in PAUTA_DISC:
+    for cod, rot, cols in _pauta_discs(pa):
         x = x0
         c.setFillColorRGB(0.81, 0.89, 0.97)
         c.rect(x, y - 18, larg[0], 18, stroke=1, fill=1)
