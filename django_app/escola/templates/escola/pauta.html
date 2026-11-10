@@ -86,64 +86,53 @@
     </p>
     <p style="text-align:center"><a href="{{ url_pdf }}" style="color:#0645ad;text-decoration:underline">⬇️ Baixar a pauta em PDF para imprimir</a></p>
   </form>
-<script>/* pauta-cores */
+<script>/* pauta-js */
 (function(){
- function cor(el){var n=parseFloat(String(el.value).replace(',','.'));
-  if(isNaN(n)){el.style.color='';el.style.fontWeight='';el.style.background='';}
-  else{el.style.color=n<5?'#d00':'#0645ad';el.style.fontWeight='700';el.style.background=(n<0||n>10)?'#ffd6d6':'';}}
- document.querySelectorAll('.pauta td input:not(.c)').forEach(function(i){
-  cor(i);i.addEventListener('input',function(){cor(i);});});
-})();
-</script>
-<script>/* pauta-auto */
-(function(){
+ var ROJO='#d00',AZUL='#0645ad';
  function num(v){var n=parseFloat(String(v).replace(',','.'));return isNaN(n)?null:n;}
+ function tracos(v){return /^-{2,}$/.test(String(v).trim());}
+ function pintar(el){
+  if(tracos(el.value)){el.style.color=ROJO;el.style.fontWeight='700';el.style.background='';return;}
+  var n=num(el.value);
+  if(n===null){el.style.color='';el.style.fontWeight='';el.style.background='';}
+  else{el.style.color=n<5?ROJO:AZUL;el.style.fontWeight='700';el.style.background=(n<0||n>10)?'#ffd6d6':'';}
+ }
+ function pintarSel(sel){if(!sel)return;var d=sel.value==='Desistente';sel.style.color=d?ROJO:'';sel.style.fontWeight=d?'700':'';}
  document.querySelectorAll('.pauta tbody tr').forEach(function(tr){
-  var ins=tr.querySelectorAll('td input:not(.c)'),sel=tr.querySelector('select');
-  var ND=Math.floor(ins.length/3);if(ND<1)return;
-  var busy=false;
-  ins.forEach(function(el){el.addEventListener('input',function(){
-   if(busy||!/^-{2,}$/.test(el.value.trim()))return;
-   busy=true;
-   ins.forEach(function(i){i.value='-----';i.style.color='';i.style.fontWeight='';i.style.background='';});
-   if(sel)sel.value='Desistente';
-   busy=false;
-  });});
+  var ins=Array.prototype.slice.call(tr.querySelectorAll('td input:not(.c)')),sel=tr.querySelector('select');
+  var ND=Math.floor(ins.length/3);
+  if(ND<1)return;
   function resultado(){
    if(!sel||sel.value==='Desistente')return;
    var neg=0;
    for(var k=0;k<ND;k++){var m=num(ins[3*k].value);if(m===null)return;if(m<5)neg++;}
    sel.value=neg>0?'Reprovado':'Aprovado';
+   pintarSel(sel);
   }
-  for(var k=0;k<ND;k++){(function(k){
-   [ins[3*k+1],ins[3*k+2]].forEach(function(el){el.addEventListener('input',function(){
-    var ne=num(ins[3*k+1].value),mf=num(ins[3*k+2].value);
-    if(ne!==null&&mf!==null&&ne>=0&&ne<=10&&mf>=0&&mf<=10){
-     ins[3*k].value=String(Math.floor((ne+mf)/2+0.5));
-     ins[3*k].dispatchEvent(new Event('input'));
-     resultado();
-    }
-   });});
-  })(k);}
- });
-})();
-</script>
-<script>/* pauta-desistente */
-(function(){
- function tracos(v){return /^-{2,}$/.test(String(v).trim());}
- document.querySelectorAll('.pauta tbody tr').forEach(function(tr){
-  var ins=Array.prototype.slice.call(tr.querySelectorAll('td input:not(.c)')),sel=tr.querySelector('select');
+  ins.forEach(function(i){pintar(i);i.dataset.t=tracos(i.value)?'1':'';});
+  pintarSel(sel);
+  if(sel)sel.addEventListener('change',function(){pintarSel(sel);});
   ins.forEach(function(i){
-   i.dataset.t=tracos(i.value)?'1':'';
    i.addEventListener('input',function(){
     if(tracos(i.value)){
-     ins.forEach(function(o){o.value='-----';o.dataset.t='1';o.style.color='';o.style.fontWeight='';o.style.background='';});
-     if(sel)sel.value='Desistente';
-    }else if(i.dataset.t==='1'){
-     i.dataset.t='';
-     ins.forEach(function(o){if(o!==i&&tracos(o.value)){o.value='';o.dataset.t='';}});
-     if(sel&&sel.value==='Desistente')sel.value='';
+     ins.forEach(function(o){o.value='-----';o.dataset.t='1';pintar(o);});
+     if(sel){sel.value='Desistente';pintarSel(sel);}
+     return;
     }
+    if(i.dataset.t==='1'){
+     i.dataset.t='';
+     ins.forEach(function(o){if(o!==i&&tracos(o.value)){o.value='';o.dataset.t='';pintar(o);}});
+     if(sel&&sel.value==='Desistente'){sel.value='';pintarSel(sel);}
+    }
+    pintar(i);
+    var idx=ins.indexOf(i),k=Math.floor(idx/3),r=idx%3;
+    if(r>0){
+     var ne=num(ins[3*k+1].value),mf=num(ins[3*k+2].value);
+     if(ne!==null&&mf!==null&&ne>=0&&ne<=10&&mf>=0&&mf<=10){
+      ins[3*k].value=String(Math.floor((ne+mf)/2+0.5));pintar(ins[3*k]);
+      resultado();
+     }
+    }else{resultado();}
    });
   });
  });

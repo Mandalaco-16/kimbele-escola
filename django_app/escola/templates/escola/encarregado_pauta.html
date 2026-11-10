@@ -1,39 +1,77 @@
 {% extends "escola/base.html" %}
 {% block titulo %}Pauta - {{ NOME_ESCOLA }}{% endblock %}
 {% block conteudo %}
-<section class="secao secao--estreita">
+<style>
+.pauta{font-family:Arial,Helvetica,sans-serif;color:#000;background:#fff;padding:10px;border:1px solid #333}
+.pauta-cab{text-align:center;line-height:1.35;font-size:13px}
+.pauta-cab b{font-size:15px}
+.pauta table{border-collapse:collapse;font-size:12px;min-width:1000px}
+.pauta th,.pauta td{border:1px solid #000;padding:3px 2px;text-align:center}
+.pauta th.v{writing-mode:vertical-rl;transform:rotate(180deg);height:46px;width:30px;font-size:11px}
+.pauta .juri{border:1px solid #000;padding:6px 10px;font-size:13px;max-width:330px;margin:10px 0 10px auto}
+</style>
+<section class="secao">
   <a href="/contributo/" class="link-voltar">&larr; Voltar</a>
   <h3 style="text-align:center">PAUTA</h3>
-  <p style="text-align:center;margin:0">Aluno: {{ aluno.nome }}</p>
   {% if linha %}
-    <p style="text-align:center;margin:2px 0">{{ linha.pauta.classe }}.ª classe, turma {{ linha.pauta.turma }}, ano lectivo 20{{ linha.pauta.ano_inicio }}/20{{ linha.pauta.ano_fim }}</p>
-    <p style="text-align:right;margin:8px 0"><a href="{% url 'escola:encarregado_pauta_pdf' %}" style="color:#0645ad;text-decoration:underline;font-size:14px">⬇️ Baixar a pauta em PDF</a></p>
-    <div style="text-align:center;margin:14px 0">
-      {% if linha.resultado == 'Aprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#1e8e3e;color:#fff;font-weight:700;font-size:18px">{% if fem %}APROVADA{% else %}APROVADO{% endif %}</span>
-      {% elif linha.resultado == 'Reprovado' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#c0392b;color:#fff;font-weight:700;font-size:18px">{% if fem %}REPROVADA{% else %}REPROVADO{% endif %}</span>
-      {% elif linha.resultado == 'Desistente' %}<span style="display:inline-block;padding:8px 22px;border-radius:20px;background:#777;color:#fff;font-weight:700;font-size:18px">DESISTENTE</span>
-      {% else %}<span style="color:#666">O resultado final ainda não foi publicado.</span>{% endif %}
+  {% url 'escola:encarregado_pauta_pdf' as url_pdf %}
+  {% if url_pdf %}<p style="text-align:right;margin:8px 0"><a href="{{ url_pdf }}" style="color:#0645ad;text-decoration:underline;font-size:14px">⬇️ Baixar a pauta em PDF</a></p>{% endif %}
+  <div style="text-align:center;margin:10px 0">
+    <span style="display:inline-block;padding:8px 22px;border-radius:20px;background:{{ res_fundo }};color:#fff;font-weight:700;font-size:18px">{{ res_txt|upper|default:"RESULTADO AINDA NÃO PUBLICADO" }}</span>
+  </div>
+  <div class="pauta">
+    <div class="pauta-cab">
+      <img src="/static/escola/insignia.png" alt="" style="height:48px"><br>
+      <b>REPÚBLICA DE ANGOLA</b><br>
+      GOVERNO PROVINCIAL DO UÍGE<br>
+      ADMINISTRAÇÃO MUNICIPAL DE QUIMBELE<br>
+      DIRECÇÃO DA EDUCAÇÃO
     </div>
-    <table style="width:100%;border-collapse:collapse;text-align:center;font-size:14px">
-      <tr style="background:#2f5233;color:#fff"><th style="padding:6px;text-align:left">Disciplina</th><th>MFD</th><th>NE</th><th>MF</th></tr>
-      {% for d in discs %}
-        <tr style="border-bottom:1px solid #bbb"><td style="padding:6px;text-align:left;background:#d6e6f5">{{ d.rot }}</td><td style="background:#cdeccd">{{ d.med }}</td><td>{{ d.ne }}</td><td>{{ d.nf }}</td></tr>
-      {% endfor %}
-    </table>
-    <p style="margin-top:10px"><b>Comportamento:</b> {{ linha.comportamento|default:"-" }}</p>
-    <p style="font-size:12px;color:#555">MFD: média final da disciplina; NE: nota do exame; MF: média final.</p>
-    <div style="text-align:right;margin-top:14px"><div style="display:inline-block;width:150px;text-align:center;line-height:1.1"><b style="font-size:12px">O Director</b><img src="/static/escola/carimbo.jpg" alt="" style="display:block;width:150px;max-width:100%;mix-blend-mode:multiply;opacity:.9;-webkit-mask-image:linear-gradient(to right,transparent,#000 10px,#000 calc(100% - 10px),transparent),linear-gradient(to bottom,transparent,#000 10px,#000 calc(100% - 10px),transparent);-webkit-mask-composite:source-in;mask-image:linear-gradient(to right,transparent,#000 10px,#000 calc(100% - 10px),transparent),linear-gradient(to bottom,transparent,#000 10px,#000 calc(100% - 10px),transparent);mask-composite:intersect" onerror="this.style.display='none'"></div></div>
+    <div class="juri">
+      <b>O CORPO DE JÚRI</b><br>
+      Presidente <u>{{ pauta.presidente }}</u><br>
+      1º Vogal <u>{{ pauta.vogal1 }}</u><br>
+      2º Vogal <u>{{ pauta.vogal2 }}</u>
+    </div>
+    <div style="text-align:center;font-size:13px;line-height:1.9">
+      <b>ESCOLA PRIMÁRIA Nº</b> <u>{{ pauta.escola_numero }}</u> <b>DE</b> <u>{{ pauta.escola_nome }}</u><br>
+      PAUTA PARA CLASSES DE EXAME - FORMAÇÃO GERAL<br>
+      CLASSE {{ pauta.classe }}ª &nbsp; SALA <u>{{ pauta.sala }}</u> &nbsp; TURMA <u>{{ pauta.turma }}</u> &nbsp; PERIODO <u>{{ pauta.periodo }}</u><br>
+      ANO LECTIVO 20<u>{{ pauta.ano_inicio }}</u> / 20<u>{{ pauta.ano_fim }}</u>
+    </div>
+    <div style="overflow-x:auto;margin-top:10px">
+      <table>
+        <thead>
+          <tr>
+            <th rowspan="2" style="width:34px">N.º</th>
+            <th rowspan="2" style="min-width:200px">NOME COMPLETO</th>
+            {% for d in discs %}<th colspan="{{ d.n }}" style="background:#cfe2f5">{{ d.rot }}</th>{% endfor %}
+            <th rowspan="2" style="min-width:100px">COMPORTA-<br>MENTO</th>
+            <th rowspan="2" style="min-width:110px">RESULTADO<br>FINAL</th>
+          </tr>
+          <tr>{% for d in discs %}{% for c in d.cols %}<th class="v"{% if c == "MFD" %} style="background:#cdeccd"{% endif %}>{{ c }}</th>{% endfor %}{% endfor %}</tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>{{ linha.numero }}</b></td>
+            <td style="text-align:left;white-space:nowrap">{{ aluno.nome }}</td>
+            {% for c in cells %}<td{% if c.med %} style="background:#cdeccd"{% endif %}><b{% if c.cor %} style="color:{{ c.cor }}"{% endif %}>{{ c.valor }}</b></td>{% endfor %}
+            <td>{{ linha.comportamento|default:"-" }}</td>
+            <td><b{% if res_cor %} style="color:{{ res_cor }}"{% endif %}>{{ res_txt|default:"-" }}</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="display:flex;justify-content:space-around;text-align:center;margin:14px 0;font-weight:700">
+      <div>Disciplinas<br><span style="font-size:22px">{{ total }}</span></div>
+      <div style="color:#0645ad">Positivas<br><span style="font-size:22px">{{ pos }}</span></div>
+      <div style="color:#d00">Negativas<br><span style="font-size:22px">{{ neg }}</span></div>
+    </div>
+    <div style="text-align:right;margin-top:6px"><div style="display:inline-block;width:150px;text-align:center;line-height:1.1"><b style="font-size:12px">O Director</b><img src="/static/escola/carimbo.jpg" alt="" style="display:block;width:150px;max-width:100%;mix-blend-mode:multiply;opacity:.9" onerror="this.style.display='none'"></div></div>
+  </div>
+  <p style="font-size:12px;color:#555">MFD: média final da disciplina; NE: nota do exame; MF: média final. Positiva: 5 ou mais; negativa: menos de 5.</p>
   {% else %}
     <p style="text-align:center;margin-top:16px">Ainda não há pauta para este aluno.</p>
   {% endif %}
-<script>/* pauta-cores */
-document.querySelectorAll('table tr').forEach(function(tr){
- var td=tr.querySelectorAll('td');
- for(var i=1;i<td.length;i++){
-  var n=parseFloat(td[i].textContent.replace(',','.'));
-  if(!isNaN(n)){td[i].style.color=n<5?'#d00':'#0645ad';td[i].style.fontWeight='700';}
- }
-});
-</script>
 </section>
 {% endblock %}

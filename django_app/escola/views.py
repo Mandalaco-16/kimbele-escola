@@ -1438,7 +1438,9 @@ def _pauta_pdf(pauta):
                     nota = float(val.replace(",", "."))
                 except ValueError:
                     nota = None
-                if nota is None:
+                if nota is None and val.strip() and set(val.strip()) == {"-"}:
+                    c.setFillColorRGB(0.85, 0, 0)
+                elif nota is None:
                     c.setFillColorRGB(0, 0, 0)
                 elif nota < 5:
                     c.setFillColorRGB(0.85, 0, 0)
@@ -1451,7 +1453,10 @@ def _pauta_pdf(pauta):
         c.setFont("Helvetica", 7)
         c.drawCentredString(x + 26, y - 11, l.comportamento[:12])
         c.rect(x + 52, y - 16, 56, 16)
+        if l.resultado == "Desistente":
+            c.setFillColorRGB(0.85, 0, 0)
         c.drawCentredString(x + 80, y - 11, _pauta_res_txt(l.resultado, l.nome))
+        c.setFillColorRGB(0, 0, 0)
         y -= 16
     try:
         img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "carimbo.jpg"))
@@ -1541,7 +1546,7 @@ def _pauta_discs(pauta):
     t = unicodedata.normalize("NFD", str(c or "").lower())
     t = "".join(ch for ch in t if unicodedata.category(ch) != "Mn")
     nums = re.findall(r"\d+", t)
-    if "pre" in t or (nums and nums[0] in ("1", "4")):
+    if "pre" in t or (nums and nums[0] in ("1", "2", "3", "4")):
         return [d for d in PAUTA_DISC if d[0] not in ("geo", "emc", "hist")]
     return PAUTA_DISC
 
@@ -1600,17 +1605,18 @@ def _pauta_numerar(pauta):
 
 def _pauta_gravar(request, pauta, editar_cabecalho):
     invalidas = 0
-    if True:
-        for f in (("escola_numero", "escola_nome", "sala", "periodo", "ano_inicio", "ano_fim", "presidente", "vogal1", "vogal2") if editar_cabecalho else ("presidente", "vogal1", "vogal2")):
-            if "h_" + f in request.POST:
-                setattr(pauta, f, request.POST.get("h_" + f, "").strip()[:150])
-        pauta.save()
+    campos_cab = ("escola_numero", "escola_nome", "sala", "periodo", "ano_inicio", "ano_fim", "presidente", "vogal1", "vogal2") if editar_cabecalho else ("presidente", "vogal1", "vogal2")
+    for f in campos_cab:
+        if "h_" + f in request.POST:
+            setattr(pauta, f, request.POST.get("h_" + f, "").strip()[:150])
+    pauta.save()
+    ds = _pauta_discs(pauta)
     for l in pauta.linhas.all():
-        for cod, rot, cols in _pauta_discs(pauta):
+        for cod, rot, cols in ds:
             for c in cols:
                 campo = cod + "_" + c
                 raw = request.POST.get("l" + str(l.pk) + "_" + campo, "").strip()[:6]
-                ok = raw == "" or (len(raw) >= 2 and set(raw) == {"-"})  # _desistente_tracos
+                ok = raw == "" or (len(raw) >= 2 and set(raw) == {"-"})
                 if raw and set(raw) != {"-"}:
                     try:
                         ok = 0 <= float(raw.replace(",", ".")) <= 10
@@ -1629,19 +1635,21 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
                     pass
         l.comportamento = request.POST.get("l" + str(l.pk) + "_comportamento", "").strip()[:30]
         l.resultado = request.POST.get("l" + str(l.pk) + "_resultado", "").strip()[:30]
-        if any(set(getattr(l, cod + "_" + c) or "x") == {"-"} for cod, rot, cols in _pauta_discs(pauta) for c in cols):
-            for cod, rot, cols in _pauta_discs(pauta):
+        todos = [getattr(l, cod + "_" + c) for cod, rot, cols in ds for c in cols]
+        if any(v and set(v) == {"-"} for v in todos):
+            for cod, rot, cols in ds:
                 for c in cols:
                     setattr(l, cod + "_" + c, "-----")
             l.resultado = "Desistente"
-        meds = []
-        for cod, rot, cols in _pauta_discs(pauta):
-            try:
-                meds.append(float(getattr(l, cod + "_med").replace(",", ".")))
-            except ValueError:
-                pass
-        if len(meds) == len(_pauta_discs(pauta)) and l.resultado != "Desistente":
-            l.resultado = "Reprovado" if sum(1 for m in meds if m < 5) > PAUTA_MAX_NEGATIVAS else "Aprovado"
+        else:
+            meds = []
+            for cod, rot, cols in ds:
+                try:
+                    meds.append(float(getattr(l, cod + "_med").replace(",", ".")))
+                except ValueError:
+                    pass
+            if len(meds) == len(ds) and l.resultado != "Desistente":
+                l.resultado = "Reprovado" if sum(1 for m in meds if m < 5) > PAUTA_MAX_NEGATIVAS else "Aprovado"
         l.save()
     if invalidas:
         messages.warning(request, "Algumas notas não foram gravadas: só são aceites valores de 0 a 10.")
@@ -1730,14 +1738,39 @@ def encarregado_pauta(request):
         messages.error(request, "Insira primeiro os dados de acesso do aluno.")
         return redirect("/contributo/")
     linha = PautaLinha.objects.filter(aluno=aluno).select_related("pauta").order_by("-pauta__ano_inicio").first()
+    ctx = {"aluno": aluno, "linha": linha}
     if linha:
         request.session["pauta_vista_%s" % linha.pk] = linha.resultado
-    discs = []
-    if linha:
-        for cod, rot, cols in _pauta_discs(linha.pauta):
-            vals = {c: (getattr(linha, cod + "_" + c) or "-") for c in cols}
-            discs.append({"rot": rot, "med": vals.get("med"), "ne": vals.get("ne"), "nf": vals.get("nf", "-")})
-    return render(request, "escola/encarregado_pauta.html", {"aluno": aluno, "linha": linha, "discs": discs, "fem": _pauta_genero(aluno.nome) == "f"})
+        ds = _pauta_discs(linha.pauta)
+        cells = []
+        pos = neg = 0
+        for cod, rot, cols in ds:
+            for c in cols:
+                v = getattr(linha, cod + "_" + c) or ""
+                cor = ""
+                traco = bool(v) and set(v) == {"-"}
+                if traco:
+                    cor = "#d00"
+                else:
+                    try:
+                        n = float(v.replace(",", "."))
+                        cor = "#d00" if n < 5 else "#0645ad"
+                        if c == "med":
+                            if n < 5:
+                                neg += 1
+                            else:
+                                pos += 1
+                    except ValueError:
+                        pass
+                cells.append({"valor": v, "cor": cor, "med": c == "med"})
+        res_txt = _pauta_res_txt(linha.resultado, aluno.nome)
+        res_cor = {"Aprovado": "#1e8e3e", "Reprovado": "#d00", "Desistente": "#d00"}.get(linha.resultado, "")
+        ctx.update({
+            "pauta": linha.pauta, "cells": cells, "pos": pos, "neg": neg, "total": len(ds),
+            "discs": [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in ds],
+            "res_txt": res_txt, "res_cor": res_cor, "res_fundo": res_cor or "#777",
+        })
+    return render(request, "escola/encarregado_pauta.html", ctx)
 
 
 @login_required
@@ -1773,6 +1806,9 @@ def funcionario_faltas_direcao(request, pk):
 
 
 def _cor_nota(c, val):
+    if val.strip() and set(val.strip()) == {"-"}:
+        c.setFillColorRGB(0.85, 0, 0)
+        return
     try:
         n = float(val.replace(",", "."))
     except ValueError:
@@ -1868,7 +1904,10 @@ def encarregado_pauta_pdf(request):
     c.drawString(2 * cm, y, "Comportamento: %s" % (l.comportamento or "-"))
     y -= 20
     c.setFont("Helvetica-Bold", 12)
+    if l.resultado == "Desistente":
+        c.setFillColorRGB(0.85, 0, 0)
     c.drawString(2 * cm, y, "Resultado final: %s" % (_pauta_res_txt(l.resultado, aluno.nome) or "ainda não publicado"))
+    c.setFillColorRGB(0, 0, 0)
     c.setFont("Helvetica", 8)
     y -= 18
     c.drawString(2 * cm, y, "MFD: média final da disciplina; NE: nota do exame; MF: média final.")
