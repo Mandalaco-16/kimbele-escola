@@ -1597,8 +1597,8 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
             for c in cols:
                 campo = cod + "_" + c
                 raw = request.POST.get("l" + str(l.pk) + "_" + campo, "").strip()[:6]
-                ok = raw == ""
-                if raw:
+                ok = raw == "" or (len(raw) >= 2 and set(raw) == {"-"})  # _desistente_tracos
+                if raw and set(raw) != {"-"}:
                     try:
                         ok = 0 <= float(raw.replace(",", ".")) <= 10
                     except ValueError:
@@ -1610,9 +1610,17 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
             ne_v = getattr(l, cod + "_ne")
             mf_v = getattr(l, cod + "_nf")
             if ne_v and mf_v:
-                setattr(l, cod + "_med", _pauta_mfd(ne_v, mf_v))
+                try:
+                    setattr(l, cod + "_med", _pauta_mfd(ne_v, mf_v))
+                except ValueError:
+                    pass
         l.comportamento = request.POST.get("l" + str(l.pk) + "_comportamento", "").strip()[:30]
         l.resultado = request.POST.get("l" + str(l.pk) + "_resultado", "").strip()[:30]
+        if any(set(getattr(l, cod + "_" + c) or "x") == {"-"} for cod, rot, cols in PAUTA_DISC for c in cols):
+            for cod, rot, cols in PAUTA_DISC:
+                for c in cols:
+                    setattr(l, cod + "_" + c, "-----")
+            l.resultado = "Desistente"
         meds = []
         for cod, rot, cols in PAUTA_DISC:
             try:

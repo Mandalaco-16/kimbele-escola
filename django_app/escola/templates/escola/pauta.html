@@ -61,7 +61,7 @@
               <tr>
                 <td><b>{{ l.obj.numero }}</b></td>
                 <td style="text-align:left;white-space:nowrap">{{ l.obj.nome }}</td>
-                {% for c in l.cells %}<td{% if c.campo|slice:"-4:" == "_med" %} style="background:#cdeccd"{% endif %}><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="6" inputmode="decimal"></td>{% endfor %}
+                {% for c in l.cells %}<td{% if c.campo|slice:"-4:" == "_med" %} style="background:#cdeccd"{% endif %}><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="6"></td>{% endfor %}
                 <td><input class="c" name="l{{ l.obj.pk }}_comportamento" value="{{ l.obj.comportamento }}" maxlength="30"></td>
                 <td>
                   <select name="l{{ l.obj.pk }}_resultado">
@@ -101,6 +101,14 @@
  document.querySelectorAll('.pauta tbody tr').forEach(function(tr){
   var ins=tr.querySelectorAll('td input:not(.c)'),sel=tr.querySelector('select');
   if(ins.length<27)return;
+  var busy=false;
+  ins.forEach(function(el){el.addEventListener('input',function(){
+   if(busy||!/^-{2,}$/.test(el.value.trim()))return;
+   busy=true;
+   ins.forEach(function(i){i.value='-----';i.style.color='';i.style.fontWeight='';i.style.background='';});
+   if(sel)sel.value='Desistente';
+   busy=false;
+  });});
   function resultado(){
    if(!sel||sel.value==='Desistente')return;
    var neg=0;
@@ -117,6 +125,27 @@
     }
    });});
   })(k);}
+ });
+})();
+</script>
+<script>/* pauta-desistente */
+(function(){
+ function tracos(v){return /^-{2,}$/.test(String(v).trim());}
+ document.querySelectorAll('.pauta tbody tr').forEach(function(tr){
+  var ins=Array.prototype.slice.call(tr.querySelectorAll('td input:not(.c)')),sel=tr.querySelector('select');
+  ins.forEach(function(i){
+   i.dataset.t=tracos(i.value)?'1':'';
+   i.addEventListener('input',function(){
+    if(tracos(i.value)){
+     ins.forEach(function(o){o.value='-----';o.dataset.t='1';o.style.color='';o.style.fontWeight='';o.style.background='';});
+     if(sel)sel.value='Desistente';
+    }else if(i.dataset.t==='1'){
+     i.dataset.t='';
+     ins.forEach(function(o){if(o!==i&&tracos(o.value)){o.value='';o.dataset.t='';}});
+     if(sel&&sel.value==='Desistente')sel.value='';
+    }
+   });
+  });
  });
 })();
 </script>
