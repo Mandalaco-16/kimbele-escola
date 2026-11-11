@@ -1789,7 +1789,7 @@ def encarregado_pauta(request):
         res_txt = _pauta_res_txt(linha.resultado, aluno.nome)
         res_cor = {"Aprovado": "#1e8e3e", "Reprovado": "#d00", "Desistente": "#d00"}.get(linha.resultado, "")
         ctx.update({
-            "pauta": linha.pauta, "docente": _pauta_docente(linha.pauta), "cells": cells, "pos": pos, "neg": neg, "total": len(ds),
+            "pauta": linha.pauta, "docente": _pauta_docente(linha.pauta) or aluno.professor, "cells": cells, "pos": pos, "neg": neg, "total": len(ds),
             "discs": [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in ds],
             "res_txt": res_txt, "res_cor": res_cor, "res_fundo": res_cor or "#777",
         })
@@ -1865,7 +1865,7 @@ def encarregado_pauta_pdf(request):
     resp["Content-Disposition"] = 'attachment; filename="pauta_%s.pdf"' % nome
     W, H = A4
     c = canvas.Canvas(resp, pagesize=A4)
-    d = _pauta_docente(pa)
+    d = _pauta_docente(pa) or aluno.professor
     if d:
         c.setFillColorRGB(0.03, 0.27, 0.68)
         c.setFont("Helvetica-Bold", 10)
