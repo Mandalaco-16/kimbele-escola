@@ -21,6 +21,7 @@
   <form method="post">
     {% csrf_token %}
     <div class="pauta">
+      {% if docente %}<div style="text-align:left;font-weight:700;color:#0645ad;font-size:14px;margin-bottom:6px">{{ docente }}</div>{% endif %}
       <div class="pauta-cab">
         <img src="/static/escola/insignia.png" alt="" style="height:48px"><br>
         <b>REPÚBLICA DE ANGOLA</b><br>
@@ -61,7 +62,7 @@
               <tr>
                 <td><b>{{ l.obj.numero }}</b></td>
                 <td style="text-align:left;white-space:nowrap">{{ l.obj.nome }}</td>
-                {% for c in l.cells %}<td{% if c.campo|slice:"-4:" == "_med" %} style="background:#cdeccd"{% endif %}><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="6"></td>{% endfor %}
+                {% for c in l.cells %}<td{% if c.campo|slice:"-4:" == "_med" %} style="background:#cdeccd"{% endif %}><input name="l{{ l.obj.pk }}_{{ c.campo }}" value="{{ c.valor }}" maxlength="4"></td>{% endfor %}
                 <td><input class="c" name="l{{ l.obj.pk }}_comportamento" value="{{ l.obj.comportamento }}" maxlength="30"></td>
                 <td>
                   <select name="l{{ l.obj.pk }}_resultado">
@@ -115,7 +116,7 @@
   ins.forEach(function(i){
    i.addEventListener('input',function(){
     if(tracos(i.value)){
-     ins.forEach(function(o){o.value='-----';o.dataset.t='1';pintar(o);});
+     ins.forEach(function(o){o.value='--';o.dataset.t='1';pintar(o);});
      if(sel){sel.value='Desistente';pintarSel(sel);}
      return;
     }

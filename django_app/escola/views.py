@@ -1348,6 +1348,12 @@ def _pauta_pdf(pauta):
     x0 = (W - sum(larg)) / 2
 
     def cabecalho():
+        d = _pauta_docente(pauta)
+        if d:
+            c.setFillColorRGB(0.03, 0.27, 0.68)
+            c.setFont("Helvetica-Bold", 10)
+            c.drawString(30, H - 24, d)
+            c.setFillColorRGB(0, 0, 0)
         try:
             img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "insignia.png"))
             c.drawImage(img, W / 2 - 20, H - 62, 40, 40, mask="auto")
@@ -1433,7 +1439,7 @@ def _pauta_pdf(pauta):
                     c.rect(x, y - 16, 20, 16, stroke=1, fill=1)
                 else:
                     c.rect(x, y - 16, 20, 16)
-                val = getattr(l, cod + "_" + col)
+                val = _nota_txt(getattr(l, cod + "_" + col))
                 try:
                     nota = float(val.replace(",", "."))
                 except ValueError:
@@ -1551,6 +1557,20 @@ def _pauta_discs(pauta):
     return PAUTA_DISC
 
 
+def _nota_txt(v):
+    v = (v or "").strip()
+    return "--" if v and set(v) == {"-"} else v
+
+
+def _pauta_docente(pauta):
+    if pauta.docente:
+        return pauta.docente
+    f = Funcionario.objects.filter(
+        ativo=True, classe__iexact=pauta.classe.strip(), turma__iexact=pauta.turma.strip()
+    ).order_by("nome").first()
+    return f.nome if f else ""
+
+
 def _pauta_contexto(pauta, editar_cabecalho):
     _pauta_numerar(pauta)
     linhas = []
@@ -1559,10 +1579,10 @@ def _pauta_contexto(pauta, editar_cabecalho):
         for cod, rot, cols in _pauta_discs(pauta):
             for c in cols:
                 campo = cod + "_" + c
-                cells.append({"campo": campo, "valor": getattr(l, campo)})
+                cells.append({"campo": campo, "valor": _nota_txt(getattr(l, campo))})
         linhas.append({"obj": l, "cells": cells, "fem": _pauta_genero(l.nome) == "f"})
     discs = [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in _pauta_discs(pauta)]
-    return {"pauta": pauta, "linhas": linhas, "discs": discs, "editar_cabecalho": editar_cabecalho}
+    return {"pauta": pauta, "linhas": linhas, "discs": discs, "editar_cabecalho": editar_cabecalho, "docente": _pauta_docente(pauta)}
 
 
 PAUTA_MAX_NEGATIVAS = 0
@@ -1622,6 +1642,8 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
                         ok = 0 <= float(raw.replace(",", ".")) <= 10
                     except ValueError:
                         ok = False
+                if ok and raw and set(raw) == {"-"}:
+                    raw = "--"
                 if ok:
                     setattr(l, campo, raw)
                 else:
@@ -1639,7 +1661,7 @@ def _pauta_gravar(request, pauta, editar_cabecalho):
         if any(v and set(v) == {"-"} for v in todos):
             for cod, rot, cols in ds:
                 for c in cols:
-                    setattr(l, cod + "_" + c, "-----")
+                    setattr(l, cod + "_" + c, "--")
             l.resultado = "Desistente"
         else:
             meds = []
@@ -1720,6 +1742,8 @@ def funcionario_pauta(request, pk):
             messages.success(request, "Lista de alunos atualizada.")
         else:
             _pauta_gravar(request, pauta, False)
+            pauta.docente = funcionario.nome
+            pauta.save(update_fields=["docente"])
             messages.success(request, "Pauta gravada.")
         return redirect("escola:funcionario_pauta", pk=pk)
     if not pauta.linhas.exists():
@@ -1755,18 +1779,17 @@ def encarregado_pauta(request):
                     try:
                         n = float(v.replace(",", "."))
                         cor = "#d00" if n < 5 else "#0645ad"
-                        if c == "med":
-                            if n < 5:
-                                neg += 1
-                            else:
-                                pos += 1
+                        if n < 5:
+                            neg += 1
+                        else:
+                            pos += 1
                     except ValueError:
                         pass
-                cells.append({"valor": v, "cor": cor, "med": c == "med"})
+                cells.append({"valor": ("--" if traco else v), "cor": cor, "med": c == "med"})
         res_txt = _pauta_res_txt(linha.resultado, aluno.nome)
         res_cor = {"Aprovado": "#1e8e3e", "Reprovado": "#d00", "Desistente": "#d00"}.get(linha.resultado, "")
         ctx.update({
-            "pauta": linha.pauta, "cells": cells, "pos": pos, "neg": neg, "total": len(ds),
+            "pauta": linha.pauta, "docente": _pauta_docente(linha.pauta), "cells": cells, "pos": pos, "neg": neg, "total": len(ds),
             "discs": [{"rot": rot, "n": len(cols), "cols": [PAUTA_ROT[c] for c in cols]} for cod, rot, cols in ds],
             "res_txt": res_txt, "res_cor": res_cor, "res_fundo": res_cor or "#777",
         })
@@ -1842,6 +1865,12 @@ def encarregado_pauta_pdf(request):
     resp["Content-Disposition"] = 'attachment; filename="pauta_%s.pdf"' % nome
     W, H = A4
     c = canvas.Canvas(resp, pagesize=A4)
+    d = _pauta_docente(pa)
+    if d:
+        c.setFillColorRGB(0.03, 0.27, 0.68)
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(2 * cm, H - 1.1 * cm, d)
+        c.setFillColorRGB(0, 0, 0)
     y = H - 1.5 * cm
     try:
         img = ImageReader(os.path.join(settings.BASE_DIR, "escola", "static", "escola", "insignia.png"))
@@ -1887,7 +1916,7 @@ def encarregado_pauta_pdf(request):
         c.drawString(x + 4, y - 12, rot)
         x += larg[0]
         for col, w in zip(("med", "ne", "nf"), larg[1:]):
-            val = getattr(l, cod + "_" + col) or "-"
+            val = _nota_txt(getattr(l, cod + "_" + col)) or "-"
             if col == "med":
                 c.setFillColorRGB(0.80, 0.93, 0.80)
                 c.rect(x, y - 18, w, 18, stroke=1, fill=1)

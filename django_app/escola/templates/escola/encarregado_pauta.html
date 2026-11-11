@@ -20,6 +20,7 @@
     <span style="display:inline-block;padding:8px 22px;border-radius:20px;background:{{ res_fundo }};color:#fff;font-weight:700;font-size:18px">{{ res_txt|upper|default:"RESULTADO AINDA NÃO PUBLICADO" }}</span>
   </div>
   <div class="pauta">
+    {% if docente %}<div style="text-align:left;font-weight:700;color:#0645ad;font-size:14px;margin-bottom:6px">{{ docente }}</div>{% endif %}
     <div class="pauta-cab">
       <img src="/static/escola/insignia.png" alt="" style="height:48px"><br>
       <b>REPÚBLICA DE ANGOLA</b><br>
@@ -63,9 +64,9 @@
       </table>
     </div>
     <div style="display:flex;justify-content:space-around;text-align:center;margin:14px 0;font-weight:700">
-      <div>Disciplinas<br><span style="font-size:22px">{{ total }}</span></div>
-      <div style="color:#0645ad">Positivas<br><span style="font-size:22px">{{ pos }}</span></div>
-      <div style="color:#d00">Negativas<br><span style="font-size:22px">{{ neg }}</span></div>
+      <div>Notas<br><span style="font-size:22px">{{ pos|add:neg }}</span></div>
+      <div style="color:#0645ad">Notas positivas<br><span style="font-size:22px">{{ pos }}</span></div>
+      <div style="color:#d00">Notas negativas<br><span style="font-size:22px">{{ neg }}</span></div>
     </div>
     <div style="text-align:right;margin-top:6px"><div style="display:inline-block;width:150px;text-align:center;line-height:1.1"><b style="font-size:12px">O Director</b><img src="/static/escola/carimbo.jpg" alt="" style="display:block;width:150px;max-width:100%;mix-blend-mode:multiply;opacity:.9" onerror="this.style.display='none'"></div></div>
   </div>

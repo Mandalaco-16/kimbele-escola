@@ -407,6 +407,7 @@ class Pauta(models.Model):
     presidente = models.CharField("Presidente", max_length=150, blank=True)
     vogal1 = models.CharField("1.º Vogal", max_length=150, blank=True)
     vogal2 = models.CharField("2.º Vogal", max_length=150, blank=True)
+    docente = models.CharField("Docente que publicou", max_length=150, blank=True)
 
     class Meta:
         verbose_name = "Pauta"
